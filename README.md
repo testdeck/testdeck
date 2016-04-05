@@ -1,23 +1,85 @@
-# mocha-typescript
-Decorator based wrapper over mocha's interface.
-It will read your decorators and call the appopriate
-`describe`, `it`, `timeout`, `slow`, `it.only` or `it.skip`
-calls for you.
+# TypeScript Decorators Based Interface for Mocha 
+It will read your `@suite`, `@test`, `@timeout`, `@slow`, `@only` and `@skip` decorators
+and call the appopriate `describe`, `it`, `timeout`, `slow`, `it.only` or `it.skip`.
 
-A class decorated with `@suite` is considered suite.
+ - A class decorated with `@suite` is considered suite.
+ - Static `before` and `after` methods will be called before and after all tests.
+ - A class instance will be created for each test.
+ - Instance `before` and `after` methods will be called before and after each test.
+ - A method decorated with `@test` is considered a test.
+ - Methods accepting `done` callback or returning a `Promise` instance are considered async.
 
-Static `before` and `after` methods will be called before and after all tests.
+The standard mocha interface (arrow functions are discouraged):
+```
+describe("Hello", function() {
+    it("world", function() {});
+})
+```
 
-A class instance will be created for each test.
+Becomes:
+```
+@suite class Hello {
+    @test "world"() { }
+}
+```
 
-Instance `before` and `after` methods will be called before and after each test.
+## Scafolding
+In the terminal run:
+```
+mkdir mocha-ts-use
+cd mocha-ts-use
 
-A method decorated with `@test` is considered a test.
+npm init
+# then multiple enter hits
 
-Methods accepting `done` callback or returning a `Promise` instance are considered async.
+npm install typescript --save-dev
+npm install mocha --save-dev
+npm install mocha-typescript --save-dev
+```
 
-For more information check the playground:
+In the `package.json` add:
+```
+  "scripts": {
+    "test": "tsc -p . && mocha",
+    "prepublish": "tsc -p ."
+  },
+```
 
+Create `tsconfig.json` file near the `package.json` like that:
+```
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "removeComments": false,
+        "preserveConstEnums": true,
+        "sourceMap": true,
+        "experimentalDecorators": true,
+        "declaration": true
+    }
+}
+```
+
+Add a `test.ts` file:
+```
+import { suite, test, slow, timeout, skip, only } from "mocha-typescript";
+
+@suite class Hello {
+    @test "world"() { }
+}
+```
+
+Back to the terminal:
+```
+npm test
+```
+
+Now you have tests for the code you are about to write.
+
+Mind adding `.npmignore` and `.gitignore` to keep `.ts` files in `git`,
+and `.js` and `.d.ts` files in `npm`.
+
+## More Example Code
+Check the playground:
 ``` TypeScript
 import { suite, test, slow, timeout, skip, only } from "mocha-typescript";
 

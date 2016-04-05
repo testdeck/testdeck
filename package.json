@@ -1,13 +1,13 @@
 {
   "name": "mocha-typescript",
-  "version": "1.0.0",
-  "description": "0.0.1",
+  "version": "1.0.1",
+  "description": "TypeScript decorators based wrapper over mocha's interface",
   "main": "index.js",
   "scripts": {
     "test": "tsc -p . && mocha test.js",
     "prepublish": "tsc -p ."
   },
-  "author": "",
+  "author": "Panayot Cankov",
   "license": "Apache-2",
   "dependencies": {},
   "peerDependencies": {

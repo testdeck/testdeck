@@ -8,7 +8,7 @@ A class decorated with `@suite` is considered suite.
 
 Static `before` and `after` methods will be called before and after all tests.
 
-A class instance will be create for each test.
+A class instance will be created for each test.
 
 Instance `before` and `after` methods will be called before and after each test.
 

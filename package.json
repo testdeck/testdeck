@@ -1,8 +1,12 @@
 {
   "name": "mocha-typescript",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "TypeScript decorators based wrapper over mocha's interface",
   "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/PanayotCankov/mocha-typescript"
+  },
   "scripts": {
     "test": "tsc -p . && mocha test.js",
     "prepublish": "tsc -p ."

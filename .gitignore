@@ -2,3 +2,4 @@ node_modules/
 *.js
 *.map
 *.d.ts
+*.tgz

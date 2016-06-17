@@ -1,5 +1,3 @@
-declare function Symbol(description: string): symbol;
-
 declare var global: any;
 let describeFunction = global.describe;
 let itFunction = global.it;
@@ -10,12 +8,14 @@ let beforeEach = global.beforeEach;
 let afterAll = global.after;
 let afterEach = global.afterEach;
 
-let testNameSymbol = Symbol("test");
-let instanceSymbol = Symbol("instance");
-let slowSymbol = Symbol("slow");
-let timeoutSymbol = Symbol("timout");
-let onlySymbol = Symbol("only");
-let skipSymbol = Symbol("skip");
+let nodeSymbol = global.Symbol || (key => "__mts_" + key);
+
+let testNameSymbol = nodeSymbol("test");
+let instanceSymbol = nodeSymbol("instance");
+let slowSymbol = nodeSymbol("slow");
+let timeoutSymbol = nodeSymbol("timout");
+let onlySymbol = nodeSymbol("only");
+let skipSymbol = nodeSymbol("skip");
 
 interface SuiteCtor {
     before?();

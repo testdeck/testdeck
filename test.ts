@@ -123,7 +123,7 @@ class Basic {
 //        - After each test 2
 //    - After the suite4
 
-@suite class AsyncLifeCycle {
+@suite class FailingAsyncLifeCycle {
 
     constructor() {
     }
@@ -135,7 +135,8 @@ class Basic {
     }
 
     after(done) {
-        // done() not called... results in fail
+        // done() not called... results in "two" not starting because "one" is not completely finished (though the test
+        // passes)
         return;
     }
 
@@ -153,10 +154,47 @@ class Basic {
     }
 }
 
-//   AsyncLifeCycle
+//   FailingAsyncLifeCycle
 //     √ one
 //     4) "after each" hook for "one"
 //     5) "after all" hook
+
+@suite class PassingAsyncLifeCycle {
+
+    constructor() {
+    }
+
+    before(done) {
+        setTimeout(() => {
+            done();
+        }, 100);
+    }
+
+    after() {
+        return new Promise((resolve, reject) => resolve());
+    }
+
+    static before() {
+        return new Promise((resolve, reject) => resolve());
+    }
+
+    static after(done) {
+        setTimeout(() => {
+            done();
+        }, 300);
+        return;
+    }
+
+    @test one() {
+    }
+    @test two() {
+    }
+}
+
+//   PassingAsyncLifeCycle
+//     √ one
+//     √ two
+
 
 @suite class Times {
     @test @slow(10) "when fast is normal"(done) {
@@ -248,7 +286,7 @@ class ServerTests {
 //     √ web can disconnect
 //   tear down server.
 
-//   19 passing (2s)
+//   21 passing (3s)
 //   2 pending
 //   6 failing
 

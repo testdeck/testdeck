@@ -1,5 +1,8 @@
 node_modules/
+typings/
 *.js
 *.map
 *.d.ts
 *.tgz
+
+.idea/

@@ -20,7 +20,7 @@ class Basic {
     
     @test("should pass async tests")
     assert_pass_async(done: Function) {
-        setTimeout(() => done(), 1);
+        setTimeout(done, 1);
     }
     
     @test("should fail async when given error")
@@ -129,14 +129,11 @@ class Basic {
     }
 
     before(done) {
-        setTimeout(() => {
-            done();
-        }, 100);
+        setTimeout(done, 100);
     }
 
     after(done) {
-        // done() not called... results in "two" not starting because "one" is not completely finished (though the test
-        // passes)
+        // done() not called... results in "two" not starting because "one" is not completely finished (though the test passes)
         return;
     }
 

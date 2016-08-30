@@ -9,15 +9,16 @@
   },
   "scripts": {
     "test": "tsc -p . && mocha test.js",
-    "prepublish": "tsc -p ."
+    "prepublish": "typings install && tsc"
   },
   "author": "Panayot Cankov",
-  "license": "Apache-2",
+  "license": "Apache-2.0",
   "dependencies": {},
   "devDependencies": {
     "assert": "^1.3.0",
     "mocha": "^2.5.3",
-    "typescript": "^1.8.9"
+    "typescript": "^1.8.9",
+    "typings": "^1.3.3"
   },
   "files": [
     "index.js",

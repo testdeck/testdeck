@@ -9,7 +9,10 @@ and call the appopriate `describe`, `it`, `timeout`, `slow`, `it.only` or `it.sk
  - A method decorated with `@test` is considered a test.
  - Methods accepting `done` callback or returning a `Promise` instance are considered async.
 
-The standard mocha interface (arrow functions are discouraged):
+# Thanks to
+[Haringat](https://github.com/PanayotCankov/mocha-typescript/pull/6) for the async support in before and after methods.
+
+The standard mocha interface (arrow functions are discouraged because this is messed up):
 ```
 describe("Hello", function() {
     it("world", function() {});
@@ -204,6 +207,37 @@ class Basic {
 //     √ two
 //        - After each test 2
 //    - After the suite4
+
+@suite class PassingAsyncLifeCycle {
+
+    constructor() {
+    }
+
+    before(done) {
+        setTimeout(done, 100);
+    }
+
+    after() {
+        return new Promise((resolve, reject) => resolve());
+    }
+
+    static before() {
+        return new Promise((resolve, reject) => resolve());
+    }
+
+    static after(done) {
+        setTimeout(done, 300);
+    }
+
+    @test one() {
+    }
+    @test two() {
+    }
+}
+
+//   PassingAsyncLifeCycle
+//     √ one
+//     √ two
 
 @suite class Times {
     @test @slow(10) "when fast is normal"(done) {

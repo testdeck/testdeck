@@ -9,6 +9,7 @@
     },
     "files": [
         "test.ts",
-        "index.ts"
+        "index.ts",
+        "typings/index.d.ts"
     ]
 }

@@ -1,5 +1,3 @@
-/// <reference path="typings/globals/es2015-symbol/index.d.ts"/>
-
 interface IOptionallyAsync {
     (): any;
     (done: Function): any;

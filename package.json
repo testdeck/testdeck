@@ -8,8 +8,9 @@
     "url": "https://github.com/PanayotCankov/mocha-typescript"
   },
   "scripts": {
-    "test": "tsc -p . && mocha test.js",
-    "prepublish": "typings install && tsc"
+    "pretest": "tsc",
+    "test": "mocha test.js",
+    "prepublish": "typings install && npm test"
   },
   "author": "Panayot Cankov",
   "license": "Apache-2.0",

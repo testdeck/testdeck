@@ -1,4 +1,24 @@
-declare var global: any;
+/// <reference path="typings/globals/es2015-symbol/index.d.ts"/>
+
+interface IOptionallyAsync {
+    (): any;
+    (done: Function): any;
+}
+
+declare var global: {
+    describe(string, IOptionallyAsync): void;
+    it: {
+        (string, IOtinallyAsync): void;
+        skip(string, IOptionallyAsync): void,
+        only(string, IOptionallyAsync): void
+    };
+    before(IOptionallyAsync): void,
+    beforeEach(IOptionallyAsync): void,
+    after(IOptionallyAsync): void,
+    afterEach(IOptionallyAsync): void,
+    Symbol: Symbol;
+};
+
 let describeFunction = global.describe;
 let itFunction = global.it;
 let skipFunction = itFunction.skip;
@@ -8,7 +28,8 @@ let beforeEach = global.beforeEach;
 let afterAll = global.after;
 let afterEach = global.afterEach;
 
-let nodeSymbol = global.Symbol || (key => "__mts_" + key);
+//let nodeSymbol = global.Symbol || (key => "__mts_" + key);
+let nodeSymbol = (key => "__mts_" + key);
 
 let testNameSymbol = nodeSymbol("test");
 let instanceSymbol = nodeSymbol("instance");
@@ -18,13 +39,13 @@ let onlySymbol = nodeSymbol("only");
 let skipSymbol = nodeSymbol("skip");
 
 interface SuiteCtor {
-    before?();
-    after?();
+    before?: IOptionallyAsync;
+    after?: IOptionallyAsync;
     new();
 }
 interface SuiteProto {
-    before?();
-    after?();
+    before?: IOptionallyAsync;
+    after?: IOptionallyAsync;
 }
 
 /**
@@ -39,65 +60,116 @@ export function suite(name: string): ClassDecorator;
 export function suite<TFunction extends Function>(target: TFunction): TFunction | void;
 export function suite<TFunction extends Function>(target: TFunction | string): ClassDecorator | TFunction | void {
     let decoratorName = typeof target === "string" && target;
-    let result = (target: SuiteCtor) => {
+    function result(target: SuiteCtor) {
         let targetName = decoratorName || (<any>target).name;
         describeFunction(targetName, function() {
-            beforeAll(function() {
-                target.before && target.before();
-            });
-            afterAll(function() {
-                target.after && target.after();
-            });
+            let instance;
+            if (target.before) {
+                if (target.before.length > 0) {
+                    beforeAll((done) => {
+                        return target.before(done);
+                    });
+                } else {
+                    beforeAll(() => {
+                        return target.before();
+                    });
+                }
+            }
+            if (target.after) {
+                if (target.after.length > 0) {
+                    afterAll((done) => {
+                        return target.after(done);
+                    });
+                } else {
+                    afterAll(() => {
+                        return target.after();
+                    });
+                }
+            }
             let prototype: SuiteProto = target.prototype;
-            beforeEach(function() {
-                let instance = new target;
-                this[instanceSymbol] = instance;
-                prototype.before && prototype.before.call(instance);
-            });
-            afterEach(function() {
-                let instance = this[instanceSymbol];
-                prototype.after && prototype.after.call(instance);
-                this[instanceSymbol] = undefined;
-            });
-            for (let key in prototype) {
-                (function forInstanceMethod() {
-                    let method = <Function>prototype[key];
-                    let testName = method[testNameSymbol];
-                    
-                    function applyTimes(target) {
-                        let timeoutValue = method[timeoutSymbol];
-                        let slowValue = method[slowSymbol];
-                        if (typeof timeoutValue === "number") {
-                            target.timeout(timeoutValue);
-                        }
-                        if (typeof slowValue === "number") {
-                            target.slow(slowValue);
-                        }
-                    }
-                    
-                    let shouldSkip = method[skipSymbol];
-                    let shouldOnly = method[onlySymbol];
-                    
-                    let testFunc = (shouldSkip && skipFunction)
-                                || (shouldOnly && onlyFunction)
-                                || itFunction;
+            let beforeEachFunction: {(): any} | {(done: Function): any} = () => {
+                this[instanceSymbol] = new target;
+            };
+            if (prototype.before) {
+                if (prototype.before.length > 0) {
+                    beforeEachFunction = (done: Function) => {
+                        instance = new target();
+                        /*let instance = new target;
+                        this[instanceSymbol] = instance;*/
+                        return prototype.before.call(instance, done);
+                    };
+                } else {
+                    beforeEachFunction = () => {
+                        instance = new target();
+                        //this[instanceSymbol] = instance;
+                        return prototype.before.call(instance);
+                    };
+                }
+            } else {
+                beforeEachFunction = () => {
+                    //this[instanceSymbol] = new target;
+                    instance = new target();
+                }
+            }
+            beforeEach(beforeEachFunction);
 
-                    if (testName) {
-                        if (method.length == 0) { 
-                            testFunc(testName, function() {
-                                applyTimes(this);
-                                let instance = this[instanceSymbol];
-                                return method.apply(instance);
-                            });
-                        } else if (method.length == 1) {
-                            testFunc(testName, function(done) {
-                                applyTimes(this);
-                                let instance = this[instanceSymbol];
-                                return method.call(instance, done);
-                            });
-                        }
+            let afterEachFunction: {(): any} | {(done: Function): any} = () => {
+                this[instanceSymbol] = undefined;
+            };
+            if (prototype.after) {
+                if (prototype.after.length > 0) {
+                    afterEachFunction = (done) => {
+                        let instanceReference = instance;
+                        instance = undefined;
+                        return prototype.after.call(instanceReference, done);
+                    };
+                } else {
+                    afterEachFunction = () => {
+                        let instanceReference = instance;
+                        instance = undefined;
+                        return prototype.after.call(instanceReference);
+                    };
+                }
+            }
+            afterEach(afterEachFunction);
+
+            for (let key in prototype) {
+                let method = <Function>prototype[key];
+                let testName = method[testNameSymbol];
+
+                function applyTimes(target) {
+                    let timeoutValue = method[timeoutSymbol];
+                    let slowValue = method[slowSymbol];
+                    if (typeof timeoutValue === "number") {
+                        target.timeout(timeoutValue);
                     }
-                })();
+                    if (typeof slowValue === "number") {
+                        target.slow(slowValue);
+                    }
+                }
+
+                let shouldSkip = method[skipSymbol];
+                let shouldOnly = method[onlySymbol];
+
+                let testFunc = (shouldSkip && skipFunction)
+                    || (shouldOnly && onlyFunction)
+                    || itFunction;
+
+                if (testName) {
+                    if (method.length == 0) {
+                        testFunc(testName, function () {
+                            applyTimes(this);
+                            //let instance = this[instanceSymbol];
+                            return method.apply(instance);
+                        });
+                    } else if (method.length == 1) {
+                        testFunc(testName, function (done) {
+                            applyTimes(this);
+                            //let instance = this[instanceSymbol];
+                            return method.call(instance, done);
+                        });
+                    }
+                }
             }
         });
     }
@@ -116,8 +188,7 @@ export function test(target: Object, propertyKey: string | symbol): void;
 export function test(target: string | Object, propertyKey?: string | symbol): PropertyDecorator | void {
     let decoratorName = typeof target === "string" && target;
     let result = (target: Object, propertyKey: string | symbol) => {
-        let targetName = decoratorName || propertyKey;
-        target[propertyKey][testNameSymbol] = targetName;
+        target[propertyKey][testNameSymbol] = decoratorName || propertyKey;
     };
     return decoratorName ? result : result(target, propertyKey);
 }

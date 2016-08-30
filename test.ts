@@ -29,7 +29,8 @@ class Basic {
     }
     
     @test("should fail async when callback not called")
-    @timeout(100)
+    @timeout(10)
+    @skip
     assert_fail_async_no_callback(done: Function) {
         // Never called... t/o intentional.
     }
@@ -122,6 +123,79 @@ class Basic {
 //        - After each test 2
 //    - After the suite4
 
+@suite class FailingAsyncLifeCycle {
+
+    constructor() {
+    }
+
+    before(done) {
+        setTimeout(() => {
+            done();
+        }, 100);
+    }
+
+    after(done) {
+        // done() not called... results in "two" not starting because "one" is not completely finished (though the test
+        // passes)
+        return;
+    }
+
+    static before() {
+        return new Promise((resolve, reject) => resolve());
+    }
+
+    static after() {
+        return new Promise((resolve, reject) => reject());
+    }
+
+    @test one() {
+    }
+    @test two() {
+    }
+}
+
+//   FailingAsyncLifeCycle
+//     √ one
+//     4) "after each" hook for "one"
+//     5) "after all" hook
+
+@suite class PassingAsyncLifeCycle {
+
+    constructor() {
+    }
+
+    before(done) {
+        setTimeout(() => {
+            done();
+        }, 100);
+    }
+
+    after() {
+        return new Promise((resolve, reject) => resolve());
+    }
+
+    static before() {
+        return new Promise((resolve, reject) => resolve());
+    }
+
+    static after(done) {
+        setTimeout(() => {
+            done();
+        }, 300);
+        return;
+    }
+
+    @test one() {
+    }
+    @test two() {
+    }
+}
+
+//   PassingAsyncLifeCycle
+//     √ one
+//     √ two
+
+
 @suite class Times {
     @test @slow(10) "when fast is normal"(done) {
         setTimeout(done, 0);
@@ -145,7 +219,7 @@ class Basic {
 //     √ when average is yellow-ish (10ms)
 //     √ when slow is red-ish (20ms)
 //     √ when faster than timeout passes
-//     5) when slower than timeout fails
+//     6) when slower than timeout fails
 
 @suite class ExecutionControl {
     @skip @test "this won't run"() {
@@ -212,8 +286,8 @@ class ServerTests {
 //     √ web can disconnect
 //   tear down server.
 
-//   18 passing (219ms)
-//   1 pending
-//   5 failing
+//   21 passing (3s)
+//   2 pending
+//   6 failing
 
 

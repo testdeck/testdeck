@@ -5,11 +5,7 @@
         "preserveConstEnums": true,
         "sourceMap": true,
         "experimentalDecorators": true,
-        "declaration": true
-    },
-    "files": [
-        "test.ts",
-        "index.ts",
-        "typings/index.d.ts"
-    ]
+        "declaration": true,
+        "listFiles": true
+    }
 }

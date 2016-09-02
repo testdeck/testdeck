@@ -14,7 +14,7 @@ declare var global: {
     beforeEach(IOptionallyAsync): void,
     after(IOptionallyAsync): void,
     afterEach(IOptionallyAsync): void,
-    Symbol: Symbol;
+    // Symbol: Symbol;
 };
 
 let describeFunction = global.describe;

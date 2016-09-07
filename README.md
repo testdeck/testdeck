@@ -12,7 +12,31 @@ and call the appopriate `describe`, `it`, `timeout`, `slow`, `it.only` or `it.sk
 # Thanks to
 [Haringat](https://github.com/PanayotCankov/mocha-typescript/pull/6) for the async support in before and after methods.
 
-The standard mocha interface (arrow functions are discouraged because this is messed up):
+# Test Watcher
+There is a watcher script in the package, that runs `tsc -w` process and watches its output for successful compilation, upon compilation runs a `mocha` process.
+
+You will need a `tsconfig.json`, and at least `test.ts` mocha entrypoint.
+
+Install `mocha`, `typescript` and `mocha-typescript` as dev dependencies (required):
+```
+npm install typescript --save-dev
+npm install mocha --save-dev
+npm install mocha-typescript --save-dev
+```
+
+Add the following npm script to `package.json`:
+```
+  "scripts": {
+    "dev-test-watch": "mocha-typescript-watch"
+  },
+```
+
+And run the typescript mocha watcher from the terminal using `npm run dev-test-watch`.
+
+You can use the watcher with plain `describe`, `it` functions. The decorator based interface is not required for use with the watcher.
+
+# Test Interface
+The standard mocha interface (arrow functions are discouraged because this is messed up, so we use function):
 ```
 describe("Hello", function() {
     it("world", function() {});

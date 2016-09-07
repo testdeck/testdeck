@@ -283,7 +283,20 @@ class ServerTests {
 //     √ web can disconnect
 //   tear down server.
 
-//   21 passing (3s)
+// Nested suites
+declare var describe, it;
+describe("outer suite", () => {
+    @suite class TestClass {
+        @test method() {
+        }
+    }
+})
+
+//   outer suite
+//     TestClass
+//       ✓ method
+
+//   22 passing (3s)
 //   2 pending
 //   6 failing
 

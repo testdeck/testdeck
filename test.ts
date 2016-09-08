@@ -1,303 +1,42 @@
-import { suite, test, slow, timeout, skip, only } from "./index";
+import { suite, test, slow, timeout } from "./index";
 
-declare var Promise: any; // ES6 Promise
+var child_process = require("child_process");
+var assert = require("better-assert");
+var chai = require("chai");
+var fs = require("fs");
 
-@suite("mocha typescript")
-class Basic {
-    
-    @test("should pass when asserts are fine")
-    asserts_pass() {
-    }
-    
-    @test("should fail when asserts are broken")
-    asserts_fail() {
-        // Any self-respecting assertion framework should throw
-        var error = new Error("Assert failed");
-        (<any>error).expected = "expected";
-        (<any>error).actual = "to fail";
-        throw error;
-    }
-    
-    @test("should pass async tests")
-    assert_pass_async(done: Function) {
-        setTimeout(done, 1);
-    }
-    
-    @test("should fail async when given error")
-    assert_fail_async(done: Function) {
-        setTimeout(() => done(new Error("Oops...")), 1);
-    }
-    
-    @test("should fail async when callback not called")
-    @timeout(10)
-    @skip
-    assert_fail_async_no_callback(done: Function) {
-        // Never called... t/o intentional.
-    }
-    
-    @test("should pass when promise resolved")
-    promise_pass_resolved() {
-        return new Promise((resolve, reject) => {
-            setTimeout(() => resolve(), 1);
-        });
-    }
-    
-    @test("should fail when promise rejected")
-    promise_fail_rejected() {
-        return new Promise((resolve, reject) => {
-            setTimeout(() => reject(new Error("Ooopsss...")), 1);
-        });
-    }
-}
+var spawnSync = child_process.spawnSync;
 
-//   mocha typescript
-//     √ should pass when asserts are fine
-//     1) should fail when asserts are broken
-//     √ should pass async tests
-//     2) should fail async when given error
-//     3) should fail async when callback not called
-//     √ should pass when promise resolved
-//     4) should fail when promise rejected
+@suite("typescript") class SuiteTest {
 
-@suite class CuteSyntax {
-    @test testNamedAsMethod() {
-    }
-    
-    @test "can have non verbose syntax for fancy named tests"() {
-    }
-    
-    @test "and they can be async too"(done) {
-        done();
-    }
-}
-
-//   CuteSyntax
-//     √ testNamedAsMethod
-//     √ can have non verbose syntax for fancy named tests
-//     √ and they can be async too
-
-@suite class LifeCycle {
-    static tokens = 0;
-    token: number;
-    
-    constructor() {
-        console.log("     - new LifeCycle");
-    }
-    
-    before() {
-        this.token = LifeCycle.tokens++;
-        console.log("       - Before each test " + this.token);
-    }
-    
-    after() {
-        console.log("       - After each test " + this.token);
+    @test("target es5") @slow(5000) @timeout(15000) es5() {
+        this.run("es5");
     }
 
-    static before() {
-        console.log("   - Before the suite: " + ++this.tokens);
-    }
-    
-    static after() {
-        console.log("   - After the suite" + ++this.tokens);
-    }
-    
-    @test one() {
-        console.log("         - Run one: " + this.token);
-    }
-    @test two() {
-        console.log("         - Run two: " + this.token);
-    }
-}
-
-//   LifeCycle
-//    - Before the suite: 1
-//      - new LifeCycle
-//        - Before each test 1
-//          - Run one: 1
-//     √ one
-//        - After each test 1
-//      - new LifeCycle
-//        - Before each test 2
-//          - Run two: 2
-//     √ two
-//        - After each test 2
-//    - After the suite4
-
-@suite class FailingAsyncLifeCycle {
-
-    constructor() {
+    @test("target es6") @slow(5000) @timeout(15000) es6() {
+        this.run("es6");
     }
 
-    before(done) {
-        setTimeout(done, 100);
-    }
+    run(target: string) {
+        let tsc = spawnSync("node", ["./node_modules/typescript/bin/tsc", "--experimentalDecorators", "--module", "commonjs", "--target", target, "test.suite.ts"]);
+        assert(tsc.status === 0);
 
-    after(done) {
-        // done() not called... results in "two" not starting because "one" is not completely finished (though the test passes)
-        return;
-    }
+        let mocha = spawnSync("node", ["./node_modules/mocha/bin/_mocha", "test.suite.js"]);
+        // console.log(mocha.stdout.toString());
+        assert(mocha.status !== 0);
 
-    static before() {
-        return new Promise((resolve, reject) => resolve());
-    }
+        let actual = mocha.stdout.toString().split("\n");
+        let expected = fs.readFileSync("./test.suite.expected.txt", "utf-8").split("\n");
 
-    static after() {
-        return new Promise((resolve, reject) => reject());
-    }
+        // To patch the expected use the output of this, but clean up times and callstacks:
+        // console.log("exp: " + expected);
 
-    @test one() {
-    }
-    @test two() {
-    }
-}
-
-//   FailingAsyncLifeCycle
-//     √ one
-//     4) "after each" hook for "one"
-//     5) "after all" hook
-
-@suite class PassingAsyncLifeCycle {
-
-    constructor() {
-    }
-
-    before(done) {
-        setTimeout(() => {
-            done();
-        }, 100);
-    }
-
-    after() {
-        return new Promise((resolve, reject) => resolve());
-    }
-
-    static before() {
-        return new Promise((resolve, reject) => resolve());
-    }
-
-    static after(done) {
-        setTimeout(() => {
-            done();
-        }, 300);
-        return;
-    }
-
-    @test one() {
-    }
-    @test two() {
-    }
-}
-
-//   PassingAsyncLifeCycle
-//     √ one
-//     √ two
-
-
-@suite class Times {
-    @test @slow(10) "when fast is normal"(done) {
-        setTimeout(done, 0);
-    }
-    @test @slow(15) "when average is yellow-ish"(done) {
-        setTimeout(done, 10);
-    }
-    @test @slow(15) "when slow is red-ish"(done) {
-        setTimeout(done, 20);
-    }
-    @test @timeout(10) "when faster than timeout passes"(done) {
-        setTimeout(done, 0);
-    }
-    @test @timeout(10) "when slower than timeout fails"(done) {
-        setTimeout(done, 20);
-    }
-}
-
-//   Times
-//     √ when fast is normal
-//     √ when average is yellow-ish (10ms)
-//     √ when slow is red-ish (20ms)
-//     √ when faster than timeout passes
-//     6) when slower than timeout fails
-
-@suite class ExecutionControl {
-    @skip @test "this won't run"() {
-    }
-    
-    @test "this however will"() {
-    }
-    
-    // @only
-    @test "add @only to run just this test"() {
-    }
-}
-
-//   ExecutionControl
-//     - this won't run
-//     √ this however will
-//     √ add @only to run just this test
-
-class ServerTests {
-    connect() {
-        console.log("      connect(" + ServerTests.connection + ")");
-    }
-    disconnect() {
-        console.log("      disconnect(" + ServerTests.connection + ")");
-    }
-    
-    static connection: string;
-    static connectionId: number = 0;
-
-    static before() {
-        ServerTests.connection = "shader connection " + ++ServerTests.connectionId;
-        console.log("    boot up server.");
-    }
-
-    static after() {
-        ServerTests.connection = undefined;
-        console.log("    tear down server.");
-    }
-}
-
-@suite class MobileClient extends ServerTests {
-    @test "client can connect"() { this.connect(); }
-    @test "client can disconnect"() { this.disconnect(); }
-}
-
-@suite class WebClient extends ServerTests {
-    @test "web can connect"() { this.connect(); }
-    @test "web can disconnect"() { this.disconnect(); }
-}
-
-//   MobileClient
-//   boot up server.
-//     connect(shader connection 1)
-//     √ client can connect
-//     disconnect(shader connection 1)
-//     √ client can disconnect
-//   tear down server.
-
-//   WebClient
-//   boot up server.
-//     connect(shader connection 2)
-//     √ web can connect
-//     disconnect(shader connection 2)
-//     √ web can disconnect
-//   tear down server.
-
-// Nested suites
-declare var describe, it;
-describe("outer suite", () => {
-    @suite class TestClass {
-        @test method() {
+        for(var i = 0; i < expected.length; i++) {
+            let expectedLine = expected[i].trim();
+            let actualLine = actual[i].trim();
+            if (actualLine.indexOf(expectedLine) === -1) {
+                throw new Error("Unexpected output. Expected: '" + expectedLine + "' to be contained in '" + actualLine + "'");
+            }
         }
     }
-})
-
-//   outer suite
-//     TestClass
-//       ✓ method
-
-//   22 passing (3s)
-//   2 pending
-//   6 failing
-
-
+}

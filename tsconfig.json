@@ -1,5 +1,6 @@
 {
     "compilerOptions": {
+        "target": "es6",
         "module": "commonjs",
         "removeComments": false,
         "preserveConstEnums": true,
@@ -7,5 +8,10 @@
         "experimentalDecorators": true,
         "declaration": true,
         "listFiles": true
-    }
+    },
+    "files": [
+        "test.ts",
+        "index.ts",
+        "bin/watch.ts"
+    ]
 }

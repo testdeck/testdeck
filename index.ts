@@ -131,44 +131,46 @@ export function suite<TFunction extends Function>(target: TFunction | string): C
             }
             afterEach(afterEachFunction);
 
-            for (let key in prototype) {
-                let method = <Function>prototype[key];
-                let testName = method[testNameSymbol];
+            (<any>Object).getOwnPropertyNames(prototype).forEach(key => {
+                try {
+                    let method = <Function>prototype[key];
+                    let testName = method[testNameSymbol];
 
-                function applyTimes(target) {
-                    let timeoutValue = method[timeoutSymbol];
-                    let slowValue = method[slowSymbol];
-                    if (typeof timeoutValue === "number") {
-                        target.timeout(timeoutValue);
+                    function applyTimes(target) {
+                        let timeoutValue = method[timeoutSymbol];
+                        let slowValue = method[slowSymbol];
+                        if (typeof timeoutValue === "number") {
+                            target.timeout(timeoutValue);
+                        }
+                        if (typeof slowValue === "number") {
+                            target.slow(slowValue);
+                        }
                     }
-                    if (typeof slowValue === "number") {
-                        target.slow(slowValue);
+
+                    let shouldSkip = method[skipSymbol];
+                    let shouldOnly = method[onlySymbol];
+
+                    let testFunc = (shouldSkip && skipFunction)
+                        || (shouldOnly && onlyFunction)
+                        || itFunction;
+
+                    if (testName) {
+                        if (method.length == 0) {
+                            testFunc(testName, function () {
+                                applyTimes(this);
+                                return method.apply(instance);
+                            });
+                        } else if (method.length == 1) {
+                            testFunc(testName, function (done) {
+                                applyTimes(this);
+                                return method.call(instance, done);
+                            });
+                        }
                     }
+                } catch(e) {
+                    // console.log(e);
                 }
-
-                let shouldSkip = method[skipSymbol];
-                let shouldOnly = method[onlySymbol];
-
-                let testFunc = (shouldSkip && skipFunction)
-                    || (shouldOnly && onlyFunction)
-                    || itFunction;
-
-                if (testName) {
-                    if (method.length == 0) {
-                        testFunc(testName, function () {
-                            applyTimes(this);
-                            //let instance = this[instanceSymbol];
-                            return method.apply(instance);
-                        });
-                    } else if (method.length == 1) {
-                        testFunc(testName, function (done) {
-                            applyTimes(this);
-                            //let instance = this[instanceSymbol];
-                            return method.call(instance, done);
-                        });
-                    }
-                }
-            }
+            });
         });
     }
     return decoratorName ? result : result(<any>target);

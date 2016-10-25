@@ -3,6 +3,7 @@
   "version": "1.0.10",
   "description": "TypeScript decorators based wrapper over mocha's interface",
   "main": "index.js",
+  "typings": "index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/PanayotCankov/mocha-typescript"

@@ -19,9 +19,11 @@ var spawnSync = child_process.spawnSync;
 
     run(target: string) {
         let tsc = spawnSync("node", ["./node_modules/typescript/bin/tsc", "--experimentalDecorators", "--module", "commonjs", "--target", target, "test.suite.ts"]);
+        assert(tsc.stdout.toString() === "");
         assert(tsc.status === 0);
 
         let mocha = spawnSync("node", ["./node_modules/mocha/bin/_mocha", "test.suite.js"]);
+        // To debug any actual output while developing:
         // console.log(mocha.stdout.toString());
         assert(mocha.status !== 0);
 
@@ -29,7 +31,7 @@ var spawnSync = child_process.spawnSync;
         let expected = fs.readFileSync("./test.suite.expected.txt", "utf-8").split("\n");
 
         // To patch the expected use the output of this, but clean up times and callstacks:
-        // console.log("exp: " + expected);
+        // console.log("exp: " + actual);
 
         for(var i = 0; i < expected.length; i++) {
             let expectedLine = expected[i].trim();

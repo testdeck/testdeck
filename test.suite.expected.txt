@@ -65,11 +65,23 @@
     ✓ web can disconnect
     tear down server.
 
+  OverallSlow
+    ✓ first fast
+    7) second slow
+    ✓ third fast
+
+  SlowBefore
+    8) "before each" hook for "will fail for slow before"
+
+  SlowAfter
+    ✓ will fail for slow after
+    9) "after each" hook for "will fail for slow after"
+
   outer suite
     TestClass
       ✓ method
 
 
-  22 passing
+  25 passing
   2 pending
-  6 failing
+  9 failing

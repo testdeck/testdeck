@@ -283,6 +283,50 @@ class ServerTests {
 //     √ web can disconnect
 //   tear down server.
 
+@suite @timeout(10) class OverallSlow {
+    @test "first fast"(done) {
+        setTimeout(done, 1);
+    }
+    @test "second slow"(done) {
+        setTimeout(done, 20);
+    }
+    @test "third fast"(done) {
+        setTimeout(done, 1);
+    }
+}
+
+//   OverallSlow
+//     ✓ first fast
+//     7) second slow
+//     ✓ third fast
+
+@suite class SlowBefore {
+    @timeout(10) before(done) {
+        setTimeout(done, 20);
+    }
+    @test "will fail for slow before"() {}
+    after(done) {
+        setTimeout(done, 1);
+    }
+}
+
+@suite class SlowAfter {
+    before(done) {
+        setTimeout(done, 1);
+    }
+    @test "will fail for slow after"() {}
+    @timeout(10) after(done) {
+        setTimeout(done, 20);
+    }
+}
+
+//   SlowBefore
+//     8) "before each" hook for "will fail for slow before"
+
+//   SlowAfter
+//     ✓ will fail for slow after
+//     9) "after each" hook for "will fail for slow after"
+
 // Nested suites
 declare var describe, it;
 describe("outer suite", () => {

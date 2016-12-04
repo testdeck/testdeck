@@ -7,7 +7,7 @@
         "sourceMap": true,
         "experimentalDecorators": true,
         "declaration": true,
-        "listFiles": true
+        "listFiles": false
     },
     "files": [
         "test.ts",

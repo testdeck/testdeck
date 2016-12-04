@@ -30,7 +30,6 @@ let afterEach = global.afterEach;
 let nodeSymbol = (key => "__mts_" + key);
 
 let testNameSymbol = nodeSymbol("test");
-let instanceSymbol = nodeSymbol("instance");
 let slowSymbol = nodeSymbol("slow");
 let timeoutSymbol = nodeSymbol("timout");
 let onlySymbol = nodeSymbol("only");
@@ -45,6 +44,23 @@ interface SuiteProto {
     before?: IOptionallyAsync;
     after?: IOptionallyAsync;
 }
+interface MochaContext {
+    timeout(timeout: number);
+    slow(time: number);
+}
+
+function applyDecorators(this: MochaContext, target) {
+    const timeoutValue = target[timeoutSymbol];
+    if (typeof timeoutValue === "number") {
+        this.timeout(timeoutValue);
+    }
+    const slowValue = target[slowSymbol];
+    if (typeof slowValue === "number") {
+        this.slow(slowValue);
+    }
+}
+
+const noname = (cb) => cb;
 
 /**
  * Mark a class as test suite and provide a custom name.
@@ -61,73 +77,82 @@ export function suite<TFunction extends Function>(target: TFunction | string): C
     function result(target: SuiteCtor) {
         let targetName = decoratorName || (<any>target).name;
         describeFunction(targetName, function() {
+            applyDecorators.call(this, target);
             let instance;
             if (target.before) {
                 if (target.before.length > 0) {
-                    beforeAll((done) => {
+                    beforeAll(function(done) {
+                        applyDecorators.call(this, target.before);
                         return target.before(done);
                     });
                 } else {
-                    beforeAll(() => {
+                    beforeAll(function() {
+                        applyDecorators.call(this, target.before);
                         return target.before();
                     });
                 }
             }
             if (target.after) {
                 if (target.after.length > 0) {
-                    afterAll((done) => {
+                    afterAll(function(done) {
+                        applyDecorators.call(this, target.after);
                         return target.after(done);
                     });
                 } else {
-                    afterAll(() => {
+                    afterAll(function() {
+                        applyDecorators.call(this, target.after);
                         return target.after();
                     });
                 }
             }
             let prototype: SuiteProto = target.prototype;
-            let beforeEachFunction: {(): any} | {(done: Function): any} = () => {
-                this[instanceSymbol] = new target;
-            };
+            let beforeEachFunction: {(): any} | {(done: Function): any};
             if (prototype.before) {
                 if (prototype.before.length > 0) {
-                    beforeEachFunction = (done: Function) => {
+                    beforeEachFunction = noname(function(this: MochaContext, done: Function) {
                         instance = new target();
-                        /*let instance = new target;
-                        this[instanceSymbol] = instance;*/
+                        applyDecorators.call(this, prototype.before);
                         return prototype.before.call(instance, done);
-                    };
+                    });
                 } else {
-                    beforeEachFunction = () => {
+                    beforeEachFunction = noname(function(this: MochaContext) {
                         instance = new target();
-                        //this[instanceSymbol] = instance;
+                        applyDecorators.call(this, prototype.before);
                         return prototype.before.call(instance);
-                    };
+                    });
                 }
             } else {
-                beforeEachFunction = () => {
-                    //this[instanceSymbol] = new target;
+                beforeEachFunction = noname(function(this: MochaContext) {
                     instance = new target();
-                }
+                });
             }
             beforeEach(beforeEachFunction);
 
-            let afterEachFunction: {(): any} | {(done: Function): any} = () => {
-                this[instanceSymbol] = undefined;
-            };
+            let afterEachFunction: {(): any} | {(done: Function): any};
             if (prototype.after) {
                 if (prototype.after.length > 0) {
-                    afterEachFunction = (done) => {
-                        let instanceReference = instance;
-                        instance = undefined;
-                        return prototype.after.call(instanceReference, done);
-                    };
+                    afterEachFunction = noname(function(this: MochaContext, done) {
+                        try {
+                            applyDecorators.call(this, prototype.after);
+                            return prototype.after.call(instance, done);
+                        } finally {
+                            instance = undefined;
+                        }
+                    });
                 } else {
-                    afterEachFunction = () => {
-                        let instanceReference = instance;
-                        instance = undefined;
-                        return prototype.after.call(instanceReference);
-                    };
+                    afterEachFunction = noname(function(this: MochaContext) {
+                        try {
+                            applyDecorators.call(this, prototype.after);
+                            return prototype.after.call(instance);
+                        } finally {
+                            instance = undefined;
+                        }
+                    });
                 }
+            } else {
+                afterEachFunction = noname(function(this: MochaContext) {
+                    instance = undefined;
+                });
             }
             afterEach(afterEachFunction);
 
@@ -135,17 +160,6 @@ export function suite<TFunction extends Function>(target: TFunction | string): C
                 try {
                     let method = <Function>prototype[key];
                     let testName = method[testNameSymbol];
-
-                    function applyTimes(target) {
-                        let timeoutValue = method[timeoutSymbol];
-                        let slowValue = method[slowSymbol];
-                        if (typeof timeoutValue === "number") {
-                            target.timeout(timeoutValue);
-                        }
-                        if (typeof slowValue === "number") {
-                            target.slow(slowValue);
-                        }
-                    }
 
                     let shouldSkip = method[skipSymbol];
                     let shouldOnly = method[onlySymbol];
@@ -155,16 +169,16 @@ export function suite<TFunction extends Function>(target: TFunction | string): C
                         || itFunction;
 
                     if (testName) {
-                        if (method.length == 0) {
-                            testFunc(testName, function () {
-                                applyTimes(this);
-                                return method.apply(instance);
-                            });
-                        } else if (method.length == 1) {
-                            testFunc(testName, function (done) {
-                                applyTimes(this);
+                        if (method.length > 0) {
+                            testFunc(testName, noname(function(this: MochaContext, done) {
+                                applyDecorators.call(this, method);
                                 return method.call(instance, done);
-                            });
+                            }));
+                        } else {
+                            testFunc(testName, noname(function(this: MochaContext) {
+                                applyDecorators.call(this, method);
+                                return method.call(instance);
+                            }));
                         }
                     }
                 } catch(e) {
@@ -197,19 +211,27 @@ export function test(target: string | Object, propertyKey?: string | symbol): Pr
  * Set a test method execution time that is considered slow.
  * @param time The time in miliseconds.
  */
-export function slow(time: number): PropertyDecorator {
-    return (target: Object, propertyKey: string | symbol): void => {
-        target[propertyKey][slowSymbol] = time;
+export function slow(time: number): PropertyDecorator & ClassDecorator {
+    return function<TFunction extends Function>(target: Object, propertyKey?: string | symbol): void {
+        if (arguments.length === 1) {
+            target[slowSymbol] = time;
+        } else {
+            target[propertyKey][slowSymbol] = time;
+        }
     }
 }
 
 /**
- * Set a test method timeout time.
+ * Set a test method or suite timeout time.
  * @param time The time in miliseconds.
  */
-export function timeout(time: number): PropertyDecorator {
-    return (target: Object, propertyKey: string | symbol): void => {
-        target[propertyKey][timeoutSymbol] = time;
+export function timeout(time: number): PropertyDecorator & ClassDecorator {
+    return function<TFunction extends Function>(target: Object | TFunction, propertyKey?: string | symbol): void {
+        if (arguments.length === 1) {
+            target[timeoutSymbol] = time;
+        } else {
+            target[propertyKey][timeoutSymbol] = time;
+        }
     }
 }
 

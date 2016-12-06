@@ -35,6 +35,31 @@ And run the typescript mocha watcher from the terminal using `npm run dev-test-w
 
 You can use the watcher with plain `describe`, `it` functions. The decorator based interface is not required for use with the watcher.
 
+The `mocha-typescript-watch` script is designed as a command line tool.
+You can provide the arguments in the package.json's script, for example:
+```
+  "scripts": {
+    "dev-test-watch": "mocha-typescript-watch -p tsconfig.test.json -o mocha.opts"
+  },
+```
+
+For complete list with check `./node_modules/.bin/mocha-typescript-watch --help`: 
+```
+Options:
+  -p, --project  Path to tsconfig file or directory containing tsconfig, passed
+                 to `tsc -p <value>`.                    [string] [default: "."]
+  -t, --tsc      Path to executable tsc, by default points to typescript
+                 installed as dev dependency. Set to 'tsc' for global tsc
+                 installation.
+                         [string] [default: "./node_modules/typescript/bin/tsc"]
+  -o, --opts     Path to mocha.opts file containing additional mocha
+                 configuration.          [string] [default: "./test/mocha.opts"]
+  -m, --mocha    Path to executable mocha, by default points to mocha installed
+                 as dev dependency.
+                           [string] [default: "./node_modules/mocha/bin/_mocha"]
+  -h, --help     Show help                                             [boolean]
+```
+
 # Test Interface
 The standard mocha interface (arrow functions are discouraged because this is messed up, so we use function):
 ```

@@ -1,6 +1,10 @@
-# TypeScript Decorators Based Interface for Mocha 
-It will read your `@suite`, `@test`, `@timeout`, `@slow`, `@only` and `@skip` decorators
-and call the appopriate `describe`, `it`, `timeout`, `slow`, `it.only` or `it.skip`.
+TypeScript Decorators Based Interface for Mocha
+
+[![Build Status](https://travis-ci.org/PanayotCankov/mocha-typescript.svg?branch=master)](https://travis-ci.org/PanayotCankov/mocha-typescript)
+
+# Summary
+Use TypeScript decorators such as `@suite`, `@test`, `@timeout`, `@slow`, `@only` and `@skip`,
+to write your tests. The package will call the appopriate `describe`, `it`, `timeout`, `slow`, `it.only` or `it.skip`.
 
  - A class decorated with `@suite` is considered suite.
  - Static `before` and `after` methods will be called before and after all tests.

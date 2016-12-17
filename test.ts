@@ -1,4 +1,4 @@
-import { suite, test, slow, timeout } from "./index";
+import { suite, test, slow, timeout, pending, only } from "./index";
 
 var child_process = require("child_process");
 var assert = require("better-assert");
@@ -7,28 +7,51 @@ var fs = require("fs");
 
 var spawnSync = child_process.spawnSync;
 
-@suite("typescript") class SuiteTest {
+// @pending class One {
+//     @pending test1() {};
+//     @test test2() {};
+//     @only test3() {}
+// }
 
-    @test("target es5") @slow(5000) @timeout(15000) es5() {
-        this.run("es5");
+@suite("typescript") @slow(5000) @timeout(15000) class SuiteTest {
+
+    @test("target es5") es5() {
+        this.run("es5", "test.suite");
     }
 
-    @test("target es6") @slow(5000) @timeout(15000) es6() {
-        this.run("es6");
+    @test("target es6") es6() {
+        this.run("es6", "test.suite");
     }
 
-    run(target: string) {
-        let tsc = spawnSync("node", ["./node_modules/typescript/bin/tsc", "--experimentalDecorators", "--module", "commonjs", "--target", target, "test.suite.ts"]);
+    @test "only suite es5"() {
+        this.run("es5", "only.suite");
+    }
+
+    @test "only suite es6"() {
+        this.run("es6", "only.suite");
+    }
+
+    @test "pending suite es5"() {
+        this.run("es5", "pending.suite");
+    }
+
+    @test "pending suite es6"() {
+        this.run("es6", "pending.suite");
+    }
+
+    run(target: string, ts: string) {
+        let tsc = spawnSync("node", ["./node_modules/typescript/bin/tsc", "--experimentalDecorators", "--module", "commonjs", "--target", target, "tests/" + ts + ".ts"]);
+
+        console.log(tsc.stdout.toString());
         assert(tsc.stdout.toString() === "");
         assert(tsc.status === 0);
 
-        let mocha = spawnSync("node", ["./node_modules/mocha/bin/_mocha", "test.suite.js"]);
+        let mocha = spawnSync("node", ["./node_modules/mocha/bin/_mocha", "tests/" + ts + ".js"]);
         // To debug any actual output while developing:
-        // console.log(mocha.stdout.toString());
-        assert(mocha.status !== 0);
+        // assert(mocha.status !== 0);
 
         let actual = mocha.stdout.toString().split("\n");
-        let expected = fs.readFileSync("./test.suite.expected.txt", "utf-8").split("\n");
+        let expected = fs.readFileSync("./tests/" + ts + ".expected.txt", "utf-8").split("\n");
 
         // To patch the expected use the output of this, but clean up times and callstacks:
         // console.log("exp: " + actual);

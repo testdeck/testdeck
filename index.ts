@@ -4,9 +4,13 @@ interface IOptionallyAsync {
 }
 
 declare var global: {
-    describe(string, IOptionallyAsync): void;
+    describe: {
+        (string, IOptionallyAsync): void;
+        skip(string, IOptionallyAsync): void;
+        only(string, IOptionallyAsync): void;
+    };
     it: {
-        (string, IOtinallyAsync): void;
+        (string, IOtinallyAsync?): void;
         skip(string, IOptionallyAsync): void,
         only(string, IOptionallyAsync): void
     };
@@ -18,9 +22,13 @@ declare var global: {
 };
 
 let describeFunction = global.describe;
+let skipSuiteFunction = describeFunction.skip;
+let onlySuiteFunction = describeFunction.only;
+
 let itFunction = global.it;
 let skipFunction = itFunction.skip;
 let onlyFunction = itFunction.only;
+let pendingFunction = itFunction;
 let beforeAll = global.before;
 let beforeEach = global.beforeEach;
 let afterAll = global.after;
@@ -33,7 +41,9 @@ let testNameSymbol = nodeSymbol("test");
 let slowSymbol = nodeSymbol("slow");
 let timeoutSymbol = nodeSymbol("timout");
 let onlySymbol = nodeSymbol("only");
+let pendingSumbol = nodeSymbol("pending");
 let skipSymbol = nodeSymbol("skip");
+let handled = nodeSymbol("handled");
 
 interface SuiteCtor {
     before?: IOptionallyAsync;
@@ -76,7 +86,17 @@ export function suite<TFunction extends Function>(target: TFunction | string): C
     let decoratorName = typeof target === "string" && target;
     function result(target: SuiteCtor) {
         let targetName = decoratorName || (<any>target).name;
-        describeFunction(targetName, function() {
+
+        let shouldSkip = target[skipSymbol];
+        let shouldOnly = target[onlySymbol];
+        let shouldPending = target[pendingSumbol];
+
+        let suiteFunc = (shouldSkip && skipSuiteFunction)
+            || (shouldOnly && onlySuiteFunction)
+            || (shouldPending && skipSuiteFunction)
+            || describeFunction;
+        
+        suiteFunc(targetName, function() {
             applyDecorators.call(this, target);
             let instance;
             if (target.before) {
@@ -159,17 +179,24 @@ export function suite<TFunction extends Function>(target: TFunction | string): C
             (<any>Object).getOwnPropertyNames(prototype).forEach(key => {
                 try {
                     let method = <Function>prototype[key];
-                    let testName = method[testNameSymbol];
+                    if (method === target) {
+                        return;
+                    }
 
+                    let testName = method[testNameSymbol];
                     let shouldSkip = method[skipSymbol];
                     let shouldOnly = method[onlySymbol];
+                    let shouldPending = method[pendingSumbol];
 
                     let testFunc = (shouldSkip && skipFunction)
                         || (shouldOnly && onlyFunction)
                         || itFunction;
 
-                    if (testName) {
-                        if (method.length > 0) {
+                    if (testName || shouldOnly || shouldPending || shouldSkip) {
+                        testName = testName || (<any>method).name;
+                        if (shouldPending && !shouldSkip && !shouldOnly) {
+                            pendingFunction(testName);
+                        } else if (method.length > 0) {
                             testFunc(testName, noname(function(this: MochaContext, done) {
                                 applyDecorators.call(this, method);
                                 return method.call(instance, done);
@@ -236,15 +263,40 @@ export function timeout(time: number): PropertyDecorator & ClassDecorator {
 }
 
 /**
- * Mark a test as the only one to execute.
+ * Mart a test or suite as pending.
+ *  - Used as `@suite @pending class` is `describe.skip("name", ...);`.
+ *  - Used as `@test @pending method` is `it("name");`
  */
-export function only(target: Object, propertyKey: string | symbol): void {
-    target[propertyKey][onlySymbol] = true;
+export function pending<TFunction extends Function>(target: Object | TFunction, propertyKey?: string | symbol): void {
+    if (arguments.length === 1) {
+        target[pendingSumbol] = true;
+    } else {
+        target[propertyKey][pendingSumbol] = true;
+    }
 }
 
 /**
- * Mark a test to skip.
+ * Mark a test or suite as the only one to execute.
+ *  - Used as `@suite @only class` is `describe.only("name", ...)`.
+ *  - Used as `@test @only method` is `it.only("name", ...)`.
  */
-export function skip(target: Object, propertyKey: string | symbol): void {
-    target[propertyKey][skipSymbol] = true;
+export function only<TFunction extends Function>(target: Object, propertyKey?: string | symbol): void {
+    if (arguments.length === 1) {
+        target[onlySymbol] = true;
+    } else {
+        target[propertyKey][onlySymbol] = true;
+    }
+}
+
+/**
+ * Mark a test or suite to skip.
+ *  - Used as `@suite @skip class` is `describe.skip("name", ...);`.
+ *  - Used as `@test @skip method` is `it.skip("name")`.
+ */
+export function skip<TFunction extends Function>(target: Object | TFunction, propertyKey?: string | symbol): void {
+    if (arguments.length === 1) {
+        target[onlySymbol] = true;
+    } else {
+        target[propertyKey][skipSymbol] = true;
+    }
 }

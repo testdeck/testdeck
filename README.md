@@ -14,8 +14,8 @@ to write your tests. The package will call the appopriate `describe`, `it`, `tim
  - Methods accepting `done` callback or returning a `Promise` instance are considered async.
 
 # Thanks to
-[Haringat](https://github.com/PanayotCankov/mocha-typescript/pull/6) for the async support in before and after methods.
-[godart](https://github.com/PanayotCankov/mocha-typescript/pull/16) for taking the extra step to support non-default test file paths.
+ - [Haringat](https://github.com/PanayotCankov/mocha-typescript/pull/6) for the async support in before and after methods.
+ - [godart](https://github.com/PanayotCankov/mocha-typescript/pull/16) for taking the extra step to support non-default test file paths.
 
 # Test Watcher
 There is a watcher script in the package, that runs `tsc -w` process and watches its output for successful compilation, upon compilation runs a `mocha` process.

@@ -68,7 +68,8 @@ function compilationComplete() {
         console.log(chalk.gray("Run mocha."));
     }
 
-    mocha = spawn("node", [argv.mocha, "--opts", argv.opts, "--colors"]);
+    var mocha_options = ["--opts", argv.opts, "--colors"].concat(argv._);
+    mocha = spawn("node", [argv.mocha].concat(mocha_options));
     mocha.on("close", code => {
         if (code) {
             console.log(chalk.red("Exited with " + code));

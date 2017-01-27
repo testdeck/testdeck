@@ -1,8 +1,13 @@
-TypeScript Decorators Based Interface for Mocha
+Watcher for TypeScript and Mocha and a Decorators Based Interface for Mocha
 
 [![Build Status](https://travis-ci.org/PanayotCankov/mocha-typescript.svg?branch=master)](https://travis-ci.org/PanayotCankov/mocha-typescript)
 
 # Summary
+## Watcher
+Set up a watcher that does TypeScript compilation for a TypeScript project and runs mocha tests on file change.
+The watcher can be used with any mocha test interface.
+
+## Decorators
 Use TypeScript decorators such as `@suite`, `@test`, `@timeout`, `@slow`, `@only` and `@skip`,
 to write your tests. The package will call the appopriate `describe`, `it`, `timeout`, `slow`, `it.only` or `it.skip`.
 

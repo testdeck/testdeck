@@ -15,6 +15,7 @@ to write your tests. The package will call the appopriate `describe`, `it`, `tim
 
 # Thanks to
 [Haringat](https://github.com/PanayotCankov/mocha-typescript/pull/6) for the async support in before and after methods.
+[godart](https://github.com/PanayotCankov/mocha-typescript/pull/16) for taking the extra step to support non-default test file paths.
 
 # Test Watcher
 There is a watcher script in the package, that runs `tsc -w` process and watches its output for successful compilation, upon compilation runs a `mocha` process.
@@ -40,10 +41,13 @@ And run the typescript mocha watcher from the terminal using `npm run dev-test-w
 You can use the watcher with plain `describe`, `it` functions. The decorator based interface is not required for use with the watcher.
 
 The `mocha-typescript-watch` script is designed as a command line tool.
-You can provide the arguments in the package.json's script, for example:
+You can provide the arguments in the package.json's script.
+In case you are not using the default `test.js` file as entrypoint for mocha,
+you can list the test suite files as arguments to mocha-typescript-watch and they will be passed to mocha.
+For example:
 ```
   "scripts": {
-    "dev-test-watch": "mocha-typescript-watch -p tsconfig.test.json -o mocha.opts"
+    "dev-test-watch": "mocha-typescript-watch -p tsconfig.test.json -o mocha.opts dist/test1.js dist/test2.js"
   },
 ```
 

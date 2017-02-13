@@ -70,6 +70,9 @@ Options:
   -m, --mocha    Path to executable mocha, by default points to mocha installed
                  as dev dependency.
                            [string] [default: "./node_modules/mocha/bin/_mocha"]
+  -g, --grep     Passed down to mocha: only run tests matching <pattern>[string]
+  -f, --fgrep    Passed down to mocha: only run tests containing <string>
+                                                                        [string]
   -h, --help     Show help                                             [boolean]
 ```
 
@@ -147,8 +150,6 @@ and `.js` and `.d.ts` files in `npm`.
 Check the playground:
 ``` TypeScript
 import { suite, test, slow, timeout, skip, only } from "mocha-typescript";
-
-declare var Promise: any; // ES6 Promise
 
 @suite("mocha typescript")
 class Basic {
@@ -392,7 +393,6 @@ class ServerTests {
 //   tear down server.
 
 // Nested suites
-declare var describe, it;
 describe("outer suite", () => {
     @suite class TestClass {
         @test method() {

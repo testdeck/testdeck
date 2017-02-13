@@ -2,8 +2,6 @@
 
 // Run "tsc" with watch, upon successful compilation run mocha tests.
 
-declare var require;
-
 var child_process = require("child_process");
 var spawn = child_process.spawn;
 var readline = require("readline");
@@ -39,21 +37,41 @@ var argv = yargs
             default: "./node_modules/mocha/bin/_mocha",
             describe: "Path to executable mocha, by default points to mocha installed as dev dependency.",
             type: "string"
+        },
+        "g": {
+            alias: "grep",
+            demand: false,
+            default: undefined,
+            describe: "Passed down to mocha: only run tests matching <pattern>",
+            type: "string"
+        },
+        "f": {
+            alias: "fgrep",
+            demand: false,
+            default: undefined,
+            describe: "Passed down to mocha: only run tests containing <string>",
+            type: "string"
         }
     })
     .help("h")
     .alias("h", "help")
     .argv;
 
-var mocha = null;
+var stdl = readline.createInterface({ input: process.stdin, });
+stdl.on("line", line => {
+    // TODO: handle "g <pattern>" or "f <pattern>" to run mocha with pattern
+    // Ctrl + R may restart mocha test run?
+});
+
+var mochap = null;
 var mochal = null;
 var errors = 0;
 
 function compilationStarted() {
-    if (mocha) {
-        mocha.kill("SIGINT");
+    if (mochap) {
+        mochap.kill("SIGINT");
     }
-    mocha = null;
+    mochap = null;
     mochal = null;
     errors = 0;
 }
@@ -69,23 +87,31 @@ function compilationComplete() {
     }
 
     var mocha_options = ["--opts", argv.opts, "--colors"].concat(argv._);
-    mocha = spawn("node", [argv.mocha].concat(mocha_options));
-    mocha.on("close", code => {
+    if (argv.g) {
+        mocha_options.push("-g");
+        mocha_options.push(argv.g);
+    }
+    if (argv.f) {
+        mocha_options.push("-f");
+        mocha_options.push(argv.f);
+    }
+    mochap = spawn("node", [argv.mocha].concat(mocha_options));
+    mochap.on("close", code => {
         if (code) {
             console.log(chalk.red("Exited with " + code));
         } else {
         }
-        mocha = null;
+        mochap = null;
         mochal = null;
     });
-    mochal = readline.createInterface({ input: mocha.stdout });
+    mochal = readline.createInterface({ input: mochap.stdout });
     mochal.on("line", line => {
         console.log(line);
     });
 }
 
-var tsc = spawn("node", [argv.tsc, "-p", argv.project, "-w"]);
-var tscl = readline.createInterface({ input: tsc.stdout });
+var tscp = spawn("node", [argv.tsc, "-p", argv.project, "-w"]);
+var tscl = readline.createInterface({ input: tscp.stdout });
 tscl.on("line", line => {
     console.log(line);
     if (line.indexOf("Compilation complete.") >= 0) {

@@ -1,7 +1,0 @@
-{
-  "name": "mocha-typescript",
-  "dependencies": {},
-  "globalDependencies": {
-    "es2015-symbol": "registry:env/es2015-symbol#1.0.0+20160526151700"
-  }
-}

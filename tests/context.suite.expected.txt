@@ -31,4 +31,4 @@ End of test: OAuth npmjs Request sensitive data
 End of test: true
 
 
-  10 passing (12ms)
+  10 passing

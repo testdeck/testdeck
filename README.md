@@ -408,3 +408,34 @@ describe("outer suite", () => {
 //   1 pending
 //   5 failing
 ```
+
+In case you really really need the mocha context (the 'this' argument of it/describe/before/after etc.)
+you can decorate a class field to be asigned the mocha context as follows:
+```
+@suite class OAuthTest {
+
+    // Get the mocha context for instance before and after (before/after each) and test methods.
+    @context mocha: mocha.IBeforeAndAfterContext & mocha.IHookCallbackContext;
+
+    // Get the mocha context for static before and after.
+    @context static mocha: mocha.IBeforeAndAfterContext & mocha.IHookCallbackContext;
+
+    @test async "Request token"() {
+        // return (await request(url)).responce.headers.token;
+        return Promise.resolve();
+    }
+    @test async "Exchange token for oauth session"() {
+        return Promise.resolve();
+    }
+    @test async "Request sensitive data"() {
+        return Promise.resolve();
+    }
+    after() {
+        console.log("End of test: " + this.mocha.currentTest.fullTitle());
+    }
+    static after() {
+        // After all tests
+        console.log("End of test: " + !!this.mocha);
+    }
+}
+```

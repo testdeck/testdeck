@@ -39,6 +39,10 @@ var spawnSync = child_process.spawnSync;
         this.run("es6", "pending.suite");
     }
 
+    @test "context suite es6"() {
+        this.run("es6", "context.suite");
+    }
+
     run(target: string, ts: string) {
         let tsc = spawnSync("node", ["./node_modules/typescript/bin/tsc", "--experimentalDecorators", "--module", "commonjs", "--target", target, "tests/" + ts + ".ts"]);
 
@@ -54,9 +58,12 @@ var spawnSync = child_process.spawnSync;
         let expected = fs.readFileSync("./tests/" + ts + ".expected.txt", "utf-8").split("\n");
 
         // To patch the expected use the output of this, but clean up times and callstacks:
-        // console.log("exp: " + actual);
+        // console.log("exp:\n" + actual.join("\n"));
 
         for(var i = 0; i < expected.length; i++) {
+            if (actual.length <= i) {
+                throw new Error("Actual output is shorter than expected, acutal lines: " + actual.length + ", expected: " + expected.length);
+            }
             let expectedLine = expected[i].trim();
             let actualLine = actual[i].trim();
             if (actualLine.indexOf(expectedLine) === -1) {

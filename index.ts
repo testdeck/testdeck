@@ -43,6 +43,7 @@ let timeoutSymbol = nodeSymbol("timout");
 let onlySymbol = nodeSymbol("only");
 let pendingSumbol = nodeSymbol("pending");
 let skipSymbol = nodeSymbol("skip");
+let contextSymbol = nodeSymbol("context");
 let handled = nodeSymbol("handled");
 
 interface SuiteCtor {
@@ -59,18 +60,22 @@ interface MochaContext {
     slow(time: number);
 }
 
-function applyDecorators(this: MochaContext, target) {
-    const timeoutValue = target[timeoutSymbol];
+function applyDecorators(mocha: MochaContext, ctorOrProto, method, instance) {
+    const timeoutValue = method[timeoutSymbol];
     if (typeof timeoutValue === "number") {
-        this.timeout(timeoutValue);
+        mocha.timeout(timeoutValue);
     }
-    const slowValue = target[slowSymbol];
+    const slowValue = method[slowSymbol];
     if (typeof slowValue === "number") {
-        this.slow(slowValue);
+        mocha.slow(slowValue);
+    }
+    const contextProperty = ctorOrProto[contextSymbol];
+    if (contextProperty) {
+        instance[contextProperty] = mocha;
     }
 }
 
-const noname = (cb) => cb;
+const noname = cb => cb;
 
 /**
  * Mark a class as test suite and provide a custom name.
@@ -97,17 +102,17 @@ export function suite<TFunction extends Function>(target: TFunction | string): C
             || describeFunction;
         
         suiteFunc(targetName, function() {
-            applyDecorators.call(this, target);
+            applyDecorators(this, target, target, target);
             let instance;
             if (target.before) {
                 if (target.before.length > 0) {
                     beforeAll(function(done) {
-                        applyDecorators.call(this, target.before);
+                        applyDecorators(this, target, target.before, target);
                         return target.before(done);
                     });
                 } else {
                     beforeAll(function() {
-                        applyDecorators.call(this, target.before);
+                        applyDecorators(this, target, target.before, target);
                         return target.before();
                     });
                 }
@@ -115,12 +120,12 @@ export function suite<TFunction extends Function>(target: TFunction | string): C
             if (target.after) {
                 if (target.after.length > 0) {
                     afterAll(function(done) {
-                        applyDecorators.call(this, target.after);
+                        applyDecorators(this, target, target.after, target);
                         return target.after(done);
                     });
                 } else {
                     afterAll(function() {
-                        applyDecorators.call(this, target.after);
+                        applyDecorators(this, target, target.after, target);
                         return target.after();
                     });
                 }
@@ -131,13 +136,13 @@ export function suite<TFunction extends Function>(target: TFunction | string): C
                 if (prototype.before.length > 0) {
                     beforeEachFunction = noname(function(this: MochaContext, done: Function) {
                         instance = new target();
-                        applyDecorators.call(this, prototype.before);
+                        applyDecorators(this, prototype, prototype.before, instance);
                         return prototype.before.call(instance, done);
                     });
                 } else {
                     beforeEachFunction = noname(function(this: MochaContext) {
                         instance = new target();
-                        applyDecorators.call(this, prototype.before);
+                        applyDecorators(this, prototype, prototype.before, instance);
                         return prototype.before.call(instance);
                     });
                 }
@@ -153,7 +158,7 @@ export function suite<TFunction extends Function>(target: TFunction | string): C
                 if (prototype.after.length > 0) {
                     afterEachFunction = noname(function(this: MochaContext, done) {
                         try {
-                            applyDecorators.call(this, prototype.after);
+                            applyDecorators(this, prototype, prototype.after, instance);
                             return prototype.after.call(instance, done);
                         } finally {
                             instance = undefined;
@@ -162,7 +167,7 @@ export function suite<TFunction extends Function>(target: TFunction | string): C
                 } else {
                     afterEachFunction = noname(function(this: MochaContext) {
                         try {
-                            applyDecorators.call(this, prototype.after);
+                            applyDecorators(this, prototype, prototype.after, instance);
                             return prototype.after.call(instance);
                         } finally {
                             instance = undefined;
@@ -198,12 +203,12 @@ export function suite<TFunction extends Function>(target: TFunction | string): C
                             pendingFunction(testName);
                         } else if (method.length > 0) {
                             testFunc(testName, noname(function(this: MochaContext, done) {
-                                applyDecorators.call(this, method);
+                                applyDecorators(this, prototype, method, instance);
                                 return method.call(instance, done);
                             }));
                         } else {
                             testFunc(testName, noname(function(this: MochaContext) {
-                                applyDecorators.call(this, method);
+                                applyDecorators(this, prototype, method, instance);
                                 return method.call(instance);
                             }));
                         }
@@ -299,4 +304,11 @@ export function skip<TFunction extends Function>(target: Object | TFunction, pro
     } else {
         target[propertyKey][skipSymbol] = true;
     }
+}
+
+/**
+ * Mark a method as test. Use the method name as test name.
+ */
+export function context(target: Object, propertyKey: string | symbol): void {
+    target[contextSymbol] = propertyKey;
 }

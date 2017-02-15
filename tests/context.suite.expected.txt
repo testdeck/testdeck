@@ -1,0 +1,34 @@
+
+
+  Static
+    ✓ one
+
+  OAuth google
+    ✓ Request token
+End of test: OAuth google Request token
+    ✓ Exchange token for oauth session
+End of test: OAuth google Exchange token for oauth session
+    ✓ Request sensitive data
+End of test: OAuth google Request sensitive data
+End of test: true
+
+  OAuth github
+    ✓ Request token
+End of test: OAuth github Request token
+    ✓ Exchange token for oauth session
+End of test: OAuth github Exchange token for oauth session
+    ✓ Request sensitive data
+End of test: OAuth github Request sensitive data
+End of test: true
+
+  OAuth npmjs
+    ✓ Request token
+End of test: OAuth npmjs Request token
+    ✓ Exchange token for oauth session
+End of test: OAuth npmjs Exchange token for oauth session
+    ✓ Request sensitive data
+End of test: OAuth npmjs Request sensitive data
+End of test: true
+
+
+  10 passing (12ms)

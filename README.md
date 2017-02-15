@@ -1,6 +1,6 @@
 Watcher for TypeScript and Mocha and a Decorators Based Interface for Mocha
 
-[![Build Status](https://travis-ci.org/PanayotCankov/mocha-typescript.svg?branch=master)](https://travis-ci.org/PanayotCankov/mocha-typescript)
+[![Build Status](https://travis-ci.org/pana-cc/mocha-typescript.svg?branch=master)](https://travis-ci.org/pana-cc/mocha-typescript)
 
 # Summary
 ## Watcher

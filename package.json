@@ -1,6 +1,6 @@
 {
   "name": "mocha-typescript",
-  "version": "1.0.19",
+  "version": "1.0.20",
   "description": "TypeScript decorators based wrapper over mocha's interface",
   "main": "index.js",
   "typings": "index.d.ts",

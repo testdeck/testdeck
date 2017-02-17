@@ -2,6 +2,8 @@ Watcher for TypeScript and Mocha and a Decorators Based Interface for Mocha
 
 [![Build Status](https://travis-ci.org/pana-cc/mocha-typescript.svg?branch=master)](https://travis-ci.org/pana-cc/mocha-typescript)
 
+[![NPM](https://nodei.co/npm-dl/mocha-typescript.png)](https://nodei.co/npm/mocha-typescript/)
+
 # Summary
 ## Watcher
 Set up a watcher that does TypeScript compilation for a TypeScript project and runs mocha tests on file change.

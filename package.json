@@ -13,7 +13,7 @@
   },
   "scripts": {
     "pretest": "tsc",
-    "test": "mocha test.js",
+    "test": "mocha test.js --opts mocha.opts",
     "prepublish": "tsc"
   },
   "author": "Panayot Cankov",

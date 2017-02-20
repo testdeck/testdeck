@@ -2,11 +2,12 @@
 
 // Run "tsc" with watch, upon successful compilation run mocha tests.
 
-var child_process = require("child_process");
+import * as child_process from "child_process";
+import * as readline from "readline";
+import * as chalk from "chalk";
+import * as yargs from "yargs";
+
 var spawn = child_process.spawn;
-var readline = require("readline");
-var chalk = require("chalk");
-var yargs = require("yargs");
 
 var argv = yargs
     .options({
@@ -63,16 +64,15 @@ stdl.on("line", line => {
     // Ctrl + R may restart mocha test run?
 });
 
-var mochap = null;
-var mochal = null;
+var mochap: child_process.ChildProcess = null;
 var errors = 0;
 
 function compilationStarted() {
     if (mochap) {
         mochap.kill("SIGINT");
+        console.log();
     }
     mochap = null;
-    mochal = null;
     errors = 0;
 }
 function foundErrors() {
@@ -96,29 +96,35 @@ function compilationComplete() {
         mocha_options.push(argv.f);
     }
     mochap = spawn("node", [argv.mocha].concat(mocha_options));
+    let source = mochap;
     mochap.on("close", code => {
-        if (code) {
-            console.log(chalk.red("Exited with " + code));
-        } else {
+        if (source === mochap) {
+            if (code) {
+                console.log(chalk.red("Exited with " + code));
+            } else {
+            }
+            mochap = null;
         }
-        mochap = null;
-        mochal = null;
     });
-    mochal = readline.createInterface({ input: mochap.stdout });
-    mochal.on("line", line => {
-        console.log(line);
+    mochap.stdout.on("data", chunk => {
+        // Ensure old processes won't interfere tsc, .pipe here may be good enough.
+        if (source === mochap) {
+            process.stdout.write(chunk);
+        }
     });
 }
 
 var tscp = spawn("node", [argv.tsc, "-p", argv.project, "-w"]);
 var tscl = readline.createInterface({ input: tscp.stdout });
 tscl.on("line", line => {
-    console.log(line);
     if (line.indexOf("Compilation complete.") >= 0) {
+        console.log(line);
         compilationComplete();
     } else if (line.indexOf("File change detected.") >= 0) {
         compilationStarted();
+        console.log(line);
     } else if (line.indexOf(": error TS") >= 0) {
+        console.log(line);
         foundErrors();
     }
 });

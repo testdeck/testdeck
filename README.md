@@ -37,7 +37,7 @@ npm install mocha-typescript --save-dev
 ```
 
 Add the following npm script to `package.json`:
-```
+```json
   "scripts": {
     "dev-test-watch": "mocha-typescript-watch"
   },
@@ -52,7 +52,7 @@ You can provide the arguments in the package.json's script.
 In case you are not using the default `test.js` file as entrypoint for mocha,
 you can list the test suite files as arguments to mocha-typescript-watch and they will be passed to mocha.
 For example:
-```
+```json
   "scripts": {
     "dev-test-watch": "mocha-typescript-watch -p tsconfig.test.json -o mocha.opts dist/test1.js dist/test2.js"
   },
@@ -80,14 +80,14 @@ Options:
 
 # Test Interface
 The standard mocha interface (arrow functions are discouraged because this is messed up, so we use function):
-```
+```TypeScript
 describe("Hello", function() {
     it("world", function() {});
 })
 ```
 
 Becomes:
-```
+```TypeScript
 @suite class Hello {
     @test "world"() { }
 }
@@ -108,7 +108,7 @@ npm install mocha-typescript --save-dev
 ```
 
 In the `package.json` add:
-```
+```json
   "scripts": {
     "test": "tsc -p . && mocha",
     "prepublish": "tsc -p ."
@@ -116,7 +116,7 @@ In the `package.json` add:
 ```
 
 Create `tsconfig.json` file near the `package.json` like that:
-```
+```json
 {
     "compilerOptions": {
         "module": "commonjs",
@@ -130,7 +130,7 @@ Create `tsconfig.json` file near the `package.json` like that:
 ```
 
 Add a `test.ts` file:
-```
+```TypeScript
 import { suite, test, slow, timeout, skip, only } from "mocha-typescript";
 
 @suite class Hello {
@@ -413,7 +413,7 @@ describe("outer suite", () => {
 
 In case you really really need the mocha context (the 'this' argument of it/describe/before/after etc.)
 you can decorate a class field to be asigned the mocha context as follows:
-```
+```TypeScript
 @suite class OAuthTest {
 
     // Get the mocha context for instance before and after (before/after each) and test methods.

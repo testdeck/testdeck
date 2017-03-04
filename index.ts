@@ -37,7 +37,7 @@ interface TestFunctions {
 	after: BeforeAfterCallback,
 	beforeEach: BeforeAfterEachCallback,
 	afterEach: BeforeAfterEachCallback,
-	itFunction: Mocha.ITestDefinition
+	it: Mocha.ITestDefinition
 }
 
 declare var global: {
@@ -50,7 +50,7 @@ declare var global: {
 };
 
 const globalTestFunctions: TestFunctions = {
-	itFunction: global.it,
+	it: global.it,
 	before: global.before,
 	beforeEach: global.beforeEach,
 	after: global.after,
@@ -100,9 +100,9 @@ function applyDecorators(mocha: Mocha.IHookCallbackContext | Mocha.ISuiteCallbac
 
 const noname = cb => cb;
 
-function makeTestFunction(target: SuiteCtor, { before, after, beforeEach, afterEach, itFunction }: TestFunctions) {
-	const skipFunction = itFunction.skip;
-	const onlyFunction = itFunction.only;
+function makeTestFunction(target: SuiteCtor, { before, after, beforeEach, afterEach, it }: TestFunctions) {
+	const skipFunction = it.skip;
+	const onlyFunction = it.only;
 	const pendingFunction = skipFunction;
 	return function () {
 		applyDecorators(this, target, target, target);
@@ -198,7 +198,7 @@ function makeTestFunction(target: SuiteCtor, { before, after, beforeEach, afterE
 
 				let testFunc = (shouldSkip && skipFunction)
 					|| (shouldOnly && onlyFunction)
-					|| itFunction;
+					|| it;
 
 				if (testName || shouldOnly || shouldPending || shouldSkip) {
 					testName = testName || (<any>method).name;
@@ -344,22 +344,44 @@ export function context(target: Object, propertyKey: string | symbol): void {
 }
 
 /**
- * Rip-off the TDD at: mocha/lib/interfaces/tdd.js
+ * Rip-off the TDD and BDD at: mocha/lib/interfaces/tdd.js and mocha/lib/interfaces/bdd.js
  * Augmented the suite and test for the mocha-typescript decorators.
  */
-function tdd(suite) {
+function tsdd(suite) {
 	var suites = [suite];
 
 	suite.on('pre-require', function (context, file, mocha) {
 		var common = Common(suites, context, mocha);
 
-		context.setup = common.beforeEach;
-		context.teardown = common.afterEach;
-		context.suiteSetup = common.before;
-		context.suiteTeardown = common.after;
+		context.before = common.before;
+		context.after = common.after;
+		context.beforeEach = common.beforeEach;
+		context.afterEach = common.afterEach;
 		context.run = mocha.options.delay && common.runWithSuite(suite);
-		
-		const itFunction: Mocha.ITestDefinition = Object.assign((title, fn) => {
+
+		// Copy of bdd
+		context.describe = context.context = function (title, fn) {
+			return common.suite.create({
+				title: title,
+				file: file,
+				fn: fn
+			});
+		};
+		context.xdescribe = context.xcontext = context.describe.skip = function (title, fn) {
+			return common.suite.skip({
+				title: title,
+				file: file,
+				fn: fn
+			});
+		};
+		context.describe.only = function (title, fn) {
+			return common.suite.only({
+				title: title,
+				file: file,
+				fn: fn
+			});
+		};
+		context.it = context.specify = function (title, fn) {
 			var suite = suites[0];
 			if (suite.isPending()) {
 				fn = null;
@@ -368,23 +390,15 @@ function tdd(suite) {
 			test.file = file;
 			suite.addTest(test);
 			return test;
-		}, {
-			only(expectation: string, callback?: (this: Mocha.ITestCallbackContext, done: MochaDone) => any): Mocha.ITest {
-				return null;
-			},
-			skip(expectation: string, callback?: (this: Mocha.ITestCallbackContext, done: MochaDone) => any): void {
-				return null;
-			},
-			timeout: null,
-			state: null
-		});
-
-		const testFunctions: TestFunctions = {
-			beforeEach: common.beforeEach,
-			afterEach: common.afterEach,
-			before: common.before,
-			after: common.after,
-			itFunction
+		};
+		context.it.only = function (title, fn) {
+			return common.test.only(mocha, context.it(title, fn));
+		};
+		context.xit = context.xspecify = context.it.skip = function (title) {
+			context.it(title);
+		};
+		context.it.retries = function (n) {
+			context.retries(n);
 		};
 
 		// Processing decorators for mocha-typescript
@@ -393,7 +407,7 @@ function tdd(suite) {
 			const shouldOnly = target[onlySymbol];
 			const shouldPending = target[pendingSumbol];
 
-			const fn = makeTestFunction(target, testFunctions);
+			const fn = makeTestFunction(target, context);
 
 			if (shouldOnly) {
 				return context.suite.only({ title, file, fn });
@@ -404,6 +418,7 @@ function tdd(suite) {
 			}
 		}
 
+		// tdd + mocha-typescript decorators
 		context.suite = function (arg1, arg2) {
 			if (typeof arg1 === "string" && arguments.length === 1) {
 				return function (target: SuiteCtor) {
@@ -421,9 +436,6 @@ function tdd(suite) {
 				});
 			}
 		};
-
-		context.describe = context.suite;
-
 		context.suite.skip = function (title, fn) {
 			return common.suite.skip({
 				title: title,
@@ -431,7 +443,6 @@ function tdd(suite) {
 				fn: fn
 			});
 		};
-
 		context.suite.only = function (title, fn) {
 			return common.suite.only({
 				title: title,
@@ -458,25 +469,12 @@ function tdd(suite) {
 				return test;
 			}
 		};
-
-		context.it = context.test;
-
 		context.test.only = function (title, fn) {
 			return common.test.only(mocha, context.test(title, fn));
 		};
 
 		context.test.skip = common.test.skip;
 		context.test.retries = common.test.retries;
-
-		context.slow = module.exports.slow;
-		context.timeout = module.exports.timeout;
-		context.pending = module.exports.pending;
-		context.only = module.exports.only;
-		context.skip = module.exports.skip;
-		context.context = module.exports.context;
 	});
 };
-for (let key in exports) {
-	tdd[key] = exports[key];
-}
-module.exports = tdd;
+module.exports = Object.assign(tsdd, exports);

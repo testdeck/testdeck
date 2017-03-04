@@ -19,19 +19,19 @@ class Basic {
     }
     
     @test("should pass async tests")
-    assert_pass_async(done: Function) {
+    assert_pass_async(done) {
         setTimeout(done, 1);
     }
     
     @test("should fail async when given error")
-    assert_fail_async(done: Function) {
+    assert_fail_async(done) {
         setTimeout(() => done(new Error("Oops...")), 1);
     }
     
     @test("should fail async when callback not called")
     @timeout(10)
     @skip
-    assert_fail_async_no_callback(done: Function) {
+    assert_fail_async_no_callback(done) {
         // Never called... t/o intentional.
     }
     

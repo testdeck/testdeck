@@ -44,7 +44,7 @@ var spawnSync = child_process.spawnSync;
     }
 
     run(target: string, ts: string) {
-        let tsc = spawnSync("node", ["./node_modules/typescript/bin/tsc", "--experimentalDecorators", "--module", "commonjs", "--target", target, "tests/" + ts + ".ts"]);
+        let tsc = spawnSync("node", ["./node_modules/typescript/bin/tsc", "--experimentalDecorators", "--module", "commonjs", "--target", target, "--lib", "es6", "tests/" + ts + ".ts"]);
 
         // console.log(tsc.stdout.toString());
         assert(tsc.stdout.toString() === "");

@@ -50,11 +50,11 @@ declare var global: {
 };
 
 const globalTestFunctions: TestFunctions = {
-	it: global.it,
-	before: global.before,
-	beforeEach: global.beforeEach,
-	after: global.after,
-	afterEach: global.afterEach
+	get it() { return global.it; },
+	get before() { return global.before; },
+	get beforeEach() { return global.beforeEach; },
+	get after() { return global.after; },
+	get afterEach() { return global.afterEach; }
 };
 
 let describeFunction = global.describe;
@@ -100,21 +100,18 @@ function applyDecorators(mocha: Mocha.IHookCallbackContext | Mocha.ISuiteCallbac
 
 const noname = cb => cb;
 
-function makeTestFunction(target: SuiteCtor, { before, after, beforeEach, afterEach, it }: TestFunctions) {
-	const skipFunction = it.skip;
-	const onlyFunction = it.only;
-	const pendingFunction = skipFunction;
+function makeTestFunction(target: SuiteCtor, context: TestFunctions) {
 	return function () {
 		applyDecorators(this, target, target, target);
 		let instance;
 		if (target.before) {
 			if (target.before.length > 0) {
-				before(function (done) {
+				context.before(function (done) {
 					applyDecorators(this, target, target.before, target);
 					return target.before(done);
 				});
 			} else {
-				before(function () {
+				context.before(function () {
 					applyDecorators(this, target, target.before, target);
 					return target.before();
 				});
@@ -122,12 +119,12 @@ function makeTestFunction(target: SuiteCtor, { before, after, beforeEach, afterE
 		}
 		if (target.after) {
 			if (target.after.length > 0) {
-				after(function (done) {
+				context.after(function (done) {
 					applyDecorators(this, target, target.after, target);
 					return target.after(done);
 				});
 			} else {
-				after(function () {
+				context.after(function () {
 					applyDecorators(this, target, target.after, target);
 					return target.after();
 				});
@@ -154,7 +151,7 @@ function makeTestFunction(target: SuiteCtor, { before, after, beforeEach, afterE
 				instance = new target();
 			});
 		}
-		beforeEach(beforeEachFunction);
+		context.beforeEach(beforeEachFunction);
 
 		let afterEachFunction: { (): any } | { (done: Function): any };
 		if (prototype.after) {
@@ -182,7 +179,7 @@ function makeTestFunction(target: SuiteCtor, { before, after, beforeEach, afterE
 				instance = undefined;
 			});
 		}
-		afterEach(afterEachFunction);
+		context.afterEach(afterEachFunction);
 
 		(<any>Object).getOwnPropertyNames(prototype).forEach(key => {
 			try {
@@ -196,14 +193,14 @@ function makeTestFunction(target: SuiteCtor, { before, after, beforeEach, afterE
 				let shouldOnly = method[onlySymbol];
 				let shouldPending = method[pendingSumbol];
 
-				let testFunc = (shouldSkip && skipFunction)
-					|| (shouldOnly && onlyFunction)
-					|| it;
+				let testFunc = (shouldSkip && context.it.skip)
+					|| (shouldOnly && context.it.only)
+					|| context.it;
 
 				if (testName || shouldOnly || shouldPending || shouldSkip) {
 					testName = testName || (<any>method).name;
 					if (shouldPending && !shouldSkip && !shouldOnly) {
-						pendingFunction(testName);
+						context.it.skip(testName);
 					} else if (method.length > 0) {
 						testFunc(testName, noname(function (this: Mocha.IHookCallbackContext, done) {
 							applyDecorators(this, prototype, method, instance);

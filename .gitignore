@@ -4,7 +4,7 @@ typings/
 *.map
 *.d.ts
 *.tgz
-
+.DS_Store
 .idea/
 
 npm-debug.log

@@ -8,10 +8,5 @@
         "experimentalDecorators": true,
         "declaration": false,
         "listFiles": false
-    },
-    "files": [
-        "test.ts",
-        "index.ts",
-        "bin/watch.ts"
-    ]
+    }
 }

@@ -15,12 +15,36 @@ var spawnSync = child_process.spawnSync;
 
 @suite("typescript") @slow(5000) @timeout(15000) class SuiteTest {
 
-    @test("target es5") es5() {
+    @test("target v1 es5") es5() {
         this.run("es5", "test.suite");
     }
 
-    @test("target es6") es6() {
+    @test("target v1 es6") es6() {
         this.run("es6", "test.suite");
+    }
+
+    @test("target v2 es5") v2es5() {
+        this.run("es5", "test.v2.suite");
+    }
+
+    @test("target v2 es6") v2es6() {
+        this.run("es6", "test.v2.suite");
+    }
+
+    @test "only v2 suite es5"() {
+        this.run("es5", "only.v2.suite");
+    }
+
+    @test "only v2 suite es6"() {
+        this.run("es6", "only.v2.suite");
+    }
+
+    @test "pending v2 suite es5"() {
+        this.run("es5", "pending.v2.suite");
+    }
+
+    @test "pending v2 suite es6"() {
+        this.run("es6", "pending.v2.suite");
     }
 
     @test "only suite es5"() {
@@ -54,11 +78,13 @@ var spawnSync = child_process.spawnSync;
         // To debug any actual output while developing:
         // assert(mocha.status !== 0);
 
+        // console.log(mocha.stderr.toString());
+
         let actual = mocha.stdout.toString().split("\n");
         let expected = fs.readFileSync("./tests/" + ts + ".expected.txt", "utf-8").split("\n");
 
         // To patch the expected use the output of this, but clean up times and callstacks:
-        // console.log("exp:\n" + actual.join("\n"));
+        // console.log("out:\n" + actual.join("\n"));
 
         for(var i = 0; i < expected.length; i++) {
             if (actual.length <= i) {

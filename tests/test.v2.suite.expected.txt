@@ -1,0 +1,69 @@
+
+
+  Simple
+    ✓ test
+
+  Timeouts
+    ✓ pass1
+    1) pass2
+    ✓ pass3
+
+  InlineTrait
+    2) timeout
+
+  StockSequence
+    ✓ step1
+    3) step2
+    - step3
+    - step4
+
+  CustomSequence
+    ✓ step1
+    4) step2
+    - step3
+    - step4
+
+  name and trait
+    ✓ step1
+    5) step2
+    - step3
+
+  Slows
+    ✓ pass1
+    ✓ pass2 (
+    ✓ pass3
+
+  mocha typescript
+    ✓ assert pass
+    ✓ assert pass 2
+    6) test fail
+    7) test fail 2
+    - test skip
+    8) test intentinally timeout
+    9) test intentinall fail due error before timeout
+    ✓ test won't timeout but will be redish slow (
+    ✓ test won't timeout but will be yellowish slow (
+
+  Skipped1
+    - test
+
+  Skipped2
+    - test
+
+  Pending1
+    - pending
+
+  Pending2
+    - pending
+
+  Pending3
+    - pending
+
+  custom suite name
+    ✓ custom test name
+
+
+  14 passing
+  11 pending
+  9 failing
+

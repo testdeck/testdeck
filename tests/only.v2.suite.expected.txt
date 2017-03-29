@@ -1,0 +1,16 @@
+
+
+  Suite1
+    ✓ test
+
+  Suite2
+    ✓ test
+
+  test suite
+    ✓ test
+
+  Suite4
+    ✓ test
+
+
+  4 passing

@@ -33,33 +33,31 @@ type OnlyFunction = typeof it.only;
 type TestCallback = (this: Mocha.ITestCallbackContext, done: MochaDone) => any
 
 interface TestFunctions {
+	it: Mocha.ITestDefinition,
+	describe: Mocha.IContextDefinition
 	before: BeforeAfterCallback,
 	after: BeforeAfterCallback,
 	beforeEach: BeforeAfterEachCallback,
 	afterEach: BeforeAfterEachCallback,
-	it: Mocha.ITestDefinition
 }
 
 declare var global: {
-	describe: DescribeFunction,
 	it: ItFunction,
+	describe: DescribeFunction,
 	before: BeforeAfterCallback,
-	beforeEach: BeforeAfterEachCallback,
 	after: BeforeAfterCallback,
+	beforeEach: BeforeAfterEachCallback,
 	afterEach: BeforeAfterEachCallback
 };
 
 const globalTestFunctions: TestFunctions = {
+	get describe() { return global.describe; },
 	get it() { return global.it; },
 	get before() { return global.before; },
-	get beforeEach() { return global.beforeEach; },
 	get after() { return global.after; },
+	get beforeEach() { return global.beforeEach; },
 	get afterEach() { return global.afterEach; }
 };
-
-let describeFunction = global.describe;
-let skipSuiteFunction = describeFunction && describeFunction.skip;
-let onlySuiteFunction = describeFunction && describeFunction.only;
 
 // key => Symbol("mocha-typescript:" + key)
 let nodeSymbol = key => "__mts_" + key;
@@ -70,17 +68,27 @@ let timeoutSymbol = nodeSymbol("timout");
 let onlySymbol = nodeSymbol("only");
 let pendingSumbol = nodeSymbol("pending");
 let skipSymbol = nodeSymbol("skip");
+let traitsSymbol = nodeSymbol("traits");
+let isTraitSymbol = nodeSymbol("isTrait");
 let contextSymbol = nodeSymbol("context");
 let handled = nodeSymbol("handled");
 
 interface SuiteCtor {
+	prototype: SuiteProto;
 	before?: (done?: MochaDone) => void;
 	after?: (done?: MochaDone) => void;
-	new ();
+	new();
 }
 interface SuiteProto {
 	before?: (done?: MochaDone) => void;
 	after?: (done?: MochaDone) => void;
+}
+
+export interface SuiteTrait {
+	(this: Mocha.ISuiteCallbackContext, ctx: Mocha.ISuiteCallbackContext, ctor: SuiteCtor): void;
+}
+export interface TestTrait {
+	(this: Mocha.ITestCallbackContext, ctx: Mocha.ITestCallbackContext, instance: SuiteProto, method: Function): void;
 }
 
 function applyDecorators(mocha: Mocha.IHookCallbackContext | Mocha.ISuiteCallbackContext, ctorOrProto, method, instance) {
@@ -97,11 +105,28 @@ function applyDecorators(mocha: Mocha.IHookCallbackContext | Mocha.ISuiteCallbac
 		instance[contextProperty] = mocha;
 	}
 }
+function applyTestTraits(context: Mocha.ITestCallbackContext, instance: SuiteProto, method: Function) {
+	const traits: TestTrait[] = method[traitsSymbol];
+	if (traits) {
+		traits.forEach(trait => {
+			trait.call(context, context, instance, method);
+		});
+	}
+}
+function applySuiteTraits(context: Mocha.ISuiteCallbackContext, target: SuiteCtor) {
+	const traits: SuiteTrait[] = target[traitsSymbol];
+	if (traits) {
+		traits.forEach(trait => {
+			trait.call(context, context, target);
+		});
+	}
+}
 
 const noname = cb => cb;
 
 function makeTestFunction(target: SuiteCtor, context: TestFunctions) {
 	return function () {
+		applySuiteTraits(this, target);
 		applyDecorators(this, target, target, target);
 		let instance;
 		if (target.before) {
@@ -130,7 +155,7 @@ function makeTestFunction(target: SuiteCtor, context: TestFunctions) {
 				});
 			}
 		}
-		let prototype: SuiteProto = target.prototype;
+		let prototype = target.prototype;
 		let beforeEachFunction: { (): any } | { (done: Function): any };
 		if (prototype.before) {
 			if (prototype.before.length > 0) {
@@ -202,13 +227,15 @@ function makeTestFunction(target: SuiteCtor, context: TestFunctions) {
 					if (shouldPending && !shouldSkip && !shouldOnly) {
 						context.it.skip(testName);
 					} else if (method.length > 0) {
-						testFunc(testName, noname(function (this: Mocha.IHookCallbackContext, done) {
+						testFunc(testName, noname(function (this: Mocha.ITestCallbackContext, done) {
 							applyDecorators(this, prototype, method, instance);
+							applyTestTraits(this, instance, method);
 							return method.call(instance, done);
 						}));
 					} else {
-						testFunc(testName, noname(function (this: Mocha.IHookCallbackContext) {
+						testFunc(testName, noname(function (this: Mocha.ITestCallbackContext) {
 							applyDecorators(this, prototype, method, instance);
+							applyTestTraits(this, instance, method);
 							return method.call(instance);
 						}));
 					}
@@ -220,79 +247,226 @@ function makeTestFunction(target: SuiteCtor, context: TestFunctions) {
 	}
 }
 
-/**
- * Mark a class as test suite and provide a custom name.
- * @param name The suite name.
- */
-export function suite(name: string): ClassDecorator;
-/**
- * Mark a class as test suite. Use the class name as suite name.
- * @param target The test class.
- */
-export function suite<TFunction extends Function>(target: TFunction): TFunction | void;
-export function suite<TFunction extends Function>(target: TFunction | string): ClassDecorator | TFunction | void {
-	let decoratorName = typeof target === "string" && target;
-	function result(target: SuiteCtor) {
-		let targetName = decoratorName || (<any>target).name;
+function makeSuiteUI(type?: "skip" | "only" | "pending") {
+	return function suite() {
+		if (arguments.length === 0) {
+			return suite;
+		} else if (typeof arguments[0] === "function" && !arguments[0][isTraitSymbol]) {
+			const target: SuiteCtor = arguments[0];
+			let suiteFunc;
 
-		let shouldSkip = target[skipSymbol];
-		let shouldOnly = target[onlySymbol];
-		let shouldPending = target[pendingSumbol];
+			switch(type) {
+				case "pending":
+				case "skip":
+					suiteFunc = global.describe.skip;
+					break;
+				case "only":
+					suiteFunc = global.describe.only;
+					break;
+				default:
+					let shouldSkip = target[skipSymbol];
+					let shouldOnly = target[onlySymbol];
+					let shouldPending = target[pendingSumbol];
 
-		let suiteFunc = (shouldSkip && skipSuiteFunction)
-			|| (shouldOnly && onlySuiteFunction)
-			|| (shouldPending && skipSuiteFunction)
-			|| describeFunction;
-
-		suiteFunc(targetName, makeTestFunction(target, globalTestFunctions));
+					suiteFunc = (shouldSkip && global.describe.skip)
+						|| (shouldOnly && global.describe.only)
+						|| (shouldPending && global.describe.skip)
+						|| global.describe;
+					break;
+			}
+			suiteFunc(target.name, makeTestFunction(target, globalTestFunctions));
+		} else {
+			let decoratorName = undefined;
+			let traits: SuiteTrait[] = [];
+			if (typeof arguments[0] === "string") {
+				decoratorName = arguments[0];
+				for (let i = 1; i < arguments.length; i++) {
+					traits.push(arguments[i]);
+				}
+			} else {
+				for (let i = 0; i < arguments.length; i++) {
+					traits.push(arguments[i]);
+				}
+			}
+			return function(target: SuiteCtor) {
+				if (traits.length > 0) {
+					target[traitsSymbol] = traits;
+				}
+				let suiteFunc;
+				switch(type) {
+					case "pending":
+					case "skip":
+						suiteFunc = global.describe.skip;
+						break;
+					case "only":
+						suiteFunc = global.describe.only;
+						break;
+					default:
+						suiteFunc = global.describe;
+						break;
+				}
+				suiteFunc(decoratorName || target.name, makeTestFunction(target, globalTestFunctions));
+			}
+		}
 	}
-	return decoratorName ? result : result(<any>target);
+}
+export const suite: Suite = Object.assign(makeSuiteUI(), {
+	skip: makeSuiteUI("skip"),
+	only: makeSuiteUI("only"),
+	pending: makeSuiteUI("pending")
+});
+
+export interface Test {
+	(name: string, ...traits: TestTrait[]): PropertyDecorator;
+	(...traits: TestTrait[]): PropertyDecorator;
+	(target: Object, propertyKey: string | symbol): void;
+	readonly skip: {
+		(name: string, ...traits: TestTrait[]): PropertyDecorator;
+		(...traits: TestTrait[]): PropertyDecorator;
+		(target: Object, propertyKey: string | symbol): void;
+	}
+	readonly only: {
+		(name: string, ...traits: TestTrait[]): PropertyDecorator;
+		(...traits: TestTrait[]): PropertyDecorator;
+		(target: Object, propertyKey: string | symbol): void;
+	}
+	readonly pending: {
+		(name: string, ...traits: TestTrait[]): PropertyDecorator;
+		(...traits: TestTrait[]): PropertyDecorator;
+		(target: Object, propertyKey: string | symbol): void;
+	}
 }
 
-/**
- * Mark a method as test and provide a custom name.
- * @param name The test name.
- */
-export function test(name: string): PropertyDecorator;
-/**
- * Mark a method as test. Use the method name as test name.
- */
-export function test(target: Object, propertyKey: string | symbol): void;
-export function test(target: string | Object, propertyKey?: string | symbol): PropertyDecorator | void {
-	let decoratorName = typeof target === "string" && target;
-	let result = (target: Object, propertyKey: string | symbol) => {
-		target[propertyKey][testNameSymbol] = decoratorName || propertyKey;
-	};
-	return decoratorName ? result : result(target, propertyKey);
+function makeTestUI(type?: "skip" | "only" | "pending") {
+	return function test() {
+		if (arguments.length === 0) {
+			return test;
+		} else if (typeof arguments[0] !== "string" && typeof arguments[0] !== "function") {
+			const target = arguments[0];
+			const property = arguments[1];
+			target[property][testNameSymbol] = property;
+			switch (type) {
+				case "skip": target[property][skipSymbol] = true; break;
+				case "only": target[property][onlySymbol] = true; break;
+				case "pending": target[property][pendingSumbol] = true; break;
+			}
+		} else {
+			let decoratorName = undefined;
+			let traits: TestTrait[] = [];
+			if (typeof arguments[0] === "string") {
+				decoratorName = arguments[0];
+				for (let i = 1; i < arguments.length; i++) {
+					traits.push(arguments[i]);
+				}
+			} else {
+				for (let i = 0; i < arguments.length; i++) {
+					traits.push(arguments[i]);
+				}
+			}
+			return (target: Object, property: string | symbol) => {
+				target[property][testNameSymbol] = decoratorName || property;
+				if (traits.length > 0) {
+					target[property][traitsSymbol] = traits;
+				}
+				switch (type) {
+					case "skip": target[property][skipSymbol] = true; break;
+					case "only": target[property][onlySymbol] = true; break;
+					case "pending": target[property][pendingSumbol] = true; break;
+				}
+			}
+		}
+	}
+}
+export const test: Test = Object.assign(makeTestUI(), {
+	skip: makeTestUI("skip"),
+	only: makeTestUI("only"),
+	pending: makeTestUI("pending")
+});
+
+export function trait<T extends SuiteTrait | TestTrait>(arg: T): T {
+	arg[isTraitSymbol] = true;
+	return arg;
 }
 
 /**
  * Set a test method execution time that is considered slow.
  * @param time The time in miliseconds.
  */
-export function slow(time: number): PropertyDecorator & ClassDecorator {
-	return function <TFunction extends Function>(target: Object, propertyKey?: string | symbol): void {
+export function slow(time: number): PropertyDecorator & ClassDecorator & SuiteTrait & TestTrait {
+	return trait(function() {
 		if (arguments.length === 1) {
+			const target = arguments[0];
 			target[slowSymbol] = time;
-		} else {
-			target[propertyKey][slowSymbol] = time;
+		} else if (arguments.length === 2 && typeof arguments[1] === "string" || typeof arguments[1] === "symbol") {
+			const target = arguments[0];
+			const property = arguments[1];
+			target[property][slowSymbol] = time;
+		} else if (arguments.length === 2) {
+			const context: Mocha.ISuiteCallbackContext = arguments[0];
+			const ctor = arguments[1];
+			context.slow(time);
+		} else if (arguments.length === 3) {
+			if (typeof arguments[2] === "function") {
+				const context: Mocha.ITestCallbackContext = arguments[0];
+				const instance = arguments[1];
+				const method = arguments[2];
+				context.slow(time);
+			} else if (typeof arguments[1] === "string" || typeof arguments[1] === "symbol") {
+				const proto: Mocha.ITestCallbackContext = arguments[0];
+				const prop = arguments[1];
+				const descriptor = arguments[2];
+				proto[prop][slowSymbol] = time;
+			}
 		}
-	}
+	});
 }
 
 /**
  * Set a test method or suite timeout time.
  * @param time The time in miliseconds.
  */
-export function timeout(time: number): PropertyDecorator & ClassDecorator {
-	return function <TFunction extends Function>(target: Object | TFunction, propertyKey?: string | symbol): void {
+export function timeout(time: number): MethodDecorator & PropertyDecorator & ClassDecorator & SuiteTrait & TestTrait {
+	return trait(function() {
 		if (arguments.length === 1) {
+			const target = arguments[0];
 			target[timeoutSymbol] = time;
-		} else {
-			target[propertyKey][timeoutSymbol] = time;
+		} else if (arguments.length === 2 && typeof arguments[1] === "string" || typeof arguments[1] === "symbol") {
+			const target = arguments[0];
+			const property = arguments[1];
+			target[property][timeoutSymbol] = time;
+		} else if (arguments.length === 2) {
+			const context: Mocha.ISuiteCallbackContext = arguments[0];
+			const ctor = arguments[1];
+			context.timeout(time);
+		} else if (arguments.length === 3) {
+			if (typeof arguments[2] === "function") {
+				const context: Mocha.ITestCallbackContext = arguments[0];
+				const instance = arguments[1];
+				const method = arguments[2];
+				context.timeout(time);
+			} else if (typeof arguments[1] === "string" || typeof arguments[1] === "symbol") {
+				const proto: Mocha.ITestCallbackContext = arguments[0];
+				const prop = arguments[1];
+				const descriptor = arguments[2];
+				proto[prop][timeoutSymbol] = time;
+			}
 		}
-	}
+	});
 }
+
+export const skipOnError: SuiteTrait = trait(function(ctx, ctor) {
+    beforeEach(function() {
+        if (ctor.__skip_all) {
+            this.skip();
+        }
+    });
+    afterEach(function() {
+        if (this.currentTest.state === "failed") {
+            ctor.__skip_all = true;
+        }
+    });
+});
+
 
 /**
  * Mart a test or suite as pending.

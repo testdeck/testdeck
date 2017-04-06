@@ -8,5 +8,9 @@
         "experimentalDecorators": true,
         "declaration": false,
         "listFiles": false
-    }
+    },
+    "exclude": [
+        "node_modules",
+        "tests/repo"
+    ]
 }

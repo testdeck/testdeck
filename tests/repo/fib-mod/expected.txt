@@ -1,0 +1,39 @@
+
+> fib-mod@1.0.0 test
+> tsc && mocha
+
+
+
+  Suite1
+    ✓ one
+    1) two
+    ✓ three
+    2) four
+    - five
+
+  Skip1
+    - one
+    - two
+
+  TimoutSuite
+    ✓ fast
+    3) slow
+
+  TimeoutSuite2
+    ✓ fast
+    4) slow
+
+  SequenceOne
+    ✓ one
+    5) two
+    - three
+
+  SequenceTwo
+    ✓ one
+    ✓ two
+    ✓ three
+
+
+  8 passing
+  4 pending
+  5 failing

@@ -1,5 +1,5 @@
 import * as mocha from "mocha";
-import { suite, test, slow, timeout, skip, only, pending, context } from "../index";
+import { suite, test, slow, timeout, skip, only, pending, context } from "../../index";
 
 @suite class Static {
     @test one() {

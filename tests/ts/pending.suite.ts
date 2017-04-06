@@ -1,4 +1,4 @@
-import { suite, test, slow, timeout, skip, only, pending } from "../index";
+import { suite, test, slow, timeout, skip, only, pending } from "../../index";
 
 @suite @pending class Suite1 {
     @test test1() {}

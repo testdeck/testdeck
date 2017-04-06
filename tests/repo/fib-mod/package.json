@@ -1,0 +1,16 @@
+{
+  "name": "fib-mod",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "tsc && mocha"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/mocha": "^2.2.40",
+    "mocha": "^3.2.0",
+    "typescript": "*"
+  }
+}

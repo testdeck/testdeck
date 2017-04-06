@@ -1,4 +1,4 @@
-import { suite, test, slow, timeout, skip, only } from "../index";
+import { suite, test, slow, timeout, skip, only } from "../../index";
 
 declare var Promise: any; // ES6 Promise
 

@@ -1,4 +1,4 @@
-import { suite, test, slow, timeout, skip, only, trait, skipOnError } from "../index";
+import { suite, test, slow, timeout, skip, only, trait, skipOnError } from "../../index";
 
 @suite class Simple {
     @test test() {}

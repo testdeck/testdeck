@@ -1,17 +1,32 @@
 import { suite, test, slow, timeout, pending, only } from "./index";
+import { assert } from "chai";
+import { spawnSync } from "child_process";
+import * as path from "path";
 
-var child_process = require("child_process");
-var assert = require("better-assert");
 var chai = require("chai");
 var fs = require("fs");
-
-var spawnSync = child_process.spawnSync;
 
 // @pending class One {
 //     @pending test1() {};
 //     @test test2() {};
 //     @only test3() {}
 // }
+
+function assertOutput(actualStr, expectedStr) {
+    let actual: string[] = actualStr.split("\n");
+    let expected: string[] = expectedStr.split("\n");
+
+    for(var i = 0; i < expected.length; i++) {
+        if (actual.length <= i) {
+            throw new Error("Actual output is shorter than expected, acutal lines: " + actual.length + ", expected: " + expected.length);
+        }
+        let expectedLine = expected[i].trim();
+        let actualLine = actual[i].trim();
+        if (actualLine.indexOf(expectedLine) === -1) {
+            throw new Error("Unexpected output. Expected: '" + expectedLine + "' to be contained in '" + actualLine + "'");
+        }
+    }
+}
 
 @suite("typescript") @slow(5000) @timeout(15000) class SuiteTest {
 
@@ -67,34 +82,54 @@ var spawnSync = child_process.spawnSync;
         this.run("es6", "context.suite");
     }
 
-    run(target: string, ts: string) {
-        let tsc = spawnSync("node", ["./node_modules/typescript/bin/tsc", "--experimentalDecorators", "--module", "commonjs", "--target", target, "--lib", "es6", "tests/" + ts + ".ts"]);
+    private run(target: string, ts: string) {
+        let tsc = spawnSync("node", ["./node_modules/typescript/bin/tsc", "--experimentalDecorators", "--module", "commonjs", "--target", target, "--lib", "es6", "tests/ts/" + ts + ".ts"]);
 
         // console.log(tsc.stdout.toString());
-        assert(tsc.stdout.toString() === "");
-        assert(tsc.status === 0);
+        assert.equal(tsc.stdout.toString(), "", "Expected error free tsc.");
+        assert.equal(tsc.status, 0);
 
-        let mocha = spawnSync("node", ["./node_modules/mocha/bin/_mocha", "tests/" + ts + ".js"]);
+        let mocha = spawnSync("node", ["./node_modules/mocha/bin/_mocha", "tests/ts/" + ts + ".js"]);
         // To debug any actual output while developing:
         // assert(mocha.status !== 0);
 
         // console.log(mocha.stderr.toString());
 
-        let actual = mocha.stdout.toString().split("\n");
-        let expected = fs.readFileSync("./tests/" + ts + ".expected.txt", "utf-8").split("\n");
+        let actual = mocha.stdout.toString();
+        let expected = fs.readFileSync("./tests/ts/" + ts + ".expected.txt", "utf-8");
 
         // To patch the expected use the output of this, but clean up times and callstacks:
         // console.log("out:\n" + actual.join("\n"));
+    }
+}
 
-        for(var i = 0; i < expected.length; i++) {
-            if (actual.length <= i) {
-                throw new Error("Actual output is shorter than expected, acutal lines: " + actual.length + ", expected: " + expected.length);
-            }
-            let expectedLine = expected[i].trim();
-            let actualLine = actual[i].trim();
-            if (actualLine.indexOf(expectedLine) === -1) {
-                throw new Error("Unexpected output. Expected: '" + expectedLine + "' to be contained in '" + actualLine + "'");
-            }
-        }
+@suite(timeout(90000))
+class PackageTest {
+    static tgzPath;
+
+    @timeout(30000)
+    static before() {
+        let pack = spawnSync("npm", ["pack"]);
+        assert.equal(pack.stderr.toString(), "");
+        assert.equal(pack.status, 0, "npm pack failed.");
+        const lines = (<string>pack.stdout.toString()).split("\n").filter(line => !!line);
+        assert.isAtLeast(lines.length, 1, "Expected atleast one line of output from npm pack with the .tgz name.");
+        PackageTest.tgzPath = path.resolve(lines[lines.length - 1]);
+    }
+
+    @test "can be consumed as module"() {
+        const cwd = path.resolve("tests/repo/fib-mod");
+        let npmi = spawnSync("npm", ["i"], { cwd });
+        assert.equal(npmi.status, 0, "'npm i' failed.");
+        let npmitgz = spawnSync("npm", ["i", PackageTest.tgzPath], { cwd });
+        assert.equal(npmitgz.status, 0, "'npm i <tgz>' failed.");
+
+        let npmtest = spawnSync("npm", ["test"], { cwd });
+
+        let actual = npmtest.stdout.toString();
+        // console.log("Assert on:\n'" + actual + "'");
+
+        let expected = fs.readFileSync(cwd + "/expected.txt", "utf-8");
+        assertOutput(actual, expected);
     }
 }

@@ -14,7 +14,7 @@
   "scripts": {
     "pretest": "tsc",
     "test": "mocha test.js --opts mocha.opts",
-    "prepublish": "tsc"
+    "prepare": "tsc"
   },
   "author": "Panayot Cankov",
   "license": "Apache-2.0",

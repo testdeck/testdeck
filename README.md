@@ -1,5 +1,5 @@
 Writing mocha tests with style - OOP style:
-```
+``` TypeScript
 import { suite, test, slow, timeout, skip, only } from "mocha-typescript";
 @suite class Hello {
     @test world() { }
@@ -20,7 +20,7 @@ import { suite, test, slow, timeout, skip, only } from "mocha-typescript";
 ## Test UI
 The test interface provides support for mocha's built-in tdd, bdd: describe/suite, it/test, timeout, slow, it.only and it.skip;
 as well as TypeScript decorators based test UI for classes. You can mix and match:
-```
+``` TypeScript
 import { suite, test, slow, timeout, skip, only } from "mocha-typescript";
 suite("one", () => {
     test("test", () => {});
@@ -33,7 +33,7 @@ suite("one", () => {
 ## Watcher
 The `mocha-typescript` comes with a watcher script that runs the TypeScript compiler in watch mode,
 and upon successful compilations runs the mocha tests, concatinating the output of both. This in combination with the support for "only":
-```
+``` TypeScript
 @suite class One {
     @test.only method1() {}
     @test mothod2() {}
@@ -49,21 +49,21 @@ Please note, the built in mocha watcher should work with mocha-typescript UI and
 
 # Test UI API
 Please note that the methods and decorators used below are introduced through importing from the `mocha-typescript` module:
-```
+``` TypeScript
 import { suite, test, slow, timeout } from "mocha-typescript";
 ```
 Or by installing `mocha-typescript` as custom mocha test UI.
 
 ## Declarative Suites and Tests
 Declaring suites is done using the `@suite` decorator and tests within the suite using the `@test` decorator:
-```
+``` TypeScript
 @suite class Suite {
     @test test1() {}
 }
 ```
 When used without parameters, the names are infered from the class and method name.
 Complex names can be provided as arguments to the `@suite` or `@test` decorator:
-```
+``` TypeScript
 @suite("A suite")
 class Suite {
     @test("can have tests") {}
@@ -74,7 +74,7 @@ class Suite {
 ## Generated Suites and Tests
 Mocha's simple interface is very flexible when test have to be dynamically generated.
 If tests for classes have to be generated dinamically here is an example:
-```
+``` TypeScript
 [{ title: "google", url: "www.google.com" },
  { title: "github", url: "www.github.com" }
 ].forEach({title, url} => {
@@ -89,7 +89,7 @@ If tests for classes have to be generated dinamically here is an example:
 By default, before and after test actions are implemented with instance and static before and after methods.
 The static before and after methods are invoked before the suite and after the suite,
 the instance before and after methods are infvoked before and after each test method.
-```
+``` TypeScript
 @suite class Suite {
     static before() { /* 1 */ }
     before() { /* 2, 5 */ }
@@ -104,7 +104,7 @@ the instance before and after methods are infvoked before and after each test me
 The methods that accept a `done` callback or return a `Promise` are considered async similar and their execution is similar to the one in mocha.
  - For `done`, calling it without params marks the test as passed, calling it with arguments fails the test.
  - For returned `Promise`, the test passes is the promise is resolved, the test fails if the promise is rejected.
-```
+``` TypeScript
 @suite class Suite {
     @test async1(done) {
         setTimeout(done, 1000);
@@ -121,7 +121,7 @@ The methods that accept a `done` callback or return a `Promise` are considered a
 
 ## Skipped and Only Suite and Tests
 Marking a test as pending or skipped declaratively is done using `@suite.skip`, `@suite.only`, `@test.skip` or `@test.only` similar to the mocha interfaces:
-```
+``` TypeScript
 @suite.only class SuiteOne {
     @test thisWillRun() {}
     @test.skip thisWillNotRun() {}
@@ -139,7 +139,7 @@ When you are ready, remove the `only` to have the watcher execute all tests agai
 ## Timing - Timeout, Slow
 Controlling the time limits, similar to the `it("test", function() { this.slow(ms); /* ... */ });` is done using suite or test traits,
 these are modifiers passed as arguments to the `@suite()` and `@test()` decorators:
-```
+``` TypeScript
 @suite(slow(1000), timeout(2000))
 class Suite {
     @test first() {}
@@ -153,20 +153,18 @@ They are still useful though for setting timeouts on before and after methods (e
 # Setting Up
 ## Mocha TypeScript and Mocha-TypeScript Unit Testing
 In the terminal run:
-```
+``` bash
 mkdir mocha-ts-use
 cd mocha-ts-use
 
 npm init
 # then multiple enter hits
 
-npm install typescript --save-dev
-npm install mocha --save-dev
-npm install mocha-typescript --save-dev
+npm install mocha typescript mocha-typescript --save-dev
 ```
 
 In the `package.json` add:
-```json
+``` json
   "scripts": {
     "test": "tsc -p . && mocha",
     "prepublish": "tsc -p ."
@@ -174,7 +172,7 @@ In the `package.json` add:
 ```
 
 Create `tsconfig.json` file near the `package.json` like that:
-```json
+``` json
 {
     "compilerOptions": {
         "module": "commonjs",
@@ -188,7 +186,7 @@ Create `tsconfig.json` file near the `package.json` like that:
 ```
 
 Add a `test.ts` file:
-```TypeScript
+``` TypeScript
 import { suite, test, slow, timeout, skip, only } from "mocha-typescript";
 
 @suite class Hello {
@@ -197,7 +195,7 @@ import { suite, test, slow, timeout, skip, only } from "mocha-typescript";
 ```
 
 Back to the terminal:
-```
+``` bash
 npm test
 ```
 
@@ -213,9 +211,7 @@ You will need a `tsconfig.json`, and at least `test.ts` mocha entrypoint.
 
 Install `mocha`, `typescript` and `mocha-typescript` as dev dependencies (required):
 ```
-npm install typescript --save-dev
-npm install mocha --save-dev
-npm install mocha-typescript --save-dev
+npm install mocha typescript mocha-typescript --save-dev
 ```
 
 Add the following npm script to `package.json`:

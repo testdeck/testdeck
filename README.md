@@ -188,9 +188,10 @@ In the `package.json` add:
 ``` json
   "scripts": {
     "test": "tsc -p . && mocha",
-    "prepublish": "tsc -p ." // you may opt in for 'prepare' here in post npm@4.0.0
+    "prepublish": "tsc -p ."
   },
 ```
+Please note it may be better to use "prepare" for npm@4.0.0 and later instead of "prepublish".
 
 Create `tsconfig.json` file near the `package.json` like that:
 ``` json

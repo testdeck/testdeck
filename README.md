@@ -18,7 +18,7 @@ import { suite, test, slow, timeout, skip, only } from "mocha-typescript";
     - [Before and After Actions](#before-and-after-actions)
     - [Async Tests, Before and After Actions](#async-tests-before-and-after-actions)
     - [Skipped and Only Suite and Tests](#skipped-and-only-suite-and-tests)
-    - [Timing - Timeout, Slow](#timing-timeout-slow)
+    - [Timing - Timeout, Slow](#timing---timeout-slow)
  - [Setting Up](#setting-up)
     - [Adding Mocha-TypeScript to Existing Project](#adding-mocha-typescript-to-existing-project)
     - [From Zero to Testing With Mocha TypeScript and Mocha-TypeScript](#from-zero-to-testing-with-mocha-typescript-and-mocha-typescript)

@@ -9,11 +9,21 @@ import { suite, test, slow, timeout, skip, only } from "mocha-typescript";
 [![Build Status](https://travis-ci.org/pana-cc/mocha-typescript.svg?branch=master)](https://travis-ci.org/pana-cc/mocha-typescript)
 
  - [Summary](#summary)
-    - [Test UI](#decorators)
+    - [Test UI](#test-ui)
     - [Watcher](#watcher)
     - [Thanks To](#thanks-to)
  - [Test UI API](#test-ui-api)
     - [Declarative Suites and Tests](#declarative-suites-and-tests)
+    - [Generated Suites and Tests](#generated-suites-and-tests)
+    - [Before and After Actions](#before-and-after-actions)
+    - [Async Tests, Before and After Actions](#async-tests-before-and-after-actions)
+    - [Skipped and Only Suite and Tests](#skipped-and-only-suite-and-tests)
+    - [Timing - Timeout, Slow](#timing-timeout-slow)
+ - [Setting Up](#setting-up)
+    - [Adding Mocha-TypeScript to Existing Project](#adding-mocha-typescript-to-existing-project)
+    - [From Zero to Testing With Mocha TypeScript and Mocha-TypeScript](#from-zero-to-testing-with-mocha-typescript-and-mocha-typescript)
+    - [Setting Up Dev Test Watcher](#setting-up-dev-test-watcher)
+    
 > TODO: ToC
 
 # Summary
@@ -100,7 +110,7 @@ the instance before and after methods are infvoked before and after each test me
 }
 ```
 
-## Async
+## Async Tests, Before and After Actions
 The methods that accept a `done` callback or return a `Promise` are considered async similar and their execution is similar to the one in mocha.
  - For `done`, calling it without params marks the test as passed, calling it with arguments fails the test.
  - For returned `Promise`, the test passes is the promise is resolved, the test fails if the promise is rejected.
@@ -120,7 +130,7 @@ The methods that accept a `done` callback or return a `Promise` are considered a
 ```
 
 ## Skipped and Only Suite and Tests
-Marking a test as pending or skipped declaratively is done using `@suite.skip`, `@suite.only`, `@test.skip` or `@test.only` similar to the mocha interfaces:
+Marking a test as pending or marking it as the only one to execute declaratively is done using `@suite.skip`, `@suite.only`, `@test.skip` or `@test.only` similar to the mocha interfaces:
 ``` TypeScript
 @suite.only class SuiteOne {
     @test thisWillRun() {}
@@ -143,7 +153,7 @@ these are modifiers passed as arguments to the `@suite()` and `@test()` decorato
 @suite(slow(1000), timeout(2000))
 class Suite {
     @test first() {}
-    @test(slow(2000), timeout(4000)) {}
+    @test(slow(2000), timeout(4000)) second() {}
 }
 ```
 The `slow` and `timeout` traits were initially working as decorators (e.g. `@suite @timeout(200) class Test {}`),
@@ -151,14 +161,27 @@ but this behavior may be dropped in future major versinos as it generates too mu
 They are still useful though for setting timeouts on before and after methods (e.g. `@suite class Test { @timeout(100) before() { /* ... */ }}`).
 
 # Setting Up
-## Mocha TypeScript and Mocha-TypeScript Unit Testing
-In the terminal run:
+## Adding Mocha-TypeScript to Existing Project
+If you allready have an npm package with mocha testing integrated just install `mocha-typescript`:
 ``` bash
-mkdir mocha-ts-use
-cd mocha-ts-use
+npm i mocha-typescript --save-dev
+```
+The require the mocha-typescript in your test files and you will be good to go:
+``` TypeScript
+import { suite, test, slow, timeout, skip, only } from "mocha-typescript";
+@suite class Two {
+    @test method() {}
+}
+```
+
+## From Zero to Testing With Mocha TypeScript and Mocha-TypeScript
+If you are starting a new package from zero and want to use mocha-typescript for testing, in the terminal run:
+``` bash
+mkdir my-npm-package
+cd my-npm-package
 
 npm init
-# then multiple enter hits
+# then hit "enter" several times
 
 npm install mocha typescript mocha-typescript --save-dev
 ```
@@ -167,7 +190,7 @@ In the `package.json` add:
 ``` json
   "scripts": {
     "test": "tsc -p . && mocha",
-    "prepublish": "tsc -p ."
+    "prepublish": "tsc -p ." // you may opt in for 'prepare' here in post npm@4.0.0
   },
 ```
 
@@ -176,11 +199,7 @@ Create `tsconfig.json` file near the `package.json` like that:
 {
     "compilerOptions": {
         "module": "commonjs",
-        "removeComments": false,
-        "preserveConstEnums": true,
-        "sourceMap": true,
-        "experimentalDecorators": true,
-        "declaration": true
+        "experimentalDecorators": true
     }
 }
 ```
@@ -204,7 +223,7 @@ Now you have tests for the code you are about to write.
 Mind adding `.npmignore` and `.gitignore` to keep `.ts` files in `git`,
 and `.js` and `.d.ts` files in `npm`.
 
-## Test Watcher
+## Setting Up Dev Test Watcher
 There is a watcher script in the package, that runs `tsc -w` process and watches its output for successful compilation, upon compilation runs a `mocha` process.
 
 You will need a `tsconfig.json`, and at least `test.ts` mocha entrypoint.

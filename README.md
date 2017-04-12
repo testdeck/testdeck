@@ -23,8 +23,6 @@ import { suite, test, slow, timeout, skip, only } from "mocha-typescript";
     - [Adding Mocha-TypeScript to Existing Project](#adding-mocha-typescript-to-existing-project)
     - [From Zero to Testing With Mocha TypeScript and Mocha-TypeScript](#from-zero-to-testing-with-mocha-typescript-and-mocha-typescript)
     - [Setting Up Dev Test Watcher](#setting-up-dev-test-watcher)
-    
-> TODO: ToC
 
 # Summary
 ## Test UI
@@ -166,7 +164,7 @@ If you allready have an npm package with mocha testing integrated just install `
 ``` bash
 npm i mocha-typescript --save-dev
 ```
-The require the mocha-typescript in your test files and you will be good to go:
+Then require the mocha-typescript in your test files and you will be good to go:
 ``` TypeScript
 import { suite, test, slow, timeout, skip, only } from "mocha-typescript";
 @suite class Two {

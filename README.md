@@ -19,10 +19,15 @@ import { suite, test, slow, timeout } from "mocha-typescript";
     - [Async Tests, Before and After Actions](#async-tests-before-and-after-actions)
     - [Skipped and Only Suite and Tests](#skipped-and-only-suite-and-tests)
     - [Timing - Timeout, Slow](#timing---timeout-slow)
+ - Extending Test Behavior
+    - Accessing the Mocha Context Within Class Methods
+    - Writing Custom Traits
+    - skipOnError
  - [Setting Up](#setting-up)
     - [Adding Mocha-TypeScript to Existing Project](#adding-mocha-typescript-to-existing-project)
     - [From Zero to Testing With Mocha TypeScript and Mocha-TypeScript](#from-zero-to-testing-with-mocha-typescript-and-mocha-typescript)
     - [Setting Up Dev Test Watcher](#setting-up-dev-test-watcher)
+    - Setting Up as Custom UI
 
 # Summary
 ## Test UI

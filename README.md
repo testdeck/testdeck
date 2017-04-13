@@ -1,6 +1,6 @@
 Writing mocha tests with style - OOP style:
 ``` TypeScript
-import { suite, test, slow, timeout, skip, only } from "mocha-typescript";
+import { suite, test, slow, timeout } from "mocha-typescript";
 @suite class Hello {
     @test world() { }
 }
@@ -29,7 +29,7 @@ import { suite, test, slow, timeout, skip, only } from "mocha-typescript";
 The test interface provides support for mocha's built-in tdd, bdd: describe/suite, it/test, timeout, slow, it.only and it.skip;
 as well as TypeScript decorators based test UI for classes. You can mix and match:
 ``` TypeScript
-import { suite, test, slow, timeout, skip, only } from "mocha-typescript";
+import { suite, test, slow, timeout } from "mocha-typescript";
 suite("one", () => {
     test("test", () => {});
 });
@@ -166,7 +166,7 @@ npm i mocha-typescript --save-dev
 ```
 Then require the mocha-typescript in your test files and you will be good to go:
 ``` TypeScript
-import { suite, test, slow, timeout, skip, only } from "mocha-typescript";
+import { suite, test, slow, timeout } from "mocha-typescript";
 @suite class Two {
     @test method() {}
 }
@@ -205,7 +205,7 @@ Create `tsconfig.json` file near the `package.json` like that:
 
 Add a `test.ts` file:
 ``` TypeScript
-import { suite, test, slow, timeout, skip, only } from "mocha-typescript";
+import { suite, test, slow, timeout } from "mocha-typescript";
 
 @suite class Hello {
     @test "world"() { }

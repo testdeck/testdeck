@@ -155,7 +155,7 @@ class Suite {
 }
 ```
 The `slow` and `timeout` traits were initially working as decorators (e.g. `@suite @timeout(200) class Test {}`),
-but this behavior may be dropped in future major versinos as it generates too much decorators that cluter the syntax.
+but this behavior may be dropped in future major versions as it generates too much decorators that cluter the syntax.
 They are still useful though for setting timeouts on before and after methods (e.g. `@suite class Test { @timeout(100) before() { /* ... */ }}`).
 
 # Setting Up

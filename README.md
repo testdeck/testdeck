@@ -118,7 +118,7 @@ The methods that accept a `done` callback or return a `Promise` are considered a
         setTimeout(done, 1000);
     }
     @test async2() {
-        new Promise((resolve, reject) => setTimeout(resolve, 1000));
+        return new Promise((resolve, reject) => setTimeout(resolve, 1000));
     }
     @test async async3() {
         // async/await FTW!

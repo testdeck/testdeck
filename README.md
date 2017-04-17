@@ -21,7 +21,7 @@ import { suite, test, slow, timeout } from "mocha-typescript";
     - [Timing - Timeout, Slow](#timing---timeout-slow)
  - [Extending Test Behavior](#extending-test-behavior)
     - [Accessing the Mocha Context Within Class Methods](#accessing-the-mocha-context-within-class-methods)
-    - [Skipping Tests In Suite After First Failure - skipOnError](#skipping-tests-in-suite-after-first-failure---skipOnError)
+    - [Skipping Tests In Suite After First Failure - skipOnError](#skipping-tests-in-suite-after-first-failure---skiponerror)
  - [Setting Up](#setting-up)
     - [Adding Mocha-TypeScript to Existing Project](#adding-mocha-typescript-to-existing-project)
     - [From Zero to Testing With Mocha TypeScript and Mocha-TypeScript](#from-zero-to-testing-with-mocha-typescript-and-mocha-typescript)

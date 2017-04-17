@@ -19,10 +19,9 @@ import { suite, test, slow, timeout } from "mocha-typescript";
     - [Async Tests, Before and After Actions](#async-tests-before-and-after-actions)
     - [Skipped and Only Suite and Tests](#skipped-and-only-suite-and-tests)
     - [Timing - Timeout, Slow](#timing---timeout-slow)
- - Extending Test Behavior
-    - Accessing the Mocha Context Within Class Methods
-    - Writing Custom Traits
-    - skipOnError
+ - [Extending Test Behavior](#extending-test-behavior)
+    - [Accessing the Mocha Context Within Class Methods](#accessing-the-mocha-context-within-class-methods)
+    - [Skipping Tests In Suite After First Failure - skipOnError](#skipping-tests-in-suite-after-first-failure---skipOnError)
  - [Setting Up](#setting-up)
     - [Adding Mocha-TypeScript to Existing Project](#adding-mocha-typescript-to-existing-project)
     - [From Zero to Testing With Mocha TypeScript and Mocha-TypeScript](#from-zero-to-testing-with-mocha-typescript-and-mocha-typescript)
@@ -162,6 +161,35 @@ class Suite {
 The `slow` and `timeout` traits were initially working as decorators (e.g. `@suite @timeout(200) class Test {}`),
 but this behavior may be dropped in future major versions as it generates too much decorators that cluter the syntax.
 They are still useful though for setting timeouts on before and after methods (e.g. `@suite class Test { @timeout(100) before() { /* ... */ }}`).
+
+# Extending Test Behavior
+## Accessing the Mocha Context Within Class Methods
+There are various aspects of the suites and tests that can be altered via the mocha context.
+Within the default mocha 'BDD' style this is done through the callback's `this` object.
+That object is exposed to the TypeScript decorators based UI through a field decorated with the `@context` decorator:
+```
+@suite class MyClass {
+  @context mocha; // Set for instenace methods such as tests and before/after
+  static @context mocha; // Set for static methods such as static before/after (mocha bdd beforeEach/afterEach)
+  after() {
+    this.mocha.currentTest.state;
+  }
+}
+```
+
+## Skipping Tests In Suite After First Failure - skipOnError
+In functional testing it is sometimes fine to skip the rest of the suite when one of the tests fail.
+Consider the case of a web site tests where the login test fail and subsequent tests that depend on the login will hardly pass.
+This can be done with the `skipOnError` suite trait:
+```
+@suite(skipOnError)
+class StockSequence {
+    @test step1() {}
+    @test step2() { throw new Error("Failed"); }
+    @test step3() { /* will be skipped */ }
+    @test step4() { /* will be skipped */ }
+}
+```
 
 # Setting Up
 ## Adding Mocha-TypeScript to Existing Project

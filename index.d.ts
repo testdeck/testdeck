@@ -35,8 +35,9 @@ declare namespace Mocha {
         skip(... traits: MochaTypeScript.TestTrait[]): PropertyDecorator;
     }
 }
+
 declare namespace MochaTypeScript {
-    interface Suite {
+    export interface Suite {
         prototype: {
             before?: (done?: MochaDone) => void;
             after?: (done?: MochaDone) => void;

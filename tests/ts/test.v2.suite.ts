@@ -1,5 +1,22 @@
 import { suite, test, slow, timeout, skip, only, trait, skipOnError } from "../../index";
 
+suite("vanila tdd suite", () => {
+    test("vanila test", () => {});
+    test("vanila failing test", () => { throw new Error("x") });
+    test("vanila asinc", done => setTimeout(done, 5));
+    test("Vanila promise", () => new Promise((resolve, reject) => setTimeout(resolve, 5)));
+    test.pending("pending", () => {});
+    test.skip("skipped", () => {});
+});
+
+describe("vanila bdd suite", () => {
+    it("vanila test", () => {});
+    it("vanila failing test", () => { throw new Error("x") });
+    it("vanila asinc", done => setTimeout(done, 5));
+    it("Vanila promise", () => new Promise((resolve, reject) => setTimeout(resolve, 5)));
+    it.skip("skipped", () => {});
+});
+
 @suite class Simple {
     @test test() {}
 }

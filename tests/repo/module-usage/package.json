@@ -1,5 +1,5 @@
 {
-  "name": "fib-mod",
+  "name": "module-usage",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -7,7 +7,7 @@
     "test": "tsc && mocha"
   },
   "author": "",
-  "license": "ISC",
+  "license": "Apache-2.0",
   "devDependencies": {
     "@types/mocha": "^2.2.40",
     "mocha": "^3.2.0",

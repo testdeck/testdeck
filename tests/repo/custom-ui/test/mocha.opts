@@ -1,2 +1,2 @@
---reporter list
+--ui mocha-typescript
 --require source-map-support/register

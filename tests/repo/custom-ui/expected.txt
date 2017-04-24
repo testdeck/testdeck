@@ -1,5 +1,5 @@
 
-> fib-mod@1.0.0 test
+> custom-ui@1.0.0 test
 > tsc && mocha
 
 

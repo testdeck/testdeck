@@ -99,7 +99,9 @@ function assertOutput(actualStr, expectedStr) {
         let expected = fs.readFileSync("./tests/ts/" + ts + ".expected.txt", "utf-8");
 
         // To patch the expected use the output of this, but clean up times and callstacks:
-        // console.log("out:\n" + actual.join("\n"));
+        // console.log("=====\n" + actual + "\n=====");
+
+        assertOutput(actual, expected);
     }
 }
 
@@ -118,16 +120,24 @@ class PackageTest {
     }
 
     @test "can be consumed as module"() {
-        const cwd = path.resolve("tests/repo/fib-mod");
+        this.testPackage("module-usage");
+    }
+
+    @test "can be consumed as custom ui"() {
+        this.testPackage("custom-ui");
+    }
+
+    private testPackage(packageName: string): void {
+        const cwd = path.resolve("tests/repo", packageName);
         let npmi = spawnSync("npm", ["i"], { cwd });
         assert.equal(npmi.status, 0, "'npm i' failed.");
         let npmitgz = spawnSync("npm", ["i", PackageTest.tgzPath], { cwd });
         assert.equal(npmitgz.status, 0, "'npm i <tgz>' failed.");
-
         let npmtest = spawnSync("npm", ["test"], { cwd });
-
         let actual = npmtest.stdout.toString();
-        // console.log("Assert on:\n'" + actual + "'");
+
+        // console.log("=====\n" + actual + "\n=====");
+        // console.log(npmtest.stderr.toString());
 
         let expected = fs.readFileSync(cwd + "/expected.txt", "utf-8");
         assertOutput(actual, expected);

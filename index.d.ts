@@ -1,4 +1,25 @@
 declare namespace Mocha {
+    export interface IContextDefinition {}
+    export interface ITestDefinition {}
+}
+
+declare namespace MochaTypeScript {
+    export interface Suite {
+        prototype: {
+            before?: (done?: MochaDone) => void;
+            after?: (done?: MochaDone) => void;
+        };
+        before?: (done?: MochaDone) => void;
+        after?: (done?: MochaDone) => void;
+        new();
+    }
+    export interface SuiteTrait {
+        (this: Mocha.ISuiteCallbackContext, ctx: Mocha.ISuiteCallbackContext, ctor: Function): void;
+    }
+    export interface TestTrait {
+        (this: Mocha.ITestCallbackContext, ctx: Mocha.ITestCallbackContext, instance: Object, method: Function): void;
+    }
+
     export interface IContextDefinition {
         (target: MochaTypeScript.Suite): any;
         (): ClassDecorator;
@@ -36,43 +57,12 @@ declare namespace Mocha {
     }
 }
 
-declare namespace MochaTypeScript {
-    export interface Suite {
-        prototype: {
-            before?: (done?: MochaDone) => void;
-            after?: (done?: MochaDone) => void;
-        };
-        before?: (done?: MochaDone) => void;
-        after?: (done?: MochaDone) => void;
-        new();
-    }
-    export interface SuiteTrait {
-        (this: Mocha.ISuiteCallbackContext, ctx: Mocha.ISuiteCallbackContext, ctor: Function): void;
-    }
-    export interface TestTrait {
-        (this: Mocha.ITestCallbackContext, ctx: Mocha.ITestCallbackContext, instance: Object, method: Function): void;
-    }
-}
-
-declare var suite: Mocha.IContextDefinition;
-declare var test: Mocha.ITestDefinition;
-
-declare var describe: Mocha.IContextDefinition;
-declare var it: Mocha.ITestDefinition;
-
-declare function slow(time: number): PropertyDecorator & ClassDecorator & MochaTypeScript.SuiteTrait & MochaTypeScript.TestTrait;
-declare function timeout(time: number): PropertyDecorator & ClassDecorator & MochaTypeScript.SuiteTrait & MochaTypeScript.TestTrait;
-
-declare function pending<TFunction extends Function>(target: Object | TFunction, propertyKey?: string | symbol): void;
-declare function only<TFunction extends Function>(target: Object, propertyKey?: string | symbol): void;
-declare function skip<TFunction extends Function>(target: Object | TFunction, propertyKey?: string | symbol): void;
-
 declare module "mocha-typescript" {
-    export const suite: Mocha.IContextDefinition;
-    export const test: Mocha.ITestDefinition;
+    export const suite: Mocha.IContextDefinition & MochaTypeScript.IContextDefinition;
+    export const test: Mocha.ITestDefinition & MochaTypeScript.ITestDefinition;
 
-    export const describe: Mocha.IContextDefinition;
-    export const it: Mocha.ITestDefinition;
+    export const describe: Mocha.IContextDefinition & MochaTypeScript.IContextDefinition;
+    export const it: Mocha.ITestDefinition & MochaTypeScript.ITestDefinition;
 
     export function slow(time: number): PropertyDecorator & ClassDecorator & MochaTypeScript.SuiteTrait & MochaTypeScript.TestTrait;
     export function timeout(time: number): PropertyDecorator & ClassDecorator & MochaTypeScript.SuiteTrait & MochaTypeScript.TestTrait;

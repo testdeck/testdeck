@@ -24,39 +24,30 @@ declare module "mocha" {
 	}
 }
 
-type BeforeAfterCallback = typeof before;
-type BeforeAfterEachCallback = typeof after;
-type DescribeFunction = typeof describe;
-type ItFunction = typeof it;
-type SkipFunction = typeof it.skip;
-type OnlyFunction = typeof it.only;
-type TestCallback = (this: Mocha.ITestCallbackContext, done: MochaDone) => any
-
 interface TestFunctions {
-	it: Mocha.ITestDefinition,
-	describe: Mocha.IContextDefinition
-	before: BeforeAfterCallback,
-	after: BeforeAfterCallback,
-	beforeEach: BeforeAfterEachCallback,
-	afterEach: BeforeAfterEachCallback,
+	it: {
+		(name: string, fn: Function): void,
+		only(name: string, fn: Function): void;
+		skip(name: string, fn?: Function): void;
+	},
+	describe: {
+		(name: string, fn: Function): void,
+		only(name: string, fn: Function): void;
+		skip(name: string, fn?: Function): void;
+	},
+	before: typeof before,
+	after: typeof after,
+	beforeEach: typeof beforeEach,
+	afterEach: typeof afterEach
 }
 
-declare var global: {
-	it: ItFunction,
-	describe: DescribeFunction,
-	before: BeforeAfterCallback,
-	after: BeforeAfterCallback,
-	beforeEach: BeforeAfterEachCallback,
-	afterEach: BeforeAfterEachCallback
-};
-
 const globalTestFunctions: TestFunctions = {
-	get describe() { return global.describe; },
-	get it() { return global.it; },
-	get before() { return global.before; },
-	get after() { return global.after; },
-	get beforeEach() { return global.beforeEach; },
-	get afterEach() { return global.afterEach; }
+	get describe() { return (<any>global).describe; },
+	get it() { return (<any>global).it; },
+	get before() { return (<any>global).before; },
+	get after() { return (<any>global).after; },
+	get beforeEach() { return (<any>global).beforeEach; },
+	get afterEach() { return (<any>global).afterEach; }
 };
 
 // key => Symbol("mocha-typescript:" + key)
@@ -91,6 +82,8 @@ export interface TestTrait {
 	(this: Mocha.ITestCallbackContext, ctx: Mocha.ITestCallbackContext, instance: SuiteProto, method: Function): void;
 }
 
+const noname = cb => cb;
+
 function applyDecorators(mocha: Mocha.IHookCallbackContext | Mocha.ISuiteCallbackContext, ctorOrProto, method, instance) {
 	const timeoutValue = method[timeoutSymbol];
 	if (typeof timeoutValue === "number") {
@@ -122,9 +115,7 @@ function applySuiteTraits(context: Mocha.ISuiteCallbackContext, target: SuiteCto
 	}
 }
 
-const noname = cb => cb;
-
-function makeTestFunction(target: SuiteCtor, context: TestFunctions) {
+function suiteClassCallback(target: SuiteCtor, context: TestFunctions) {
 	return function () {
 		applySuiteTraits(this, target);
 		applyDecorators(this, target, target, target);
@@ -247,141 +238,125 @@ function makeTestFunction(target: SuiteCtor, context: TestFunctions) {
 	}
 }
 
-function makeSuiteUI(type?: "skip" | "only" | "pending") {
-	return function suite() {
-		if (arguments.length === 0) {
-			return suite;
-		} else if (typeof arguments[0] === "function" && !arguments[0][isTraitSymbol]) {
-			const target: SuiteCtor = arguments[0];
-			let suiteFunc;
-
-			switch(type) {
-				case "pending":
-				case "skip":
-					suiteFunc = global.describe.skip;
-					break;
-				case "only":
-					suiteFunc = global.describe.only;
-					break;
-				default:
-					let shouldSkip = target[skipSymbol];
-					let shouldOnly = target[onlySymbol];
-					let shouldPending = target[pendingSumbol];
-
-					suiteFunc = (shouldSkip && global.describe.skip)
-						|| (shouldOnly && global.describe.only)
-						|| (shouldPending && global.describe.skip)
-						|| global.describe;
-					break;
-			}
-			suiteFunc(target.name, makeTestFunction(target, globalTestFunctions));
+function suiteOverload(overloads: {
+	suite(name: string, fn: Function): any;
+	suiteCtor(ctor: SuiteCtor): void;
+	suiteDecorator(... traits: SuiteTrait[]): ClassDecorator;
+	suiteDecoratorNamed(name: string, ... traits: SuiteTrait[]): ClassDecorator;
+}) {
+	return function() {
+		if (arguments.length == 2 && typeof arguments[0] === "string" && typeof arguments[1] === "function" && !arguments[1][isTraitSymbol]) {
+			return overloads.suite.apply(this, arguments);
+		} else if (arguments.length === 1 && typeof arguments[0] === "function" && !arguments[0][isTraitSymbol]) {
+			overloads.suiteCtor.apply(this, arguments);
+		} else if (arguments.length >= 1 && typeof arguments[0] === "string") {
+			return overloads.suiteDecoratorNamed.apply(this, arguments);
 		} else {
-			let decoratorName = undefined;
-			let traits: SuiteTrait[] = [];
-			if (typeof arguments[0] === "string") {
-				decoratorName = arguments[0];
-				for (let i = 1; i < arguments.length; i++) {
-					traits.push(arguments[i]);
-				}
-			} else {
-				for (let i = 0; i < arguments.length; i++) {
-					traits.push(arguments[i]);
-				}
-			}
-			return function(target: SuiteCtor) {
-				if (traits.length > 0) {
-					target[traitsSymbol] = traits;
-				}
-				let suiteFunc;
-				switch(type) {
-					case "pending":
-					case "skip":
-						suiteFunc = global.describe.skip;
-						break;
-					case "only":
-						suiteFunc = global.describe.only;
-						break;
-					default:
-						suiteFunc = global.describe;
-						break;
-				}
-				suiteFunc(decoratorName || target.name, makeTestFunction(target, globalTestFunctions));
-			}
+			return overloads.suiteDecorator.apply(this, arguments);
 		}
 	}
 }
-export const suite: Suite = Object.assign(makeSuiteUI(), {
-	skip: makeSuiteUI("skip"),
-	only: makeSuiteUI("only"),
-	pending: makeSuiteUI("pending")
-});
 
-export interface Test {
-	(name: string, ...traits: TestTrait[]): PropertyDecorator;
-	(...traits: TestTrait[]): PropertyDecorator;
-	(target: Object, propertyKey: string | symbol): void;
-	readonly skip: {
-		(name: string, ...traits: TestTrait[]): PropertyDecorator;
-		(...traits: TestTrait[]): PropertyDecorator;
-		(target: Object, propertyKey: string | symbol): void;
-	}
-	readonly only: {
-		(name: string, ...traits: TestTrait[]): PropertyDecorator;
-		(...traits: TestTrait[]): PropertyDecorator;
-		(target: Object, propertyKey: string | symbol): void;
-	}
-	readonly pending: {
-		(name: string, ...traits: TestTrait[]): PropertyDecorator;
-		(...traits: TestTrait[]): PropertyDecorator;
-		(target: Object, propertyKey: string | symbol): void;
-	}
+function makeSuiteFunction(suiteFunc: (ctor?: SuiteCtor) => Function, context: TestFunctions) {
+	return suiteOverload({
+		suite(name: string, fn: Function): any {
+			return suiteFunc()(name, fn);
+		},
+		suiteCtor(ctor: SuiteCtor): void {
+			suiteFunc(ctor)(ctor.name, suiteClassCallback(ctor, context));
+		},
+		suiteDecorator(... traits: SuiteTrait[]): ClassDecorator {
+			return function(ctor: SuiteCtor) {
+				ctor[traitsSymbol] = traits;
+				suiteFunc(ctor)(ctor.name, suiteClassCallback(ctor, context));
+			}
+		},
+		suiteDecoratorNamed(name: string, ... traits: SuiteTrait[]): ClassDecorator {
+			return function(ctor: SuiteCtor) {
+				ctor[traitsSymbol] = traits;
+				suiteFunc(ctor)(name, suiteClassCallback(ctor, context));
+			}
+		}
+	});
 }
 
-function makeTestUI(type?: "skip" | "only" | "pending") {
-	return function test() {
-		if (arguments.length === 0) {
-			return test;
-		} else if (typeof arguments[0] !== "string" && typeof arguments[0] !== "function") {
-			const target = arguments[0];
-			const property = arguments[1];
-			target[property][testNameSymbol] = property;
-			switch (type) {
-				case "skip": target[property][skipSymbol] = true; break;
-				case "only": target[property][onlySymbol] = true; break;
-				case "pending": target[property][pendingSumbol] = true; break;
-			}
+function suiteFuncCheckingDecorators(context: TestFunctions) {
+	return function(ctor?: SuiteCtor) {
+		if (ctor) {
+			let shouldSkip = ctor[skipSymbol];
+			let shouldOnly = ctor[onlySymbol];
+			let shouldPending = ctor[pendingSumbol];
+			return (shouldSkip && context.describe.skip)
+				|| (shouldOnly && context.describe.only)
+				|| (shouldPending && context.describe.skip)
+				|| context.describe;
 		} else {
-			let decoratorName = undefined;
-			let traits: TestTrait[] = [];
-			if (typeof arguments[0] === "string") {
-				decoratorName = arguments[0];
-				for (let i = 1; i < arguments.length; i++) {
-					traits.push(arguments[i]);
-				}
-			} else {
-				for (let i = 0; i < arguments.length; i++) {
-					traits.push(arguments[i]);
-				}
-			}
-			return (target: Object, property: string | symbol) => {
-				target[property][testNameSymbol] = decoratorName || property;
-				if (traits.length > 0) {
-					target[property][traitsSymbol] = traits;
-				}
-				switch (type) {
-					case "skip": target[property][skipSymbol] = true; break;
-					case "only": target[property][onlySymbol] = true; break;
-					case "pending": target[property][pendingSumbol] = true; break;
-				}
-			}
+			return context.describe;
 		}
 	}
 }
-export const test: Test = Object.assign(makeTestUI(), {
-	skip: makeTestUI("skip"),
-	only: makeTestUI("only"),
-	pending: makeTestUI("pending")
-});
+
+function makeSuiteObject(context: TestFunctions): Suite {
+	return Object.assign(makeSuiteFunction(suiteFuncCheckingDecorators(context), context), {
+		skip: makeSuiteFunction(() => context.describe.skip, context),
+		only: makeSuiteFunction(() => context.describe.only, context),
+		pending: makeSuiteFunction(() => context.describe.skip, context)
+	});
+}
+export const suite = makeSuiteObject(globalTestFunctions);
+
+function testOverload(overloads: {
+	test(name: string, fn: Function);
+	testProperty(target: Object, propertyKey: string | symbol, descriptor?: PropertyDescriptor): void;
+	testDecorator(... traits: TestTrait[]): PropertyDecorator & MethodDecorator;
+	testDecoratorNamed(name: string, ... traits: TestTrait[]): PropertyDecorator & MethodDecorator;
+}) {
+	return function() {
+		if (arguments.length == 2 && typeof arguments[0] === "string" && typeof arguments[1] === "function" && !arguments[1][isTraitSymbol]) {
+			return overloads.test.apply(this, arguments);
+		} else if (arguments.length >= 2 && typeof arguments[0] !== "string" && typeof arguments[0] !== "function") {
+			overloads.testProperty.apply(this, arguments);
+		} else if (arguments.length >= 1 && typeof arguments[0] === "string") {
+			return overloads.testDecoratorNamed.apply(this, arguments);
+		} else {
+			return overloads.testDecorator.apply(this, arguments);
+		}
+	}
+}
+
+function makeTestFunction(testFunc: () => Function, mark: null | string | symbol) {
+	return testOverload({
+		test(name: string, fn: Function) {
+			testFunc()(name, fn);
+		},
+		testProperty(target: Object, propertyKey: string | symbol, descriptor?: PropertyDescriptor): void {
+			target[propertyKey][testNameSymbol] = propertyKey ? propertyKey.toString() : "";
+			mark && (target[propertyKey][mark] = true);
+		},
+		testDecorator(... traits: TestTrait[]): PropertyDecorator & MethodDecorator {
+			return function(target: Object, propertyKey: string | symbol, descriptor?: PropertyDescriptor): void {
+				target[propertyKey][testNameSymbol] = propertyKey ? propertyKey.toString() : "";
+				target[propertyKey][traitsSymbol] = traits;
+				mark && (target[propertyKey][mark] = true);
+			}
+		},
+		testDecoratorNamed(name: string, ... traits: TestTrait[]): PropertyDecorator & MethodDecorator {
+			return function(target: Object, propertyKey: string | symbol, descriptor?: PropertyDescriptor): void {
+				target[propertyKey][testNameSymbol] = name;
+				target[propertyKey][traitsSymbol] = traits;
+				mark && (target[propertyKey][mark] = true);
+			}
+		}
+	});
+}
+function makeTestObject(context: TestFunctions): Test {
+	return Object.assign(makeTestFunction(() => context.it, null), {
+		skip: makeTestFunction(() => context.it.skip, skipSymbol),
+		only: makeTestFunction(() => context.it.only, onlySymbol),
+		pending: makeTestFunction(() => context.it.skip, pendingSumbol)
+	});
+}
+export const test = makeTestObject(globalTestFunctions);
 
 export function trait<T extends SuiteTrait | TestTrait>(arg: T): T {
 	arg[isTraitSymbol] = true;
@@ -466,7 +441,6 @@ export const skipOnError: SuiteTrait = trait(function(ctx, ctor) {
         }
     });
 });
-
 
 /**
  * Mart a test or suite as pending.
@@ -572,80 +546,14 @@ function tsdd(suite) {
 			context.retries(n);
 		};
 
-		// Processing decorators for mocha-typescript
-		function makeClassSuite(title: string, target: SuiteCtor) {
-			const shouldSkip = target[skipSymbol];
-			const shouldOnly = target[onlySymbol];
-			const shouldPending = target[pendingSumbol];
+		context.suite = makeSuiteObject(context);
+		context.test = makeTestObject(context);
 
-			const fn = makeTestFunction(target, context);
-
-			if (shouldOnly) {
-				return context.suite.only({ title, file, fn });
-			} else if (shouldSkip || shouldPending) {
-				return context.suite.skip({ title, file, fn });
-			} else {
-				return common.suite.create({ title, file, fn });
-			}
-		}
-
-		// tdd + mocha-typescript decorators
-		context.suite = function (arg1, arg2) {
-			if (typeof arg1 === "string" && arguments.length === 1) {
-				return function (target: SuiteCtor) {
-					makeClassSuite(arg1, target);
-				}
-			} else if (typeof arg1 === "function") {
-				return makeClassSuite(arg1.name, arg1);
-			} else {
-				let title = arg1;
-				let fn = arg2;
-				return common.suite.create({
-					title: title,
-					file: file,
-					fn: fn
-				});
-			}
-		};
-		context.suite.skip = function (title, fn) {
-			return common.suite.skip({
-				title: title,
-				file: file,
-				fn: fn
-			});
-		};
-		context.suite.only = function (title, fn) {
-			return common.suite.only({
-				title: title,
-				file: file,
-				fn: fn
-			});
-		};
-
-		context.test = function (arg1, arg2, arg3) {
-			if (typeof arg1 === "string" && arguments.length === 1) {
-				return exports.test(arg1);
-			} else if (typeof arg1 === "object" && (typeof arg2 === "string" || typeof arg2 === "symbol") && arguments.length >= 2) {
-				return exports.test(arg1, arg2);
-			} else {
-				let title = arg1;
-				let fn = arg2;
-				var suite = suites[0];
-				if (suite.isPending()) {
-					fn = null;
-				}
-				var test = new Test(title, fn);
-				test.file = file;
-				suite.addTest(test);
-				return test;
-			}
-		};
-		context.test.only = function (title, fn) {
-			return common.test.only(mocha, context.test(title, fn));
-		};
-
-		context.test.skip = common.test.skip;
 		context.test.retries = common.test.retries;
+
+		context.timeout = timeout;
+		context.slow = slow;
+		context.skipOnError = skipOnError;
 	});
 };
 module.exports = Object.assign(tsdd, exports);

@@ -12,6 +12,10 @@ import { suite, test, slow, timeout } from "mocha-typescript";
     - [Test UI](#test-ui)
     - [Watcher](#watcher)
     - [Thanks To](#thanks-to)
+ - [Setting Up](#setting-up)
+    - [Adding Mocha-TypeScript to Existing Project](#adding-mocha-typescript-to-existing-project)
+    - [Setting up New Project With Custom UI](#setting-up-new-project-with-custom-ui)
+    - [Setting Up Dev Test Watcher](#setting-up-dev-test-watcher)
  - [Test UI API](#test-ui-api)
     - [Declarative Suites and Tests](#declarative-suites-and-tests)
     - [Generated Suites and Tests](#generated-suites-and-tests)
@@ -22,11 +26,6 @@ import { suite, test, slow, timeout } from "mocha-typescript";
  - [Extending Test Behavior](#extending-test-behavior)
     - [Accessing the Mocha Context Within Class Methods](#accessing-the-mocha-context-within-class-methods)
     - [Skipping Tests In Suite After First Failure - skipOnError](#skipping-tests-in-suite-after-first-failure---skiponerror)
- - [Setting Up](#setting-up)
-    - [Adding Mocha-TypeScript to Existing Project](#adding-mocha-typescript-to-existing-project)
-    - [From Zero to Testing With Mocha TypeScript and Mocha-TypeScript](#from-zero-to-testing-with-mocha-typescript-and-mocha-typescript)
-    - [Setting Up Dev Test Watcher](#setting-up-dev-test-watcher)
-    - Setting Up as Custom UI
 
 # Summary
 ## Test UI
@@ -58,6 +57,123 @@ Please note, the built in mocha watcher should work with mocha-typescript UI and
 ## Thanks to
  - [Haringat](https://github.com/PanayotCankov/mocha-typescript/pull/6) for the async support in before and after methods.
  - [godart](https://github.com/PanayotCankov/mocha-typescript/pull/16) for taking the extra step to support non-default test file paths.
+
+# Setting Up
+## Adding Mocha-TypeScript to Existing Project
+If you allready have an npm package with mocha testing integrated just install `mocha-typescript`:
+``` bash
+npm i mocha-typescript --save-dev
+```
+Then require the mocha-typescript in your test files and you will be good to go:
+``` TypeScript
+import { suite, test, slow, timeout } from "mocha-typescript";
+@suite class Two {
+    @test method() {}
+}
+```
+
+## Setting up New Project With Custom UI
+Create a folder, `cd` in the folder, npm init, npm install:
+```
+npm init
+npm install mocha typescript mocha-typescript @types/mocha source-map-support --save-dev
+```
+Edit the package.json and set the `sripts` section to:
+```
+  "scripts": {
+    "test": "tsc && mocha",
+    "watch": "mocha-typescript-watch"
+  },
+```
+Add a `tsconfig.json` file with settings similar to:
+```
+{
+    "compilerOptions": {
+        "target": "es6",
+        "module": "commonjs",
+        "experimentalDecorators": true,
+        "lib": [ "es6" ]
+    }
+}
+```
+Create `tests` folder and add `tests/mocha.opts` file.
+```
+--ui mocha-typescript
+--require source-map-support/register
+test/tests.js
+```
+ - Sets the mocha-typescript as custom ui
+ - Optionally require the source-map-support/register to have typescript stack traces for Errors
+ - Optionally provide test files list, point to specific dist fodler, or skip this to use mocha's defaults
+Add your first test file `tests/tests.ts`:
+```
+/// <reference path="../node_modules/mocha-typescript/globals.d.ts" /> Reference mocha-typescript's global definitions
+
+@suite(timeout(3000), slow(1000))
+class Hello {
+    @test world() {
+    }
+}
+```
+From that point on, you could either:
+```
+npm test
+npm run watch
+```
+To run the tests once manually or run all tests.
+[Keep in mind you can use add `.only` to run a single test](#skipped-and-only-suite-and-tests).
+
+## Setting Up Dev Test Watcher
+There is a watcher script in the package, that runs `tsc -w` process and watches its output for successful compilation, upon compilation runs a `mocha` process.
+
+You will need a `tsconfig.json`, and at least `test.ts` mocha entrypoint.
+
+Install `mocha`, `typescript` and `mocha-typescript` as dev dependencies (required):
+```
+npm install mocha typescript mocha-typescript --save-dev
+```
+
+Add the following npm script to `package.json`:
+```json
+  "scripts": {
+    "dev-test-watch": "mocha-typescript-watch"
+  },
+```
+
+And run the typescript mocha watcher from the terminal using `npm run dev-test-watch`.
+
+You can use the watcher with plain `describe`, `it` functions. The decorator based interface is not required for use with the watcher.
+
+The `mocha-typescript-watch` script is designed as a command line tool.
+You can provide the arguments in the package.json's script.
+In case you are not using the default `test.js` file as entrypoint for mocha,
+you can list the test suite files as arguments to mocha-typescript-watch and they will be passed to mocha.
+For example:
+```json
+  "scripts": {
+    "dev-test-watch": "mocha-typescript-watch -p tsconfig.test.json -o mocha.opts dist/test1.js dist/test2.js"
+  },
+```
+
+For complete list with check `./node_modules/.bin/mocha-typescript-watch --help`: 
+```
+Options:
+  -p, --project  Path to tsconfig file or directory containing tsconfig, passed
+                 to `tsc -p <value>`.                    [string] [default: "."]
+  -t, --tsc      Path to executable tsc, by default points to typescript
+                 installed as dev dependency. Set to 'tsc' for global tsc
+                 installation.
+                         [string] [default: "./node_modules/typescript/bin/tsc"]
+  -o, --opts     Path to mocha.opts file containing additional mocha
+                 configuration.          [string] [default: "./test/mocha.opts"]
+  -m, --mocha    Path to executable mocha, by default points to mocha installed
+                 as dev dependency.
+                           [string] [default: "./node_modules/mocha/bin/_mocha"]
+  -g, --grep     Passed down to mocha: only run tests matching <pattern>[string]
+  -f, --fgrep    Passed down to mocha: only run tests containing <string>
+                                                                        [string]
+  -h, --help     Show help                                             [boolean]
+```
 
 # Test UI API
 Please note that the methods and decorators used below are introduced through importing from the `mocha-typescript` module:
@@ -189,120 +305,4 @@ class StockSequence {
     @test step3() { /* will be skipped */ }
     @test step4() { /* will be skipped */ }
 }
-```
-
-# Setting Up
-## Adding Mocha-TypeScript to Existing Project
-If you allready have an npm package with mocha testing integrated just install `mocha-typescript`:
-``` bash
-npm i mocha-typescript --save-dev
-```
-Then require the mocha-typescript in your test files and you will be good to go:
-``` TypeScript
-import { suite, test, slow, timeout } from "mocha-typescript";
-@suite class Two {
-    @test method() {}
-}
-```
-
-## From Zero to Testing With Mocha TypeScript and Mocha-TypeScript
-If you are starting a new package from zero and want to use mocha-typescript for testing, in the terminal run:
-``` bash
-mkdir my-npm-package
-cd my-npm-package
-
-npm init
-# then hit "enter" several times
-
-npm install mocha typescript mocha-typescript --save-dev
-```
-
-In the `package.json` add:
-``` json
-  "scripts": {
-    "test": "tsc -p . && mocha",
-    "prepublish": "tsc -p ."
-  },
-```
-Please note it may be better to use "prepare" for npm@4.0.0 and later instead of "prepublish".
-
-Create `tsconfig.json` file near the `package.json` like that:
-``` json
-{
-    "compilerOptions": {
-        "module": "commonjs",
-        "experimentalDecorators": true
-    }
-}
-```
-
-Add a `test.ts` file:
-``` TypeScript
-import { suite, test, slow, timeout } from "mocha-typescript";
-
-@suite class Hello {
-    @test "world"() { }
-}
-```
-
-Back to the terminal:
-``` bash
-npm test
-```
-
-Now you have tests for the code you are about to write.
-
-Mind adding `.npmignore` and `.gitignore` to keep `.ts` files in `git`,
-and `.js` and `.d.ts` files in `npm`.
-
-## Setting Up Dev Test Watcher
-There is a watcher script in the package, that runs `tsc -w` process and watches its output for successful compilation, upon compilation runs a `mocha` process.
-
-You will need a `tsconfig.json`, and at least `test.ts` mocha entrypoint.
-
-Install `mocha`, `typescript` and `mocha-typescript` as dev dependencies (required):
-```
-npm install mocha typescript mocha-typescript --save-dev
-```
-
-Add the following npm script to `package.json`:
-```json
-  "scripts": {
-    "dev-test-watch": "mocha-typescript-watch"
-  },
-```
-
-And run the typescript mocha watcher from the terminal using `npm run dev-test-watch`.
-
-You can use the watcher with plain `describe`, `it` functions. The decorator based interface is not required for use with the watcher.
-
-The `mocha-typescript-watch` script is designed as a command line tool.
-You can provide the arguments in the package.json's script.
-In case you are not using the default `test.js` file as entrypoint for mocha,
-you can list the test suite files as arguments to mocha-typescript-watch and they will be passed to mocha.
-For example:
-```json
-  "scripts": {
-    "dev-test-watch": "mocha-typescript-watch -p tsconfig.test.json -o mocha.opts dist/test1.js dist/test2.js"
-  },
-```
-
-For complete list with check `./node_modules/.bin/mocha-typescript-watch --help`: 
-```
-Options:
-  -p, --project  Path to tsconfig file or directory containing tsconfig, passed
-                 to `tsc -p <value>`.                    [string] [default: "."]
-  -t, --tsc      Path to executable tsc, by default points to typescript
-                 installed as dev dependency. Set to 'tsc' for global tsc
-                 installation.
-                         [string] [default: "./node_modules/typescript/bin/tsc"]
-  -o, --opts     Path to mocha.opts file containing additional mocha
-                 configuration.          [string] [default: "./test/mocha.opts"]
-  -m, --mocha    Path to executable mocha, by default points to mocha installed
-                 as dev dependency.
-                           [string] [default: "./node_modules/mocha/bin/_mocha"]
-  -g, --grep     Passed down to mocha: only run tests matching <pattern>[string]
-  -f, --fgrep    Passed down to mocha: only run tests containing <string>
-                                                                        [string]
-  -h, --help     Show help                                             [boolean]
 ```

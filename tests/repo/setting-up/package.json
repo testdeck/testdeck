@@ -1,0 +1,19 @@
+{
+  "name": "setting-up",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "tsc && mocha",
+    "watch": "mocha-typescript-watch"
+  },
+  "author": "",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@types/mocha": "^2.2.41",
+    "mocha": "^3.3.0",
+    "mocha-typescript": "^1.0.23",
+    "source-map-support": "^0.4.14",
+    "typescript": "^2.2.2"
+  }
+}

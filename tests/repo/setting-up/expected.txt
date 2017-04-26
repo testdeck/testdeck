@@ -1,0 +1,11 @@
+
+> setting-up@1.0.0 test
+> tsc && mocha
+
+
+
+  Hello
+    ✓ world
+
+
+  1 passing

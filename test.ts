@@ -127,6 +127,10 @@ class PackageTest {
         this.testPackage("custom-ui");
     }
 
+    @test "readme followed custom ui"() {
+        this.testPackage("setting-up");
+    }
+
     private testPackage(packageName: string): void {
         const cwd = path.resolve("tests/repo", packageName);
         let npmi = spawnSync("npm", ["i"], { cwd });

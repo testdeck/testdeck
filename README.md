@@ -107,7 +107,8 @@ test/tests.js
  - Optionally provide test files list, point to specific dist fodler, or skip this to use mocha's defaults
 Add your first test file `tests/tests.ts`:
 ```
-/// <reference path="../node_modules/mocha-typescript/globals.d.ts" /> Reference mocha-typescript's global definitions
+// Reference mocha-typescript's global definitions:
+/// <reference path="../node_modules/mocha-typescript/globals.d.ts" />
 
 @suite(timeout(3000), slow(1000))
 class Hello {

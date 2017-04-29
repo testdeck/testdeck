@@ -17,7 +17,7 @@ declare namespace MochaTypeScript {
         };
         before?: (done?: MochaDone) => void;
         after?: (done?: MochaDone) => void;
-        new();
+        new(): any;
     }
     export interface SuiteTrait {
         (this: Mocha.ISuiteCallbackContext, ctx: Mocha.ISuiteCallbackContext, ctor: Function): void;

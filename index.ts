@@ -430,12 +430,12 @@ export function timeout(time: number): MethodDecorator & PropertyDecorator & Cla
 }
 
 export const skipOnError: SuiteTrait = trait(function(ctx, ctor) {
-    beforeEach(function() {
+    ctx.beforeEach(function() {
         if (ctor.__skip_all) {
             this.skip();
         }
     });
-    afterEach(function() {
+    ctx.afterEach(function() {
         if (this.currentTest.state === "failed") {
             ctor.__skip_all = true;
         }

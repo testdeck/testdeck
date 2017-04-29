@@ -1,6 +1,12 @@
 declare namespace Mocha {
     export interface IContextDefinition {}
     export interface ITestDefinition {}
+    export interface ISuiteCallbackContext {}
+    export interface ITestCallbackContext {}
+}
+
+interface MochaDone {
+    (error?: any): any;
 }
 
 declare namespace MochaTypeScript {

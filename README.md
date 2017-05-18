@@ -204,10 +204,10 @@ class Suite {
 Mocha's simple interface is very flexible when test have to be dynamically generated.
 If tests for classes have to be generated dinamically here is an example:
 ``` TypeScript
-[{ title: "google", url: "www.google.com" },
- { title: "github", url: "www.github.com" }
-].forEach({title, url} => {
-    @class(`Http ${title}`) OAuthTests {
+[{ title: 'google', url: 'www.google.com' },
+ { title: 'github', url: 'www.github.com' }
+].forEach(({title, url}) => {
+    @suite(`Http ${title}`) class GeneratedTestClass {
         @test login() {}
         @test logout() {}
     }

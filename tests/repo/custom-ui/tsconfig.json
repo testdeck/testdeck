@@ -5,6 +5,9 @@
         "experimentalDecorators": true,
         "lib": [
             "es6"
-        ]
+        ],
+        "noImplicitAny": true,
+        "noImplicitReturns": true,
+        "noImplicitThis": true
     }
 }

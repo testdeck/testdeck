@@ -102,7 +102,7 @@ function assertOutput(actualStr, expectedStr) {
 
 // These integration tests are slow, you can uncommend the skip version below during development
 // @suite.skip(timeout(90000))
-@suite(timeout(90000))
+@suite(timeout(90000), slow(10000))
 class PackageTest {
 
     @test "can be consumed as module"() {

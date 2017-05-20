@@ -30,19 +30,19 @@
 
 @suite(timeout(10))
 class TimoutSuite {
-    @test fast(done) {
+    @test fast(done: MochaDone) {
         setTimeout(done, 5);
     }
-    @test slow(done) {
+    @test slow(done: MochaDone) {
         setTimeout(done, 20);
     }
 }
 
 @suite class TimeoutSuite2 {
-    @test(timeout(20)) fast(done) {
+    @test(timeout(20)) fast(done: MochaDone) {
         setTimeout(done, 5);
     }
-    @test(timeout(20)) slow(done) {
+    @test(timeout(20)) slow(done: MochaDone) {
         setTimeout(done, 20);
     }
 }

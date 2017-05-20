@@ -33,7 +33,10 @@
     ✓ two
     ✓ three
 
+  named
+    ✓ with name
 
-  8 passing
+
+  9 passing
   4 pending
   5 failing

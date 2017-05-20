@@ -1,5 +1,7 @@
 import { suite, test, slow, timeout, skip, only, trait, skipOnError } from "../../index";
 
+declare var describe, it;
+
 suite("vanila tdd suite", () => {
     test("vanila test", () => {});
     test("vanila failing test", () => { throw new Error("x") });
@@ -47,6 +49,7 @@ class StockSequence {
     @test step4() { /* should be skipped */ }
 }
 
+declare var beforeEach, afterEach;
 var customSkipOnError = trait(function(ctx, ctor) {
     beforeEach(function() {
         if (ctor.__skip_all) {

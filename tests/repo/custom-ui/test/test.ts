@@ -60,3 +60,10 @@ class SequenceTwo {
     @test two() {}
     @test three() {}
 }
+
+@suite("named")
+class NamedSuite {
+    @test("with name")
+    testMethod() {
+    }
+}

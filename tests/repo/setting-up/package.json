@@ -10,7 +10,6 @@
   "author": "",
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/mocha": "^2.2.41",
     "mocha": "^3.3.0",
     "mocha-typescript": "^1.0.23",
     "source-map-support": "^0.4.14",

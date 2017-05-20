@@ -3,27 +3,6 @@ import * as Suite from "mocha/lib/suite";
 import * as Test from "mocha/lib/test";
 import * as Common from "mocha/lib/interfaces/common";
 
-declare module "mocha" {
-	export namespace Mocha {
-		export interface IContextDefinition {
-			/**
-			 * Decorate a class to mark it as a test suite.
-			 */
-			(name: string): ClassDecorator;
-			/**
-			 * Decorate a class to mark it as a test suite. Also provide a custom name.
-			 */
-			<TFunction extends Function>(target: TFunction): TFunction | void;
-		}
-		export interface ITestDefinition {
-			/**
-			 * Decorate a suite class method as test.
-			 */
-			(target: Object, propertyKey: string | symbol, descriptor: PropertyDescriptor): void;
-		}
-	}
-}
-
 interface TestFunctions {
 	it: {
 		(name: string, fn: Function): void,
@@ -35,10 +14,10 @@ interface TestFunctions {
 		only(name: string, fn: Function): void;
 		skip(name: string, fn?: Function): void;
 	},
-	before: typeof before,
-	after: typeof after,
-	beforeEach: typeof beforeEach,
-	afterEach: typeof afterEach
+	before: any,
+	after: any,
+	beforeEach: any,
+	afterEach: any
 }
 
 const globalTestFunctions: TestFunctions = {
@@ -63,6 +42,10 @@ let traitsSymbol = nodeSymbol("traits");
 let isTraitSymbol = nodeSymbol("isTrait");
 let contextSymbol = nodeSymbol("context");
 let handled = nodeSymbol("handled");
+
+interface MochaDone {
+    (error?: any): any;
+}
 
 interface SuiteCtor {
 	prototype: SuiteProto;

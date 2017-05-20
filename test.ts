@@ -2,15 +2,10 @@ import { suite, test, slow, timeout, pending, only } from "./index";
 import { assert } from "chai";
 import { spawnSync } from "child_process";
 import * as path from "path";
+import * as rimraf from "rimraf";
 
 var chai = require("chai");
 var fs = require("fs");
-
-// @pending class One {
-//     @pending test1() {};
-//     @test test2() {};
-//     @only test3() {}
-// }
 
 function assertOutput(actualStr, expectedStr) {
     let actual: string[] = actualStr.split("\n");
@@ -105,38 +100,47 @@ function assertOutput(actualStr, expectedStr) {
     }
 }
 
+// These integration tests are slow, you can uncommend the skip version below during development
+// @suite.skip(timeout(90000))
 @suite(timeout(90000))
 class PackageTest {
-    static tgzPath;
-
-    @timeout(30000)
-    static before() {
-        let pack = spawnSync("npm", ["pack"]);
-        assert.equal(pack.stderr.toString(), "");
-        assert.equal(pack.status, 0, "npm pack failed.");
-        const lines = (<string>pack.stdout.toString()).split("\n").filter(line => !!line);
-        assert.isAtLeast(lines.length, 1, "Expected atleast one line of output from npm pack with the .tgz name.");
-        PackageTest.tgzPath = path.resolve(lines[lines.length - 1]);
-    }
 
     @test "can be consumed as module"() {
-        this.testPackage("module-usage");
+        this.testPackage("module-usage", false);
     }
 
     @test "can be consumed as custom ui"() {
-        this.testPackage("custom-ui");
+        this.testPackage("custom-ui", false);
     }
 
     @test "readme followed custom ui"() {
-        this.testPackage("setting-up");
+        this.testPackage("setting-up", false);
     }
 
-    private testPackage(packageName: string): void {
+    @test "can be consumed as module with @types/mocha"() {
+        this.testPackage("module-usage", true);
+    }
+
+    @test "can be consumed as custom ui with @types/mocha"() {
+        this.testPackage("custom-ui", true);
+    }
+
+    @test "readme followed custom ui with @types/mocha"() {
+        this.testPackage("setting-up", true);
+    }
+
+    private testPackage(packageName: string, installTypesMocha: boolean = false): void {
         const cwd = path.resolve("tests/repo", packageName);
+        rimraf.sync(path.join(cwd, "node_modules"));
+
         let npmi = spawnSync("npm", ["i"], { cwd });
-        assert.equal(npmi.status, 0, "'npm i' failed.");
-        let npmitgz = spawnSync("npm", ["i", PackageTest.tgzPath], { cwd });
+        assert.equal(npmi.status, 0, "'npm i <filepath>' failed.");
+        let npmitgz = spawnSync("npm", ["i", "../../../"], { cwd });
         assert.equal(npmitgz.status, 0, "'npm i <tgz>' failed.");
+        if (installTypesMocha) {
+            let npmiMochaTypes = spawnSync("npm", ["i", "@types/mocha"], { cwd });
+            assert.equal(npmiMochaTypes.status, 0, "'npm i @types/mocha' failed.");
+        }
         let npmtest = spawnSync("npm", ["test"], { cwd });
         let actual = npmtest.stdout.toString();
 

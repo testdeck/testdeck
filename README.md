@@ -2,9 +2,13 @@ Writing mocha tests with style - OOP style:
 ``` TypeScript
 import { suite, test, slow, timeout } from "mocha-typescript";
 @suite class Hello {
-    @test world() { }
+    @test world() {
+        assert.equal(1, 2, "Expected one to equal two.");
+    }
 }
 ```
+The test UI will reguster a suite with tests for the `@suite` and `@test` decorators.
+When the tests run, the class will be instantiated once for each `@test` method and the method will be called.
 
 [![Build Status](https://travis-ci.org/pana-cc/mocha-typescript.svg?branch=master)](https://travis-ci.org/pana-cc/mocha-typescript)
 

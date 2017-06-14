@@ -131,24 +131,32 @@ class PackageTest {
     }
 
     private testPackage(packageName: string, installTypesMocha: boolean = false): void {
-        const cwd = path.resolve("tests/repo", packageName);
-        rimraf.sync(path.join(cwd, "node_modules"));
+        let cwd;
+        let npmtest;
+        let actual;
+        try {
+            cwd = path.resolve("tests/repo", packageName);
+            rimraf.sync(path.join(cwd, "node_modules"));
 
-        let npmi = spawnSync("npm", ["i"], { cwd });
-        assert.equal(npmi.status, 0, "'npm i <filepath>' failed.");
-        let npmitgz = spawnSync("npm", ["i", "../../../"], { cwd });
-        assert.equal(npmitgz.status, 0, "'npm i <tgz>' failed.");
-        if (installTypesMocha) {
-            let npmiMochaTypes = spawnSync("npm", ["i", "@types/mocha"], { cwd });
-            assert.equal(npmiMochaTypes.status, 0, "'npm i @types/mocha' failed.");
+            let npmi = spawnSync("npm", ["i"], { cwd });
+            assert.equal(npmi.status, 0, "'npm i <filepath>' failed.");
+            let npmitgz = spawnSync("npm", ["i", "../../../"], { cwd });
+            assert.equal(npmitgz.status, 0, "'npm i <tgz>' failed.");
+            if (installTypesMocha) {
+                let npmiMochaTypes = spawnSync("npm", ["i", "@types/mocha"], { cwd });
+                assert.equal(npmiMochaTypes.status, 0, "'npm i @types/mocha' failed.");
+            }
+            npmtest = spawnSync("npm", ["test"], { cwd });
+            actual = npmtest.stdout.toString();
+
+            let expected = fs.readFileSync(cwd + "/expected.txt", "utf-8");
+            assertOutput(actual, expected);
+        } catch(e) {
+            try {
+                console.log("=====\n" + actual + "\n=====");
+                console.log(npmtest.stderr.toString());
+            } catch(ee) {}
+            throw e;
         }
-        let npmtest = spawnSync("npm", ["test"], { cwd });
-        let actual = npmtest.stdout.toString();
-
-        // console.log("=====\n" + actual + "\n=====");
-        // console.log(npmtest.stderr.toString());
-
-        let expected = fs.readFileSync(cwd + "/expected.txt", "utf-8");
-        assertOutput(actual, expected);
     }
 }

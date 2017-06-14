@@ -23,7 +23,8 @@ function assertOutput(actualStr, expectedStr) {
     }
 }
 
-@suite("typescript") @slow(5000) @timeout(15000) class SuiteTest {
+@suite("typescript", slow(5000), timeout(15000))
+class SuiteTest {
 
     @test("target v1 es5") es5() {
         this.run("es5", "test.suite");

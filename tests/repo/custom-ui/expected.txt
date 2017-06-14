@@ -36,7 +36,17 @@
   named
     ✓ with name
 
+  InstanceTests
+    ✓ test
+    6) testFailing
+    ✓ beforeAfterCalled
 
-  9 passing
+  InstanceTests
+    ✓ test
+    7) testFailing
+    ✓ beforeAfterCalled
+
+
+  13 passing
   4 pending
-  5 failing
+  7 failing

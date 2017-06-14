@@ -77,8 +77,18 @@
   custom suite name
     ✓ custom test name
 
+  InstanceTests
+    ✓ test
+    12) testFailing
+    ✓ beforeAfterCalled
 
-  20 passing
+  AsyncInstanceTests
+    ✓ test
+    13) testFailing
+    ✓ beforeAfterCalled
+
+
+  24 passing
   14 pending
-  11 failing
+  13 failing
 

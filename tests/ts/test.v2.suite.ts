@@ -1,4 +1,5 @@
 import { suite, test, slow, timeout, skip, only, trait, skipOnError } from "../../index";
+import { assert } from "chai";
 
 declare var describe, it;
 
@@ -159,4 +160,70 @@ class Pending3 {
 @suite("custom suite name")
 class Test {
     @test("custom test name") test() {}
+}
+
+@suite class InstanceTests {
+    static calls = [];
+    static beforeInstance;
+    before() {
+        InstanceTests.calls.push("before");
+        assert.isTrue(this instanceof InstanceTests);
+        InstanceTests.beforeInstance = this;
+    }
+    @test test() {
+        InstanceTests.calls.push("test");
+        assert.isTrue(this instanceof InstanceTests);
+        assert.equal(this, InstanceTests.beforeInstance);
+    }
+    after() {
+        InstanceTests.calls.push("after");
+        assert.isTrue(this instanceof InstanceTests);
+        assert.equal(this, InstanceTests.beforeInstance);
+    }
+    @test testFailing() {
+        InstanceTests.calls.push("testFailing");
+        assert.isTrue(false);
+    }
+    @test beforeAfterCalled() {
+        assert.deepEqual(InstanceTests.calls, ["before", "test", "after", "before", "testFailing", "after", "before"]);
+    }
+}
+
+function task(): Promise<void> {
+    return new Promise<void>(resolve => setTimeout(resolve, 1));
+}
+
+@suite class AsyncInstanceTests {
+    static calls = [];
+    static beforeInstance;
+    async before() {
+        AsyncInstanceTests.calls.push("before");
+        assert.isTrue(this instanceof AsyncInstanceTests);
+        AsyncInstanceTests.beforeInstance = this;
+        await task();
+    }
+    @test async test() {
+        AsyncInstanceTests.calls.push("test");
+        assert.isTrue(this instanceof AsyncInstanceTests);
+        assert.equal(this, AsyncInstanceTests.beforeInstance);
+    }
+    async after() {
+        await task();
+        AsyncInstanceTests.calls.push("after");
+        assert.isTrue(this instanceof AsyncInstanceTests);
+        assert.equal(this, AsyncInstanceTests.beforeInstance);
+        await task();
+    }
+    @test async testFailing() {
+        AsyncInstanceTests.calls.push("testFailing");
+        assert.isTrue(false);
+        await task();
+    }
+    @test async beforeAfterCalled() {
+        assert.deepEqual(AsyncInstanceTests.calls, ["before", "test", "after", "before", "testFailing", "after", "before"]);
+        await task();
+    }
+    toString() {
+        return "AsyncInstanceTests";
+    }
 }

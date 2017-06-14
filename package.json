@@ -30,7 +30,7 @@
     "chai": "^3.5.0",
     "mocha": "^3.2.0",
     "rimraf": "^2.6.1",
-    "source-map-support": "^0.4.14",
+    "source-map-support": "^0.4.15",
     "typescript": "^2.2.1"
   },
   "files": [

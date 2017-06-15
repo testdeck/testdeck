@@ -9,7 +9,7 @@
   "author": "",
   "license": "Apache-2.0",
   "devDependencies": {
-    "mocha": "^3.2.0",
+    "mocha": "*",
     "typescript": "*"
   }
 }

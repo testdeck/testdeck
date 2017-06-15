@@ -5,5 +5,5 @@ typings/
 *.tgz
 .DS_Store
 .idea/
-
+package-lock.json
 npm-debug.log

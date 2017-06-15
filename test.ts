@@ -106,6 +106,8 @@ class SuiteTest {
 @suite(timeout(90000), slow(10000))
 class PackageTest {
 
+    static tgzPath: string;
+
     @test "can be consumed as module"() {
         this.testPackage("module-usage", false);
     }
@@ -130,6 +132,16 @@ class PackageTest {
         this.testPackage("setting-up", true);
     }
 
+    @timeout(30000)
+    static before() {
+        let pack = spawnSync("npm", ["pack"]);
+        assert.equal(pack.stderr.toString(), "");
+        assert.equal(pack.status, 0, "npm pack failed.");
+        const lines = (<string>pack.stdout.toString()).split("\n").filter(line => !!line);
+        assert.isAtLeast(lines.length, 1, "Expected atleast one line of output from npm pack with the .tgz name.");
+        PackageTest.tgzPath = path.resolve(lines[lines.length - 1]);
+    }
+
     private testPackage(packageName: string, installTypesMocha: boolean = false): void {
         let cwd;
         let npmtest;
@@ -138,14 +150,19 @@ class PackageTest {
             cwd = path.resolve("tests/repo", packageName);
             rimraf.sync(path.join(cwd, "node_modules"));
 
-            let npmi = spawnSync("npm", ["i"], { cwd });
-            assert.equal(npmi.status, 0, "'npm i <filepath>' failed.");
-            let npmitgz = spawnSync("npm", ["i", "../../../"], { cwd });
-            assert.equal(npmitgz.status, 0, "'npm i <tgz>' failed.");
+            let npmi = spawnSync("npm", ["i", "--no-package-lock"], { cwd });
+            assert.equal(npmi.status, 0, "'npm i' failed.");
+
+            let args: string[];
             if (installTypesMocha) {
-                let npmiMochaTypes = spawnSync("npm", ["i", "@types/mocha"], { cwd });
-                assert.equal(npmiMochaTypes.status, 0, "'npm i @types/mocha' failed.");
+                args = ["i", PackageTest.tgzPath, "@types/mocha", "--no-save", "--no-package-lock"];
+            } else {
+                args = ["i", PackageTest.tgzPath, "--no-save", "--no-package-lock"];
             }
+
+            let npmitgz = spawnSync("npm", args, { cwd });
+            assert.equal(npmitgz.status, 0, "'npm i <tgz>' failed.");
+
             npmtest = spawnSync("npm", ["test"], { cwd });
             actual = npmtest.stdout.toString();
 

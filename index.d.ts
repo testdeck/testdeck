@@ -34,19 +34,24 @@ declare namespace MochaTypeScript {
     }
 
     export interface IContextDefinition {
-        (target: MochaTypeScript.Suite): any;
+        /**
+         * This is either a single trait overload `(trait: MochaTypeScript.SuiteTrait): ClassDecorator`
+         * or a class decorator overload `(target: Function): void`.
+         * Can't figure out proper typing.
+         */
+        (args: any): any;
         (): ClassDecorator;
         (name: string): ClassDecorator;
         (name: string, ... traits: MochaTypeScript.SuiteTrait[]): ClassDecorator;
-        (... traits:MochaTypeScript.SuiteTrait[]): ClassDecorator;
+        (trait: MochaTypeScript.SuiteTrait, ... traits:MochaTypeScript.SuiteTrait[]): ClassDecorator;
 
-        only(target: MochaTypeScript.Suite): any;
+        only(arg: any): any;
         only(): ClassDecorator;
         only(name: string): ClassDecorator;
         only(name: string, ... traits: MochaTypeScript.SuiteTrait[]): ClassDecorator;
         only(... traits:MochaTypeScript.SuiteTrait[]): ClassDecorator;
 
-        skip(target: MochaTypeScript.Suite): any;
+        skip(arg: any): any;
         skip(): ClassDecorator;
         skip(name: string): ClassDecorator;
         skip(name: string, ... traits: MochaTypeScript.SuiteTrait[]): ClassDecorator;

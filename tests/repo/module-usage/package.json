@@ -10,6 +10,6 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "mocha": "*",
-    "typescript": "*"
+    "typescript": "^2.4.0"
   }
 }

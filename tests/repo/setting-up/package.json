@@ -12,6 +12,6 @@
   "devDependencies": {
     "mocha": "*",
     "source-map-support": "^0.4.14",
-    "typescript": "*"
+    "typescript": "^2.4.0"
   }
 }

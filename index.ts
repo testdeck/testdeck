@@ -249,15 +249,15 @@ function makeSuiteFunction(suiteFunc: (ctor?: SuiteCtor) => Function, context: T
 			suiteFunc(ctor)(ctor.name, suiteClassCallback(ctor, context));
 		},
 		suiteDecorator(... traits: SuiteTrait[]): ClassDecorator {
-			return function(ctor: SuiteCtor) {
+			return function<TFunction extends Function>(ctor: TFunction): void {
 				ctor[traitsSymbol] = traits;
-				suiteFunc(ctor)(ctor.name, suiteClassCallback(ctor, context));
+				suiteFunc(<any>ctor)(ctor.name, suiteClassCallback(<any>ctor, context));
 			}
 		},
 		suiteDecoratorNamed(name: string, ... traits: SuiteTrait[]): ClassDecorator {
-			return function(ctor: SuiteCtor) {
+			return function<TFunction extends Function>(ctor: TFunction): void {
 				ctor[traitsSymbol] = traits;
-				suiteFunc(ctor)(name, suiteClassCallback(ctor, context));
+				suiteFunc(<any>ctor)(name, suiteClassCallback(<any>ctor, context));
 			}
 		}
 	});

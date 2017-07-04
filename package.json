@@ -31,7 +31,7 @@
     "mocha": "^3.2.0",
     "rimraf": "^2.6.1",
     "source-map-support": "^0.4.15",
-    "typescript": "^2.4.0"
+    "typescript": "^2.4.1"
   },
   "files": [
     "index.js",

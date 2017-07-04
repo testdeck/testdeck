@@ -19,6 +19,8 @@ When the tests run, the class will be instantiated once for each `@test` method 
  - [Setting Up](#setting-up)
     - [Adding Mocha-TypeScript to Existing Project](#adding-mocha-typescript-to-existing-project)
     - [Setting up New Project With Custom UI](#setting-up-new-project-with-custom-ui)
+       - [mocha-typescript-seed](#mocha-typescript-seed)
+       - [Manual Steps](#manual-steps)
     - [Setting Up Dev Test Watcher](#setting-up-dev-test-watcher)
  - [Test UI API](#test-ui-api)
     - [Declarative Suites and Tests](#declarative-suites-and-tests)
@@ -77,39 +79,61 @@ import { suite, test, slow, timeout } from "mocha-typescript";
 ```
 
 ## Setting up New Project With Custom UI
+### mocha-typescript-seed
+[Fork the mocha-typescript-seed repo](https://github.com/pana-cc/mocha-typescript-seed), or clone it:
+```
+git clone https://github.com/pana-cc/mocha-typescript-seed.git
+```
+
+Don't forget to edit the package.json, and check the license.
+
+From that point on, you could:
+```
+npm i
+npm test
+npm run watch
+```
+
+### Manual Steps
 Create a folder, `cd` in the folder, npm init, npm install:
 ```
 npm init
-npm install mocha typescript mocha-typescript @types/mocha source-map-support --save-dev
+npm install mocha typescript mocha-typescript @types/mocha chai @types/chai source-map-support nyc --save-dev
 ```
 Edit the package.json and set the `sripts` section to:
 ```
   "scripts": {
-    "test": "tsc && mocha",
-    "watch": "mocha-typescript-watch"
+    "pretest": "tsc",
+    "test": "nyc mocha",
+    "watch": "mocha-typescript-watch",
+    "prepare": "tsc"
   },
 ```
+You may omit the `nyc` tool and have `"test": "mocha"` instead,
+`nic` is the instanbul code coverage reporting tool.
+
 Add a `tsconfig.json` file with settings similar to:
 ```
 {
     "compilerOptions": {
         "target": "es6",
         "module": "commonjs",
+        "sourceMap": true,
         "experimentalDecorators": true,
         "lib": [ "es6" ]
     }
 }
 ```
-Create `tests` folder and add `tests/mocha.opts` file.
+Create `test` folder and add `test/mocha.opts` file.
 ```
 --ui mocha-typescript
 --require source-map-support/register
-test/tests.js
+test/test.js
 ```
  - Sets the mocha-typescript as custom ui
  - Optionally require the source-map-support/register to have typescript stack traces for Errors
  - Optionally provide test files list, point to specific dist fodler, or skip this to use mocha's defaults
-Add your first test file `tests/tests.ts`:
+Add your first test file `test/test.ts`:
 ```
 // Reference mocha-typescript's global definitions:
 /// <reference path="../node_modules/mocha-typescript/globals.d.ts" />

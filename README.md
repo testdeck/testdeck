@@ -7,7 +7,7 @@ import { suite, test, slow, timeout } from "mocha-typescript";
     }
 }
 ```
-The test UI will reguster a suite with tests for the `@suite` and `@test` decorators.
+The test UI will register a suite with tests for the `@suite` and `@test` decorators.
 When the tests run, the class will be instantiated once for each `@test` method and the method will be called.
 
 [![Build Status](https://travis-ci.org/pana-cc/mocha-typescript.svg?branch=master)](https://travis-ci.org/pana-cc/mocha-typescript)
@@ -49,7 +49,7 @@ suite("one", () => {
 
 ## Watcher
 The `mocha-typescript` comes with a watcher script that runs the TypeScript compiler in watch mode,
-and upon successful compilations runs the mocha tests, concatinating the output of both. This in combination with the support for "only":
+and upon successful compilations runs the mocha tests, concatenating the output of both. This in combination with the support for "only":
 ``` TypeScript
 @suite class One {
     @test.only method1() {}
@@ -66,7 +66,7 @@ Please note, the built in mocha watcher should work with mocha-typescript UI and
 
 # Setting Up
 ## Adding Mocha-TypeScript to Existing Project
-If you allready have an npm package with mocha testing integrated just install `mocha-typescript`:
+If you already have an npm package with mocha testing integrated just install `mocha-typescript`:
 ``` bash
 npm i mocha-typescript --save-dev
 ```
@@ -100,7 +100,7 @@ Create a folder, `cd` in the folder, npm init, npm install:
 npm init
 npm install mocha typescript mocha-typescript @types/mocha chai @types/chai source-map-support nyc --save-dev
 ```
-Edit the package.json and set the `sripts` section to:
+Edit the package.json and set the `scripts` section to:
 ```
   "scripts": {
     "pretest": "tsc",
@@ -110,7 +110,7 @@ Edit the package.json and set the `sripts` section to:
   },
 ```
 You may omit the `nyc` tool and have `"test": "mocha"` instead,
-`nic` is the instanbul code coverage reporting tool.
+`nyc` is the instanbul code coverage reporting tool.
 
 Add a `tsconfig.json` file with settings similar to:
 ```
@@ -229,8 +229,8 @@ class Suite {
 ```
 
 ## Generated Suites and Tests
-Mocha's simple interface is very flexible when test have to be dynamically generated.
-If tests for classes have to be generated dinamically here is an example:
+Mocha's simple interface is very flexible when tests have to be dynamically generated.
+If tests for classes have to be generated dynamically here is an example:
 ``` TypeScript
 [{ title: 'google', url: 'www.google.com' },
  { title: 'github', url: 'www.github.com' }
@@ -245,7 +245,7 @@ If tests for classes have to be generated dinamically here is an example:
 ## Before and After Actions
 By default, before and after test actions are implemented with instance and static before and after methods.
 The static before and after methods are invoked before the suite and after the suite,
-the instance before and after methods are infvoked before and after each test method.
+the instance before and after methods are invoked before and after each test method.
 ``` TypeScript
 @suite class Suite {
     static before() { /* 1 */ }

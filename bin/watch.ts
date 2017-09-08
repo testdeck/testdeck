@@ -112,6 +112,12 @@ function compilationComplete() {
             process.stdout.write(chunk);
         }
     });
+    mochap.stderr.on("data", chunk => {
+        // Ensure old processes won't interfere tsc, .pipe here may be good enough.
+        if (source === mochap) {
+            process.stderr.write(chunk);
+        }
+    });
 }
 
 var tscp = spawn("node", [argv.tsc, "-p", argv.project, "-w"]);

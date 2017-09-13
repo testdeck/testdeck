@@ -47,7 +47,7 @@ suite("one", () => {
 }
 ```
 Similarly you can use describe/it:
-```
+``` TypeScript
 import { suite, test, slow, timeout } from "mocha-typescript";
 describe("one", () => {
     it("test", () => {});
@@ -57,7 +57,7 @@ describe("one", () => {
 }
 ```
 Or even mix the two approaches to get nested suites:
-```
+``` TypeScript
 import { suite, test, slow, timeout } from "mocha-typescript";
 describe("suite one", () => {
     it("test one", () => {});

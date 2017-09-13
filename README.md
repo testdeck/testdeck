@@ -46,7 +46,26 @@ suite("one", () => {
     @test method() {}
 }
 ```
-
+Similarly you can use describe/it:
+```
+import { suite, test, slow, timeout } from "mocha-typescript";
+describe("one", () => {
+    it("test", () => {});
+});
+@suite class Two {
+    @test method() {}
+}
+```
+Or even mix the two approaches to get nested suites:
+```
+import { suite, test, slow, timeout } from "mocha-typescript";
+describe("suite one", () => {
+    it("test one", () => {});
+    @suite class TestTwo {
+        @test method() {}
+    }
+});
+```
 ## Watcher
 The `mocha-typescript` comes with a watcher script that runs the TypeScript compiler in watch mode,
 and upon successful compilations runs the mocha tests, concatenating the output of both. This in combination with the support for "only":

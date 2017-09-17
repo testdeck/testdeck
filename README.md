@@ -22,6 +22,8 @@ When the tests run, the class will be instantiated once for each `@test` method 
        - [mocha-typescript-seed](#mocha-typescript-seed)
        - [Manual Steps](#manual-steps)
     - [Setting Up Dev Test Watcher](#setting-up-dev-test-watcher)
+ - [IDEs](#ides)
+    - [WebStorm](#webstorm)
  - [Test UI API](#test-ui-api)
     - [Declarative Suites and Tests](#declarative-suites-and-tests)
     - [Generated Suites and Tests](#generated-suites-and-tests)
@@ -222,6 +224,30 @@ Options:
                                                                         [string]
   -h, --help     Show help                                             [boolean]
 ```
+# IDEs
+## WebStorm
+![WebStorm](docs/assets/WebStorm.png)
+
+JetBrain's stellar WebStorm now (since [WebStorm 2017.3 EAP](https://confluence.jetbrains.com/display/WI/WebStorm+EAP)) supports the mocha-typescript mocha UI. Featuring:
+ - Test Explorer - Detects tests in the TypeScript using static analysis.
+ - Test Runner - WebStorm has a Mocha test runner that can be configured to also do a TypeScript compilation before test run.
+ - Code Editor Integration - In the TypeScript code editor, tests are prefixed with an icon, that lets you:
+    - Run a specific test or suite
+    - Debug a specific test or suite
+
+The [mocha-typescript-seed](https://github.com/pana-cc/mocha-typescript-seed) has been preconfigured (see the .idea folder in the repo) with `UnitTests` task that will run all mocha tests with the mocha-typescript UI. The UnitTests is configured to run mocha, with TypeScript compilation before launch, use the mocha-typescript mocha UI, as well as include tests in the test folder recursively.
+
+### Tricky
+The WebStorm has its own way to define tasks so the configuration for the project is duplicated at few places. Here are some side-effects it would be good for you to be aware of.
+
+Should running/debugging a single test/unit from the TypeScript code editor fail due missing ts-node, consider installing `npm i ts-node --save-dev` to your repo. WebStorm is using ts-node to transpile the file you are testing. This may omit proper type checking or using settings in your tsconfg, but that would rarely be an issue.
+
+Should running/debugging a single test/unit run the test twice, that's because WebStorm provides the file you are editing to mocha as .ts file, but mocha also reads the test/mocha.opts where additional files may be specified. You can either:
+ - Nevermind running the test twice
+ - Edit the automatically generated single test config from the top tasks menu in WebStorm and change the file extension it points to from .ts to .js, this will use the JavaScript files produced by the TypeScript compilation of your project. But you will have to change the extension by hand each time you debug or run a single test.
+ - Change the test/mocha.opts file so it won't reference any files (e.g. delete the `--recursive test` from it). In that case you may need to fix the package.json build scripts.
+
+At few occasions when misxing BDD and the mocha-typescript decorators based UI, trying to run a single BDD test would cause WebStorm to generate a mocha task that would run using BDD ui, instead of mocha-typescript. In these cases the tests may fail as there is no `suite` or `test` functions defined in the BDD UI. To fix this you may edit the default Mocha task, and configure it to use mocha-typescript UI explicitly. From that point on, when you try to run a single test, event BDD one, WebStorm will create Mocha tasks that will use the mocha-typescript UI. 
 
 # Test UI API
 Please note that the methods and decorators used below are introduced through importing from the `mocha-typescript` module:

@@ -35,6 +35,7 @@ let nodeSymbol = key => "__mts_" + key;
 let testNameSymbol = nodeSymbol("test");
 let slowSymbol = nodeSymbol("slow");
 let timeoutSymbol = nodeSymbol("timout");
+let retriesSymbol = nodeSymbol("retries");
 let onlySymbol = nodeSymbol("only");
 let pendingSumbol = nodeSymbol("pending");
 let skipSymbol = nodeSymbol("skip");
@@ -74,7 +75,11 @@ function applyDecorators(mocha: Mocha.IHookCallbackContext | Mocha.ISuiteCallbac
 	}
 	const slowValue = method[slowSymbol];
 	if (typeof slowValue === "number") {
-		(<Mocha.ISuiteCallbackContext>mocha).slow(slowValue);
+		mocha.slow(slowValue);
+	}
+	const retriesValue = method[retriesSymbol];
+	if (typeof retriesValue === "number") {
+		mocha.retries(retriesValue);
 	}
 	const contextProperty = ctorOrProto[contextSymbol];
 	if (contextProperty) {
@@ -407,6 +412,39 @@ export function timeout(time: number): MethodDecorator & PropertyDecorator & Cla
 				const prop = arguments[1];
 				const descriptor = arguments[2];
 				proto[prop][timeoutSymbol] = time;
+			}
+		}
+	});
+}
+
+/**
+ * Set a test method or site retries count.
+ * @param count The number of retries to attempt when running the test.
+ */
+export function retries(count: number): MethodDecorator & PropertyDecorator & ClassDecorator & SuiteTrait & TestTrait {
+	return trait(function() {
+		if (arguments.length === 1) {
+			const target = arguments[0];
+			target[retriesSymbol] = count;
+		} else if (arguments.length === 2 && typeof arguments[1] === "string" || typeof arguments[1] === "symbol") {
+			const target = arguments[0];
+			const property = arguments[1];
+			target[property][retriesSymbol] = count;
+		} else if (arguments.length === 2) {
+			const context: Mocha.ISuiteCallbackContext = arguments[0];
+			const ctor = arguments[1];
+			context.retries(count);
+		} else if (arguments.length === 3) {
+			if (typeof arguments[2] === "function") {
+				const context: Mocha.ITestCallbackContext = arguments[0];
+				const instance = arguments[1];
+				const method = arguments[2];
+				context.retries(count);
+			} else if (typeof arguments[1] === "string" || typeof arguments[1] === "symbol") {
+				const proto: Mocha.ITestCallbackContext = arguments[0];
+				const prop = arguments[1];
+				const descriptor = arguments[2];
+				proto[prop][retriesSymbol] = count;
 			}
 		}
 	});

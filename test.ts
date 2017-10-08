@@ -74,6 +74,14 @@ class SuiteTest {
         this.run("es6", "pending.suite");
     }
 
+    @test "retries suite es5"() {
+        this.run("es5", "retries.suite");
+    }
+
+    @test "retries suite es6"() {
+        this.run("es6", "retries.suite");
+    }
+
     @test "context suite es6"() {
         this.run("es6", "context.suite");
     }

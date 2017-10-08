@@ -1,0 +1,15 @@
+
+
+  FlakyMethodDecorator
+    1) tryOnce
+    ✓ tryTwice
+    ✓ tryTrice
+
+  FlakySuiteDecorator
+    ✓ tryToGetPass2
+    2) tryToGetPass4
+    ✓ overrideSuiteRetries
+
+
+  4 passing
+  2 failing

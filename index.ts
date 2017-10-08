@@ -574,6 +574,7 @@ function tsdd(suite) {
 
 		context.timeout = timeout;
 		context.slow = slow;
+		context.retries = retries;
 		context.skipOnError = skipOnError;
 	});
 };

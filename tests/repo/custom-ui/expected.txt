@@ -46,7 +46,17 @@
     7) testFailing
     ✓ beforeAfterCalled
 
+  FlakyMethodDecorator
+    8) tryOnce
+    ✓ tryTwice
+    ✓ tryTrice
 
-  13 passing
+  FlakySuiteDecorator
+    ✓ tryToGetPass2
+    9) tryToGetPass4
+    ✓ overrideSuiteRetries
+
+
+  17 passing
   4 pending
-  7 failing
+  9 failing

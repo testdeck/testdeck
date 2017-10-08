@@ -84,6 +84,7 @@ declare module "mocha-typescript" {
 
     export function slow(time: number): PropertyDecorator & ClassDecorator & MochaTypeScript.SuiteTrait & MochaTypeScript.TestTrait;
     export function timeout(time: number): PropertyDecorator & ClassDecorator & MochaTypeScript.SuiteTrait & MochaTypeScript.TestTrait;
+    export function retries(count: number): PropertyDecorator & ClassDecorator & MochaTypeScript.SuiteTrait & MochaTypeScript.TestTrait;
 
     export function pending<TFunction extends Function>(target: Object | TFunction, propertyKey?: string | symbol): void;
     export function only<TFunction extends Function>(target: Object, propertyKey?: string | symbol): void;

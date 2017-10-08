@@ -31,6 +31,7 @@ When the tests run, the class will be instantiated once for each `@test` method 
     - [Async Tests, Before and After Actions](#async-tests-before-and-after-actions)
     - [Skipped and Only Suite and Tests](#skipped-and-only-suite-and-tests)
     - [Timing - Timeout, Slow](#timing---timeout-slow)
+    - [Retries](#retries)
  - [Extending Test Behavior](#extending-test-behavior)
     - [Accessing the Mocha Context Within Class Methods](#accessing-the-mocha-context-within-class-methods)
     - [Skipping Tests In Suite After First Failure - skipOnError](#skipping-tests-in-suite-after-first-failure---skiponerror)
@@ -351,6 +352,23 @@ class Suite {
 The `slow` and `timeout` traits were initially working as decorators (e.g. `@suite @timeout(200) class Test {}`),
 but this behavior may be dropped in future major versions as it generates too much decorators that clutter the syntax.
 They are still useful though for setting timeouts on before and after methods (e.g. `@suite class Test { @timeout(100) before() { /* ... */ }}`).
+
+## Retries
+I would not recomend retrying failed tests multiple times to ensure green light but I also wouldn't judge, here it goes mocha-typescript retries:
+``` TypeScript
+@suite(retries(2))
+class Suite {
+    static tries1 = 0;
+    static tries2 = 0;
+    @test first() {
+        assert.isAbove(Suite.tries1++, 2);
+    }
+    @test(retries(5)) second() {
+        assert.isAbove(Suite.tries1++, 3);
+    }
+}
+```
+The retries can also be used as a decorator similar to `timeout` and `slow` - `@test @retries(3) testMethod() {}`.
 
 # Extending Test Behavior
 ## Accessing the Mocha Context Within Class Methods

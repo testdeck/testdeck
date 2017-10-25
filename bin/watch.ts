@@ -6,8 +6,7 @@ import * as child_process from "child_process";
 import * as readline from "readline";
 import * as chalk from "chalk";
 import * as yargs from "yargs";
-
-var spawn = child_process.spawn;
+import { spawn } from "cross-spawn"
 
 var argv = yargs
     .options({

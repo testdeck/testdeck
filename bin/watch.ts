@@ -34,7 +34,7 @@ var argv = yargs
         "m": {
             alias: "mocha",
             demand: false,
-            default: "./node_modules/mocha/bin/mocha",
+            default: "./node_modules/mocha/bin/_mocha",
             describe: "Path to executable mocha, by default points to mocha installed as dev dependency.",
             type: "string"
         },
@@ -94,7 +94,7 @@ function compilationComplete() {
         mocha_options.push("-f");
         mocha_options.push(argv.f);
     }
-    mochap = spawn(argv.mocha, mocha_options);
+    mochap = spawn("node", [argv.mocha].concat(mocha_options));
     let source = mochap;
     mochap.on("close", code => {
         if (source === mochap) {
@@ -119,7 +119,7 @@ function compilationComplete() {
     });
 }
 
-var tscp = spawn(argv.tsc, ["-p", argv.project, "-w"]);
+var tscp = spawn("node", [argv.tsc, "-p", argv.project, "-w"]);
 var tscl = readline.createInterface({ input: tscp.stdout });
 tscl.on("line", line => {
     if (line.indexOf("Compilation complete.") >= 0) {

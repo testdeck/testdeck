@@ -75,7 +75,7 @@ and upon successful compilations runs the mocha tests, concatenating the output 
 ``` TypeScript
 @suite class One {
     @test.only method1() {}
-    @test mothod2() {}
+    @test method2() {}
 }
 ```
 Allows for rapid development of both new functionality and unit tests.

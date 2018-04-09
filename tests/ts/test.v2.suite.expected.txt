@@ -1,5 +1,4 @@
 
-
   vanila tdd suite
     ✓ vanila test
     1) vanila failing test
@@ -45,7 +44,7 @@
 
   Slows
     ✓ pass1
-    ✓ pass2 (
+    ✓ pass2
     ✓ pass3
 
   mocha typescript
@@ -56,8 +55,8 @@
     - test skip
     10) test intentinally timeout
     11) test intentinall fail due error before timeout
-    ✓ test won't timeout but will be redish slow (
-    ✓ test won't timeout but will be yellowish slow (
+    ✓ test won't timeout but will be redish slow
+    ✓ test won't timeout but will be yellowish slow
 
   Skipped1
     - test
@@ -87,8 +86,58 @@
     13) testFailing
     ✓ beforeAfterCalled
 
-
   24 passing
   14 pending
   13 failing
 
+  1) vanila tdd suite
+       vanila failing test:
+     Error: x
+
+  2) vanila bdd suite
+       vanila failing test:
+     Error: x
+
+  3) Timeouts
+       pass2:
+     Error: Timeout of 10ms exceeded. For async tests and hooks, ensure "done()" is called; if returning a Promise, ensure it resolves.
+
+  4) InlineTrait
+       timeout:
+     Error: Timeout of 10ms exceeded. For async tests and hooks, ensure "done()" is called; if returning a Promise, ensure it resolves.
+
+  5) StockSequence
+       step2:
+     Error: Failed
+
+  6) CustomSequence
+       step2:
+     Error: Failed
+
+  7) name and trait
+       step2:
+     Error: Failed
+
+  8) mocha typescript
+       test fail:
+     Error: Fail intentionally!
+
+  9) mocha typescript
+       test fail 2:
+     Error: Fail intentionally!
+
+  10) mocha typescript
+       test intentinally timeout:
+     Error: Timeout of 5ms exceeded. For async tests and hooks, ensure "done()" is called; if returning a Promise, ensure it resolves.
+
+  11) mocha typescript
+       test intentinall fail due error before timeout:
+     Error: done() invoked with non-Error: Ooopsss...
+
+  12) InstanceTests
+       testFailing:
+     AssertionError: expected false to be true
+
+  13) AsyncInstanceTests
+       testFailing:
+     AssertionError: expected false to be true

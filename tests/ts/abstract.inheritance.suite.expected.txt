@@ -1,0 +1,6 @@
+
+  ConcreteTest
+    ✓ test from ConcreteTest
+    ✓ inherited test from AbstractTestBase
+
+  2 passing

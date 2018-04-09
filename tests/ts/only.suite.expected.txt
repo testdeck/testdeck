@@ -1,7 +1,5 @@
 
-
   Suite1
     ✓ test1
-
 
   1 passing

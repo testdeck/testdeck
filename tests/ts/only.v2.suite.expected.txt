@@ -1,5 +1,4 @@
 
-
   Suite1
     ✓ test
 
@@ -11,6 +10,5 @@
 
   Suite4
     ✓ test
-
 
   4 passing

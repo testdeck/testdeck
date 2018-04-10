@@ -74,12 +74,12 @@ function applyDecorators(mocha: Mocha.IHookCallbackContext | Mocha.ISuiteCallbac
 		mocha.timeout(timeoutValue);
 	}
 	const slowValue = method[slowSymbol];
-	if (typeof slowValue === "number") {
-		mocha.slow(slowValue);
+	if (mocha['slow'] && typeof slowValue === "number") {
+		mocha['slow'](slowValue);
 	}
 	const retriesValue = method[retriesSymbol];
-	if (typeof retriesValue === "number") {
-		mocha.retries(retriesValue);
+	if (mocha['retries'] && typeof retriesValue === "number") {
+		mocha['retries'](retriesValue);
 	}
 	const contextProperty = ctorOrProto[contextSymbol];
 	if (contextProperty) {

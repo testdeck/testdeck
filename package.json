@@ -25,6 +25,7 @@
   },
   "devDependencies": {
     "@types/chai": "^3.4.35",
+    "@types/mocha": "^5.0.0",
     "@types/node": "^7.0.12",
     "assert": "^1.3.0",
     "better-assert": "^1.0.2",

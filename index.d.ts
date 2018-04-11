@@ -1,19 +1,10 @@
 declare namespace Mocha {
-    export interface IContextDefinition {}
-    export interface ITestDefinition {}
-    export interface ISuiteCallbackContext {}
-    export interface ITestCallbackContext {}
-
     export interface ITest {
         <T>(target: Object, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<T>): TypedPropertyDescriptor<T> | void;
     }
     export interface ISuite {
         <TFunction extends Function>(target: TFunction): TFunction | void;
     }
-}
-
-interface MochaDone {
-    (error?: any): any;
 }
 
 declare namespace MochaTypeScript {

@@ -3,10 +3,7 @@ import { assert } from "chai";
 import { spawnSync } from "child_process";
 import * as path from "path";
 import * as rimraf from "rimraf";
-
-var chai = require("chai");
-var fs = require("fs");
-
+import * as fs from "fs";
 
 function assertContent(actualStr: string, expectedStr: string) {
 
@@ -159,18 +156,12 @@ class SuiteTest {
                                      "--experimentalDecorators", "--module", "commonjs", "--target", target, "--lib",
                                      "es6", path.join("tests", "ts", ts + ".ts")]);
 
-        // console.log(tsc.stdout.toString());
         assert.equal(tsc.stdout.toString(), "", "Expected error free tsc.");
         assert.equal(tsc.status, 0);
 
         let mocha = spawnSync("node", [path.join(".", "node_modules", "mocha", "bin", "_mocha"),
                                        "-C", path.join("tests", "ts", ts + ".js")]);
-        // To debug any actual output while developing:
-        // assert(mocha.status !== 0);
 
-        // console.log(mocha.stderr.toString());
-
-        // To patch the expected use the output of this, but clean up times and callstacks:
         let actual = cleanup(mocha.stdout.toString());
         assertOutput(actual, path.join("tests", "ts", ts + ".expected.txt"));
     }

@@ -1,5 +1,4 @@
 
-
   mocha typescript
     ✓ should pass when asserts are fine
     1) should fail when asserts are broken
@@ -81,7 +80,47 @@
     TestClass
       ✓ method
 
-
   25 passing
   2 pending
   9 failing
+
+  1) mocha typescript
+       should fail when asserts are broken:
+
+      Error: Assert failed
+      + expected - actual
+
+      -to fail
+      +expected
+
+  2) mocha typescript
+       should fail async when given error:
+     Error: Oops...
+
+  3) mocha typescript
+       should fail when promise rejected:
+     Error: Ooopsss...
+
+  4) FailingAsyncLifeCycle
+       "after each" hook for "one":
+     Error: Timeout of 2000ms exceeded. For async tests and hooks, ensure "done()" is called; if returning a Promise, ensure it resolves.
+
+  5) FailingAsyncLifeCycle
+       "after all" hook:
+     Error: Promise rejected with no or falsy reason
+
+  6) Times
+       when slower than timeout fails:
+     Error: Timeout of 10ms exceeded. For async tests and hooks, ensure "done()" is called; if returning a Promise, ensure it resolves.
+
+  7) OverallSlow
+       second slow:
+     Error: Timeout of 10ms exceeded. For async tests and hooks, ensure "done()" is called; if returning a Promise, ensure it resolves.
+
+  8) SlowBefore
+       "before each" hook for "will fail for slow before":
+     Error: Timeout of 10ms exceeded. For async tests and hooks, ensure "done()" is called; if returning a Promise, ensure it resolves.
+
+  9) SlowAfter
+       "after each" hook for "will fail for slow after":
+     Error: Timeout of 10ms exceeded. For async tests and hooks, ensure "done()" is called; if returning a Promise, ensure it resolves.

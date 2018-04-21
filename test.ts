@@ -1,26 +1,75 @@
-import { suite, test, slow, timeout, pending, only } from "./index";
+import { suite, test, slow, timeout, skip, pending, only } from "./index";
 import { assert } from "chai";
 import { spawnSync } from "child_process";
 import * as path from "path";
 import * as rimraf from "rimraf";
+import * as fs from "fs";
 
-var chai = require("chai");
-var fs = require("fs");
+function assertContent(actualStr: string, expectedStr: string) {
 
-function assertOutput(actualStr, expectedStr) {
     let actual: string[] = actualStr.split("\n");
     let expected: string[] = expectedStr.split("\n");
 
+    assert.equal(actual.length, expected.length, "actual and expected differ in length");
     for(var i = 0; i < expected.length; i++) {
-        if (actual.length <= i) {
-            throw new Error("Actual output is shorter than expected, acutal lines: " + actual.length + ", expected: " + expected.length);
-        }
-        let expectedLine = expected[i].trim();
-        let actualLine = actual[i].trim();
-        if (actualLine.indexOf(expectedLine) === -1) {
-            throw new Error("Unexpected output. Expected: '" + expectedLine + "' to be contained in '" + actualLine + "'");
-        }
+      let expectedLine = expected[i].trim();
+      let actualLine = actual[i].trim();
+      assert.isTrue(actualLine.indexOf(expectedLine) !== -1,
+        "Unexpected output on line '" + i + "'. Expected: '" +
+        expectedLine + "' to be contained in '" + actualLine + "'");
     }
+}
+
+function assertOutput(actual: string, filePath: string) {
+
+    let expected = "";
+    try {
+        expected = fs.readFileSync(filePath, "utf-8");
+        assertContent(cleanup(actual, true), cleanup(expected, true));
+    } catch (e) {
+        console.log("\nerror while testing " + filePath.replace(__dirname, ""));
+        console.log("\n" + e.toString());
+        console.log("\n<<<<< expected\n" + expected);
+        console.log("\n>>>>> actual\n" + cleanup(actual) + "=====");
+        throw e;
+    }
+}
+
+const ELIMINATE_LINE = "__mts_eliminate_line__";
+
+function cleanup(str: string, eliminateAllEmptyLines = false): string {
+
+    // clean up times
+    let result = str.replace(/\s*[(][\d]+[^)]+[)]/g, "");
+    // clean up call stacks
+    result = result.replace(/at\s<.+>.*/g, ELIMINATE_LINE);
+    result = result.replace(/at\s.+[^:]+:[^:]+:[\d]+/g, ELIMINATE_LINE);
+    result = result.replace(/at\s.+[(][^:]+:[^:]+:[^)]+[)]/g, ELIMINATE_LINE);
+    result = result.replace(/at\s.+[\[]as\s+[^\]]+[\]].*/g, ELIMINATE_LINE);
+    // clean up calls
+    result = result.replace(/>\s.+/g, ELIMINATE_LINE);
+
+    return trimEmptyLines(result, eliminateAllEmptyLines);
+}
+
+function trimEmptyLines(str: string, eliminateAll = false): string {
+
+    const collected: string[] = [];
+    const lines = str.split('\n');
+    let emptyLinesCount = 0;
+    for (const line of lines) {
+        if (line === "" || line.match(/^\s*$/) || line.indexOf(ELIMINATE_LINE) !== -1) {
+            emptyLinesCount++;
+            continue;
+        }
+        if (emptyLinesCount && !eliminateAll) {
+            collected.push('');
+        }
+        emptyLinesCount = 0;
+        collected.push(line);
+    }
+
+    return collected.join('\n');
 }
 
 @suite("typescript", slow(5000), timeout(15000))
@@ -86,26 +135,35 @@ class SuiteTest {
         this.run("es6", "context.suite");
     }
 
-    private run(target: string, ts: string) {
-        let tsc = spawnSync("node", ["./node_modules/typescript/bin/tsc", "--experimentalDecorators", "--module", "commonjs", "--target", target, "--lib", "es6", "tests/ts/" + ts + ".ts"]);
+    @test "abstract inheritance suite es5"() {
+        this.run("es5", "abstract.inheritance.suite");
+    }
 
-        // console.log(tsc.stdout.toString());
+    @test "abstract inheritance suite es6"() {
+        this.run("es6", "abstract.inheritance.suite");
+    }
+
+    @test "suite inheritance suite es5"() {
+        this.run("es5", "suite.inheritance.suite");
+    }
+
+    @test "suite inheritance suite es6"() {
+        this.run("es6", "suite.inheritance.suite");
+    }
+
+    private run(target: string, ts: string) {
+        let tsc = spawnSync("node", [path.join(".", "node_modules", "typescript", "bin", "tsc"),
+                                     "--experimentalDecorators", "--module", "commonjs", "--target", target, "--lib",
+                                     "es6", path.join("tests", "ts", ts + ".ts")]);
+
         assert.equal(tsc.stdout.toString(), "", "Expected error free tsc.");
         assert.equal(tsc.status, 0);
 
-        let mocha = spawnSync("node", ["./node_modules/mocha/bin/_mocha", "tests/ts/" + ts + ".js"]);
-        // To debug any actual output while developing:
-        // assert(mocha.status !== 0);
+        let mocha = spawnSync("node", [path.join(".", "node_modules", "mocha", "bin", "_mocha"),
+                                       "-C", path.join("tests", "ts", ts + ".js")]);
 
-        // console.log(mocha.stderr.toString());
-
-        let actual = mocha.stdout.toString();
-        let expected = fs.readFileSync("./tests/ts/" + ts + ".expected.txt", "utf-8");
-
-        // To patch the expected use the output of this, but clean up times and callstacks:
-        // console.log("=====\n" + actual + "\n=====");
-
-        assertOutput(actual, expected);
+        let actual = cleanup(mocha.stdout.toString());
+        assertOutput(actual, path.join("tests", "ts", ts + ".expected.txt"));
     }
 }
 
@@ -146,42 +204,31 @@ class PackageTest {
         assert.equal(pack.stderr.toString(), "");
         assert.equal(pack.status, 0, "npm pack failed.");
         const lines = (<string>pack.stdout.toString()).split("\n").filter(line => !!line);
-        assert.isAtLeast(lines.length, 1, "Expected atleast one line of output from npm pack with the .tgz name.");
+        assert.isAtLeast(lines.length, 1,
+          "Expected atleast one line of output from npm pack with the .tgz name.");
         PackageTest.tgzPath = path.resolve(lines[lines.length - 1]);
     }
 
     private testPackage(packageName: string, installTypesMocha: boolean = false): void {
         let cwd;
         let npmtest;
-        let actual;
-        try {
-            cwd = path.resolve("tests/repo", packageName);
-            rimraf.sync(path.join(cwd, "node_modules"));
+        cwd = path.resolve(path.join("tests", "repo"), packageName);
+        rimraf.sync(path.join(cwd, "node_modules"));
 
-            let npmi = spawnSync("npm", ["i", "--no-package-lock"], { cwd });
-            assert.equal(npmi.status, 0, "'npm i' failed.");
+        let npmi = spawnSync("npm", ["i", "--no-package-lock"], { cwd });
+        assert.equal(npmi.status, 0, "'npm i' failed.");
 
-            let args: string[];
-            if (installTypesMocha) {
-                args = ["i", PackageTest.tgzPath, "@types/mocha", "--no-save", "--no-package-lock"];
-            } else {
-                args = ["i", PackageTest.tgzPath, "--no-save", "--no-package-lock"];
-            }
-
-            let npmitgz = spawnSync("npm", args, { cwd });
-            assert.equal(npmitgz.status, 0, "'npm i <tgz>' failed.");
-
-            npmtest = spawnSync("npm", ["test"], { cwd });
-            actual = npmtest.stdout.toString();
-
-            let expected = fs.readFileSync(cwd + "/expected.txt", "utf-8");
-            assertOutput(actual, expected);
-        } catch(e) {
-            try {
-                console.log("=====\n" + actual + "\n=====");
-                console.log(npmtest.stderr.toString());
-            } catch(ee) {}
-            throw e;
+        let args: string[];
+        if (installTypesMocha) {
+            args = ["i", PackageTest.tgzPath, "@types/mocha", "--no-save", "--no-package-lock"];
+        } else {
+            args = ["i", PackageTest.tgzPath, "--no-save", "--no-package-lock"];
         }
+
+        let npmitgz = spawnSync("npm", args, { cwd });
+        assert.equal(npmitgz.status, 0, "'npm i <tgz>' failed.");
+
+        npmtest = spawnSync("npm", ["test"], { cwd });
+        assertOutput(npmtest.stdout.toString(), path.join(cwd, "expected.txt"));
     }
 }

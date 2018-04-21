@@ -185,44 +185,53 @@ function suiteClassCallback(target: SuiteCtor, context: TestFunctions) {
 		}
 		context.afterEach(afterEachFunction);
 
-		(<any>Object).getOwnPropertyNames(prototype).forEach(key => {
-			try {
-				let method = <Function>prototype[key];
-				if (method === target) {
-					return;
-				}
+		function runTests(prototype: any) {
+      (<any>Object).getOwnPropertyNames(prototype).forEach(key => {
+        try {
+          let method = <Function>prototype[key];
+          if (method === target) {
+            return;
+          }
 
-				let testName = method[testNameSymbol];
-				let shouldSkip = method[skipSymbol];
-				let shouldOnly = method[onlySymbol];
-				let shouldPending = method[pendingSumbol];
+          let testName = method[testNameSymbol];
+          let shouldSkip = method[skipSymbol];
+          let shouldOnly = method[onlySymbol];
+          let shouldPending = method[pendingSumbol];
 
-				let testFunc = (shouldSkip && context.it.skip)
-					|| (shouldOnly && context.it.only)
-					|| context.it;
+          let testFunc = (shouldSkip && context.it.skip)
+                         || (shouldOnly && context.it.only)
+                         || context.it;
 
-				if (testName || shouldOnly || shouldPending || shouldSkip) {
-					testName = testName || (<any>method).name;
-					if (shouldPending && !shouldSkip && !shouldOnly) {
-						context.it.skip(testName);
-					} else if (method.length > 0) {
-						testFunc(testName, noname(function (this: Mocha.ITestCallbackContext, done) {
-							applyDecorators(this, prototype, method, instance);
-							applyTestTraits(this, instance, method);
-							return method.call(instance, done);
-						}));
-					} else {
-						testFunc(testName, noname(function (this: Mocha.ITestCallbackContext) {
-							applyDecorators(this, prototype, method, instance);
-							applyTestTraits(this, instance, method);
-							return method.call(instance);
-						}));
-					}
-				}
-			} catch (e) {
-				// console.log(e);
-			}
-		});
+          if (testName || shouldOnly || shouldPending || shouldSkip) {
+            testName = testName || (<any>method).name;
+            if (shouldPending && !shouldSkip && !shouldOnly) {
+              context.it.skip(testName);
+            } else if (method.length > 0) {
+              testFunc(testName, noname(function(this: Mocha.ITestCallbackContext, done) {
+                applyDecorators(this, prototype, method, instance);
+                applyTestTraits(this, instance, method);
+                return method.call(instance, done);
+              }));
+            } else {
+              testFunc(testName, noname(function(this: Mocha.ITestCallbackContext) {
+                applyDecorators(this, prototype, method, instance);
+                applyTestTraits(this, instance, method);
+                return method.call(instance);
+              }));
+            }
+          }
+        } catch (e) {
+          // console.log(e);
+        }
+      });
+    }
+
+    // run all tests along the inheritance chain
+    let currentPrototype = prototype;
+    while (currentPrototype !== Object.prototype) {
+			runTests(currentPrototype);
+			currentPrototype = (<any>Object).getPrototypeOf(currentPrototype);
+		}
 	}
 }
 

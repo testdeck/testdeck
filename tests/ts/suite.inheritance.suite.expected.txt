@@ -1,0 +1,9 @@
+
+  PartialTest
+    ✓ test from PartialTest
+
+  CompleteTest
+    ✓ test from CompleteTest
+    ✓ test from PartialTest
+
+  3 passing

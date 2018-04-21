@@ -1,9 +1,4 @@
 
-> custom-ui@1.0.0 test
-> tsc && mocha
-
-
-
   Suite1
     ✓ one
     1) two
@@ -41,7 +36,7 @@
     6) testFailing
     ✓ beforeAfterCalled
 
-  InstanceTests
+  AsyncInstanceTests
     ✓ test
     7) testFailing
     ✓ beforeAfterCalled
@@ -56,7 +51,56 @@
     9) tryToGetPass4
     ✓ overrideSuiteRetries
 
-
   17 passing
   4 pending
   9 failing
+
+  1) Suite1
+       two:
+     Error: instant fail
+
+  2) Suite1
+       four:
+     Error: async fail
+
+  3) TimoutSuite
+       slow:
+     Error: Timeout of 10ms exceeded. For async tests and hooks, ensure "done()" is called; if returning a Promise, ensure it resolves.
+
+  4) TimeoutSuite2
+       slow:
+     Error: Timeout of 20ms exceeded. For async tests and hooks, ensure "done()" is called; if returning a Promise, ensure it resolves.
+
+  5) SequenceOne
+       two:
+     Error: Fail!
+
+  6) InstanceTests
+       testFailing:
+
+      AssertionError: expected false to be true
+      + expected - actual
+
+      -false
+      +true
+
+  7) AsyncInstanceTests
+       testFailing:
+
+      AssertionError: expected false to be true
+      + expected - actual
+
+      -false
+      +true
+
+  8) FlakyMethodDecorator
+       tryOnce:
+
+      AssertionError: expected 2 to be above 2
+      + expected - actual
+
+  9) FlakySuiteDecorator
+       tryToGetPass4:
+
+      AssertionError: expected 4 to be above 4
+      + expected - actual

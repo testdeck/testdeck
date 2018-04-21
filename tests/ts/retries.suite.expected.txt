@@ -1,5 +1,4 @@
 
-
   FlakyMethodDecorator
     1) tryOnce
     ✓ tryTwice
@@ -10,6 +9,13 @@
     2) tryToGetPass4
     ✓ overrideSuiteRetries
 
-
   4 passing
   2 failing
+
+  1) FlakyMethodDecorator
+       tryOnce:
+     AssertionError: expected 2 to be above 2
+
+  2) FlakySuiteDecorator
+       tryToGetPass4:
+     AssertionError: expected 4 to be above 4

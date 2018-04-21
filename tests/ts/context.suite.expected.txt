@@ -1,5 +1,4 @@
 
-
   Static
     ✓ one
 
@@ -29,6 +28,5 @@ End of test: OAuth npmjs Exchange token for oauth session
     ✓ Request sensitive data
 End of test: OAuth npmjs Request sensitive data
 End of test: true
-
 
   10 passing

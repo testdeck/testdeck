@@ -26,6 +26,8 @@ When the tests run, the class will be instantiated once for each `@test` method 
     - [WebStorm](#webstorm)
  - [Test UI API](#test-ui-api)
     - [Declarative Suites and Tests](#declarative-suites-and-tests)
+    - [Test Inheritance](#test-inheritance)
+       - [Inheritance and Both Synchronous and Asynchronous Before and After Actions](#inheritance-and-both-synchronous-and-asynchronous-before-and-after-actions)
     - [Generated Suites and Tests](#generated-suites-and-tests)
     - [Before and After Actions](#before-and-after-actions)
     - [Async Tests, Before and After Actions](#async-tests-before-and-after-actions)
@@ -206,7 +208,7 @@ For example:
   },
 ```
 
-For complete list with check `./node_modules/.bin/mocha-typescript-watch --help`: 
+For complete list with check `./node_modules/.bin/mocha-typescript-watch --help`:
 ```
 Options:
   -p, --project  Path to tsconfig file or directory containing tsconfig, passed
@@ -248,7 +250,7 @@ Should running/debugging a single test/unit run the test twice, that's because W
  - Edit the automatically generated single test config from the top tasks menu in WebStorm and change the file extension it points to from .ts to .js, this will use the JavaScript files produced by the TypeScript compilation of your project. But you will have to change the extension by hand each time you debug or run a single test.
  - Change the test/mocha.opts file so it won't reference any files (e.g. delete the `--recursive test` from it). In that case you may need to fix the package.json build scripts.
 
-At few occasions when misxing BDD and the mocha-typescript decorators based UI, trying to run a single BDD test would cause WebStorm to generate a mocha task that would run using BDD ui, instead of mocha-typescript. In these cases the tests may fail as there is no `suite` or `test` functions defined in the BDD UI. To fix this you may edit the default Mocha task, and configure it to use mocha-typescript UI explicitly. From that point on, when you try to run a single test, event BDD one, WebStorm will create Mocha tasks that will use the mocha-typescript UI. 
+At few occasions when misxing BDD and the mocha-typescript decorators based UI, trying to run a single BDD test would cause WebStorm to generate a mocha task that would run using BDD ui, instead of mocha-typescript. In these cases the tests may fail as there is no `suite` or `test` functions defined in the BDD UI. To fix this you may edit the default Mocha task, and configure it to use mocha-typescript UI explicitly. From that point on, when you try to run a single test, event BDD one, WebStorm will create Mocha tasks that will use the mocha-typescript UI.
 
 # Test UI API
 Please note that the methods and decorators used below are introduced through importing from the `mocha-typescript` module:
@@ -273,6 +275,123 @@ class Suite {
     @test "typescript also supports this syntax for method naming"() {}
 }
 ```
+
+## Test Inheritance
+One can declare abstract classes as bases for derived test classes. Tests methods declared in these base classes will be run in the context of
+the concrete test class, namely the one that has been decorated with the `@suite` decorator:
+``` TypeScript
+export abstract class AbstractTestBase {
+
+  public static before() {
+    // ...
+  }
+
+  public before() {
+    // ...
+  }
+
+  @test aTestFromBase() {
+    // ...
+  }
+
+  @test "another test from base"() {
+    // ...
+  }
+
+  public after () {
+    // ...
+  }
+
+  public static after () {
+    // ...
+  }
+}
+
+@suite class ConcreteTest extends AbstractTestBase {
+
+  public static before() {
+    // AbstractTestBase.before();
+    // ...
+  }
+
+  public before() {
+    // super.before();
+    // ...
+  }
+
+  @test aTestFromConcrete() {
+    // ...
+  }
+
+  public after() {
+    // ...
+    // super.after();
+  }
+
+  public static after() {
+    // ...
+    // AbstractTestBase.after();
+  }
+}
+```
+
+One can also inherit from another concrete test class or suite, but keep in mind that that the tests declared by that suite will
+be run multiple times and not just in the context of the concrete test classes, see the example provided in `tests/ts/suite.inheritance.suite.ts`.
+
+Important: One should not override test methods inherited from a base class and then call `super()` as this will run the tests from the base class twice.
+
+### Inheritance and Both Synchronous and Asynchronous Before and After Actions
+As for both static and instance `before()` and `after()` actions, one must make sure that the hooks from the parent class are called, see the
+above example on how.
+
+When using asynchronous actions, additional care must be taken, since one cannot simply pass the `done` callback to the parent
+classes' hooks and you will have to use something along the line of this in order to make it happen:
+``` TypeScript
+export abstract class AbstractTestBase {
+
+  public static before(done) {
+    // ...
+    // done([err]);
+  }
+
+  public before(done) {
+    // ...
+    // done([err]);
+  }
+}
+
+@suite class ConcreteTest extends AbstractTestBase {
+
+  public static before(done) {
+    AbstractTestBase.before((err) => {
+      if (err) {
+        done(err);
+        return;
+      }
+      // ...
+      // done([err]);
+    });
+  }
+
+  public before(done) {
+    super.before((err) => {
+      if (err) {
+        done(err);
+        return;
+      }
+      // ...
+      // done([err]);
+    });
+  }
+}
+```
+
+With `after()` actions the patterns are similar yet a bit more involved. Note that similar patterns apply when using `Promise`s or `async` and `await`.
+
+Important: One must not mix chained calls to both asynchronous and synchronous before and after actions. If a base class defines either action to be asynchronous then
+you will have to make your action asynchronous as well.
+
+See [Before and After Actions](#before-and-after-actions) and [Async Tests, Before and After Actions](#async-tests-before-and-after-actions) for more information.
 
 ## Generated Suites and Tests
 Mocha's simple interface is very flexible when tests have to be dynamically generated.
@@ -354,7 +473,7 @@ but this behavior may be dropped in future major versions as it generates too mu
 They are still useful though for setting timeouts on before and after methods (e.g. `@suite class Test { @timeout(100) before() { /* ... */ }}`).
 
 ## Retries
-I would not recomend retrying failed tests multiple times to ensure green light but I also wouldn't judge, here it goes mocha-typescript retries:
+I would not recommend retrying failed tests multiple times to ensure green light but I also wouldn't judge, here it goes mocha-typescript retries:
 ``` TypeScript
 @suite(retries(2))
 class Suite {

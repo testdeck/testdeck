@@ -48,12 +48,6 @@ declare namespace Mocha {
     }
 }
 
-declare var suite: Mocha.IContextDefinition;
-declare var test: Mocha.ITestDefinition;
-
-declare var describe: Mocha.IContextDefinition;
-declare var it: Mocha.ITestDefinition;
-
 declare var skipOnError: MochaTypeScript.SuiteTrait;
 
 declare function slow(time: number): PropertyDecorator & ClassDecorator & MochaTypeScript.SuiteTrait & MochaTypeScript.TestTrait;

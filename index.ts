@@ -68,7 +68,7 @@ export interface TestTrait {
 
 const noname = cb => cb;
 
-function applyDecorators(mocha: Mocha.IHookCallbackContext | Mocha.ISuiteCallbackContext, ctorOrProto, method, instance) {
+function applyDecorators(mocha: Mocha.IHookCallbackContext, ctorOrProto, method, instance) {
 	const timeoutValue = method[timeoutSymbol];
 	if (typeof timeoutValue === "number") {
 		mocha.timeout(timeoutValue);

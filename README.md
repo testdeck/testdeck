@@ -27,6 +27,7 @@ When the tests run, the class will be instantiated once for each `@test` method 
  - [Test UI API](#test-ui-api)
     - [Declarative Suites and Tests](#declarative-suites-and-tests)
     - [Test Inheritance](#test-inheritance)
+       - [Overriding Tests](#overriding-tests)
        - [Inheritance and Both Synchronous and Asynchronous Before and After Actions](#inheritance-and-both-synchronous-and-asynchronous-before-and-after-actions)
     - [Generated Suites and Tests](#generated-suites-and-tests)
     - [Before and After Actions](#before-and-after-actions)
@@ -339,6 +340,30 @@ One can also inherit from another concrete test class or suite, but keep in mind
 be run multiple times and not just in the context of the concrete test classes, see the example provided in `tests/ts/suite.inheritance.suite.ts`.
 
 Important: One should not override test methods inherited from a base class and then call `super()` as this will run the tests from the base class twice.
+
+Best practice: Do not inherit from other classes that have been decorated with the ``suite`` decorator. Instead use abstract test base classes.
+
+### Overriding Tests
+Sometimes you might want to override tests inherited from a given base class. You can do this by redeclaring the same test method in your sub class, e.g.
+``` TypeScript
+export abstract class AbstractTestBase {
+
+  @test 'test that will be overridden by sub classes'() {
+
+    chai.assert.fail('sub classes must override this');
+  }
+}
+
+export class ConcreteTest extends AbstractTestBase {
+
+  @test.skip 'test that will be overridden by sub classes'() {
+  }
+}
+```
+
+You may now either implement the test or simply just skip it, and so on.
+
+Given that ``skip`` actually marks the test as pending, this might not be what you want for your test reports. In that case, just override the test with an empty body.
 
 ### Inheritance and Both Synchronous and Asynchronous Before and After Actions
 As for both static and instance `before()` and `after()` actions, one must make sure that the hooks from the parent class are called, see the

@@ -200,7 +200,7 @@ class PackageTest {
 
     @timeout(30000)
     static before() {
-        let pack = spawnSync("npm", ["pack"]);
+        let pack = spawnSync("npm", ["pack", "--quiet"]);
         assert.equal(pack.stderr.toString(), "");
         assert.equal(pack.status, 0, "npm pack failed.");
         const lines = (<string>pack.stdout.toString()).split("\n").filter(line => !!line);

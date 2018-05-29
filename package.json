@@ -17,6 +17,12 @@
     "prepare": "tsc"
   },
   "author": "Panayot Cankov",
+  "contributors": [
+    {
+      "name": "silkentrance",
+      "url": "https://github.com/silkentrance"
+    }
+  ],
   "license": "Apache-2.0",
   "dependencies": {
     "@types/mocha": "*",

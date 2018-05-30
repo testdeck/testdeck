@@ -151,6 +151,38 @@ class SuiteTest {
         this.run("es6", "suite.inheritance.suite");
     }
 
+    @test "abstract inheritance fail to override abstract test from suite es5"() {
+        this.run("es5", "abstract.inheritance.override1.suite");
+    }
+
+    @test "abstract inheritance fail override abstract test from suite es6"() {
+        this.run("es6", "abstract.inheritance.override1.suite");
+    }
+
+    @test "abstract inheritance succeed to override abstract test from suite es5"() {
+        this.run("es5", "abstract.inheritance.override2.suite");
+    }
+
+    @test "abstract inheritance succeed override abstract test from suite es6"() {
+        this.run("es6", "abstract.inheritance.override2.suite");
+    }
+
+    @test "suite inheritance fail to override abstract test from suite es5"() {
+        this.run("es5", "suite.inheritance.override1.suite");
+    }
+
+    @test "suite inheritance fail override abstract test from suite es6"() {
+        this.run("es6", "suite.inheritance.override1.suite");
+    }
+
+    @test "suite inheritance succeed to override abstract test from suite es5"() {
+        this.run("es5", "suite.inheritance.override2.suite");
+    }
+
+    @test "suite inheritance succeed override abstract test from suite es6"() {
+        this.run("es6", "suite.inheritance.override2.suite");
+    }
+
     private run(target: string, ts: string) {
         let tsc = spawnSync("node", [path.join(".", "node_modules", "typescript", "bin", "tsc"),
                                      "--experimentalDecorators", "--module", "commonjs", "--target", target, "--lib",
@@ -169,7 +201,7 @@ class SuiteTest {
 
 // These integration tests are slow, you can uncommend the skip version below during development
 // @suite.skip(timeout(90000))
-@suite(timeout(90000), slow(10000))
+// @suite(timeout(90000), slow(10000))
 class PackageTest {
 
     static tgzPath: string;

@@ -1,0 +1,9 @@
+
+  PartialTest
+    - test must be implemented by derived suites
+
+  CompleteTest
+    - test must be implemented by derived suites
+
+  0 passing
+  2 pending

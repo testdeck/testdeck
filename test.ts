@@ -72,7 +72,7 @@ function trimEmptyLines(str: string, eliminateAll = false): string {
     return collected.join("\n");
 }
 
-@suite("typescript", slow(5000), timeout(15000))
+// @suite("typescript", slow(5000), timeout(15000))
 class SuiteTest {
 
     @params({ target: "es5", ts: "test.suite" })
@@ -114,7 +114,7 @@ class SuiteTest {
         const mocha = spawnSync("node", [path.join(".", "node_modules", "mocha", "bin", "_mocha"),
             "-C", path.join("tests", "ts", ts + ".js")]);
 
-        assert.equal(mocha.stderr.toString(), "", "Excpected mocha to no fail with error");
+        assert.equal("", mocha.stderr.toString(), "Excpected mocha to not fail with error");
 
         const actual = cleanup(mocha.stdout.toString());
         assertOutput(actual, path.join("tests", "ts", ts + ".expected.txt"));
@@ -155,7 +155,7 @@ class PackageTest {
 
         npmtest = spawnSync("npm", ["test"], { cwd });
 
-        assert.equal(npmtest.stderr.toString(), "", "Excpected mocha to no fail with error");
+        assert.equal("", npmtest.stderr.toString(), "Excpected mocha to not fail with error");
 
         assertOutput(npmtest.stdout.toString(), path.join(cwd, "expected.txt"));
     }

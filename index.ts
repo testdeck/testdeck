@@ -346,7 +346,7 @@ function makeSuiteObject(context: TestFunctions): Suite {
 export const suite = makeSuiteObject(globalTestFunctions);
 
 function makeParamsFunction(testFunc: Function, mark: null | string | symbol) {
-	return function <TParameters>(parameters: TParameters, name?: string) {
+	return (parameters: any, name?: string) => {
 		return (target: Object, propertyKey: string) => {
 			target[propertyKey][testNameSymbol] = propertyKey ? propertyKey.toString() : "";
 			target[propertyKey][parametersSymbol] = target[propertyKey][parametersSymbol] || [];
@@ -355,11 +355,20 @@ function makeParamsFunction(testFunc: Function, mark: null | string | symbol) {
 	};
 }
 
+function makeParamsNameFunction() {
+	return (nameForParameters: (parameters: any) => string) => {
+		return (target: Object, propertyKey: string) => {
+			target[propertyKey][nameForParametersSymbol] = nameForParameters;
+		}
+    }
+}
+
 function makeParamsObject(context: TestFunctions) {
 	return Object.assign(makeParamsFunction(context.it, null), {
 		skip: makeParamsFunction(context.describe.skip, skipSymbol),
 		only: makeParamsFunction(context.describe.only, onlySymbol),
-		pending: makeParamsFunction(context.describe.skip, pendingSymbol)
+		pending: makeParamsFunction(context.describe.skip, pendingSymbol),
+		naming: makeParamsNameFunction()
 	});
 }
 export const params = makeParamsObject(globalTestFunctions);

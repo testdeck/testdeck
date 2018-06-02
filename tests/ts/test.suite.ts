@@ -1,47 +1,47 @@
-import { suite, test, slow, timeout, skip, only } from "../../index";
+import { only, skip, slow, suite, test, timeout } from "../../index";
 
 declare var Promise: any; // ES6 Promise
 
 @suite("mocha typescript")
 class Basic {
-    
+
     @test("should pass when asserts are fine")
     asserts_pass() {
     }
-    
+
     @test("should fail when asserts are broken")
     asserts_fail() {
         // Any self-respecting assertion framework should throw
-        var error = new Error("Assert failed");
-        (<any>error).expected = "expected";
-        (<any>error).actual = "to fail";
+        const error = new Error("Assert failed");
+        (error as any).expected = "expected";
+        (error as any).actual = "to fail";
         throw error;
     }
-    
+
     @test("should pass async tests")
     assert_pass_async(done) {
         setTimeout(done, 1);
     }
-    
+
     @test("should fail async when given error")
     assert_fail_async(done) {
         setTimeout(() => done(new Error("Oops...")), 1);
     }
-    
+
     @test("should fail async when callback not called")
     @timeout(10)
     @skip
     assert_fail_async_no_callback(done) {
         // Never called... t/o intentional.
     }
-    
+
     @test("should pass when promise resolved")
     promise_pass_resolved() {
         return new Promise((resolve, reject) => {
             setTimeout(() => resolve(), 1);
         });
     }
-    
+
     @test("should fail when promise rejected")
     promise_fail_rejected() {
         return new Promise((resolve, reject) => {
@@ -62,10 +62,10 @@ class Basic {
 @suite class CuteSyntax {
     @test testNamedAsMethod() {
     }
-    
+
     @test "can have non verbose syntax for fancy named tests"() {
     }
-    
+
     @test "and they can be async too"(done) {
         done();
     }
@@ -79,16 +79,16 @@ class Basic {
 @suite class LifeCycle {
     static tokens = 0;
     token: number;
-    
+
     constructor() {
         console.log("     - new LifeCycle");
     }
-    
+
     before() {
         this.token = LifeCycle.tokens++;
         console.log("       - Before each test " + this.token);
     }
-    
+
     after() {
         console.log("       - After each test " + this.token);
     }
@@ -96,11 +96,11 @@ class Basic {
     static before() {
         console.log("   - Before the suite: " + ++this.tokens);
     }
-    
+
     static after() {
         console.log("   - After the suite" + ++this.tokens);
     }
-    
+
     @test one() {
         console.log("         - Run one: " + this.token);
     }
@@ -192,7 +192,6 @@ class Basic {
 //     √ one
 //     √ two
 
-
 @suite class Times {
     @test @slow(10) "when fast is normal"(done) {
         setTimeout(done, 0);
@@ -221,10 +220,10 @@ class Basic {
 @suite class ExecutionControl {
     @skip @test "this won't run"() {
     }
-    
+
     @test "this however will"() {
     }
-    
+
     // @only
     @test "add @only to run just this test"() {
     }
@@ -242,7 +241,7 @@ class ServerTests {
     disconnect() {
         console.log("      disconnect(" + ServerTests.connection + ")");
     }
-    
+
     static connection: string;
     static connectionId: number = 0;
 
@@ -334,7 +333,7 @@ describe("outer suite", () => {
         @test method() {
         }
     }
-})
+});
 
 //   outer suite
 //     TestClass
@@ -343,5 +342,3 @@ describe("outer suite", () => {
 //   22 passing (3s)
 //   2 pending
 //   6 failing
-
-

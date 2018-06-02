@@ -1,5 +1,5 @@
 import * as mocha from "mocha";
-import { suite, test, slow, timeout, skip, only, pending, context } from "../../index";
+import { context, only, pending, skip, slow, suite, test, timeout } from "../../index";
 
 @suite class Static {
     @test one() {
@@ -9,7 +9,7 @@ import { suite, test, slow, timeout, skip, only, pending, context } from "../../
 [
     { url: "google.com", title: "google" },
     { url: "github.com", title: "github" },
-    { url: "npmjs.com", title: "npmjs" }
+    { url: "npmjs.com", title: "npmjs" },
 ].forEach(({ url, title }) => {
     // Nice question: How to share the same instance for all tests?
     @suite(`OAuth ${title}`) class OAuthTest {

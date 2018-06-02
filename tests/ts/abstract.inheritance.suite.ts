@@ -1,5 +1,5 @@
-import { suite, test } from "../../index";
 import { assert } from "chai";
+import { suite, test } from "../../index";
 
 abstract class AbstractTestBase {
 

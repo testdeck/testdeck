@@ -1,12 +1,12 @@
-import { suite, test, slow, timeout, skip, only, trait, skipOnError } from "../../index";
 import { assert } from "chai";
+import { only, skip, skipOnError, slow, suite, test, timeout, trait } from "../../index";
 
 declare var describe, it;
 
 suite("vanila tdd suite", () => {
     test("vanila test", () => {});
-    test("vanila failing test", () => { throw new Error("x") });
-    test("vanila asinc", done => setTimeout(done, 5));
+    test("vanila failing test", () => { throw new Error("x"); });
+    test("vanila asinc", (done) => setTimeout(done, 5));
     test("Vanila promise", () => new Promise((resolve, reject) => setTimeout(resolve, 5)));
     test.pending("pending", () => {});
     test.skip("skipped", () => {});
@@ -14,8 +14,8 @@ suite("vanila tdd suite", () => {
 
 describe("vanila bdd suite", () => {
     it("vanila test", () => {});
-    it("vanila failing test", () => { throw new Error("x") });
-    it("vanila asinc", done => setTimeout(done, 5));
+    it("vanila failing test", () => { throw new Error("x"); });
+    it("vanila asinc", (done) => setTimeout(done, 5));
     it("Vanila promise", () => new Promise((resolve, reject) => setTimeout(resolve, 5)));
     it.skip("skipped", () => {});
 });
@@ -37,7 +37,7 @@ class Timeouts {
     }
 }
 
-@suite(trait(ctx => ctx.timeout(10)))
+@suite(trait((ctx) => ctx.timeout(10)))
 class InlineTrait {
     @test timeout(done) {}
 }
@@ -51,7 +51,7 @@ class StockSequence {
 }
 
 declare var beforeEach, afterEach;
-var customSkipOnError = trait(function(ctx, ctor) {
+const customSkipOnError = trait(function(ctx, ctor) {
     beforeEach(function() {
         if (ctor.__skip_all) {
             this.skip();
@@ -107,7 +107,7 @@ class Basic {
     @test() "test fail 2"() {
         throw new Error("Fail intentionally!");
     }
-    
+
     @test.skip "test skip"() {
     }
 
@@ -190,7 +190,7 @@ class Test {
 }
 
 function task(): Promise<void> {
-    return new Promise<void>(resolve => setTimeout(resolve, 1));
+    return new Promise<void>((resolve) => setTimeout(resolve, 1));
 }
 
 @suite class AsyncInstanceTests {
@@ -220,7 +220,10 @@ function task(): Promise<void> {
         await task();
     }
     @test async beforeAfterCalled() {
-        assert.deepEqual(AsyncInstanceTests.calls, ["before", "test", "after", "before", "testFailing", "after", "before"]);
+        assert.deepEqual(AsyncInstanceTests.calls, [
+            "before", "test", "after", "before", "testFailing", "after", "before",
+        ]);
+
         await task();
     }
     toString() {

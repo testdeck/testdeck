@@ -1,0 +1,19 @@
+{
+  "extends": [
+    "tslint:recommended"
+  ],
+  "rules": {
+    "max-classes-per-file": false,
+    "object-literal-sort-keys": false,
+    "interface-name": false,
+    "member-access": [true, "no-public"],
+    "ban-types": [
+      true,
+      ["Boolean", "Use boolean instead"],
+      ["Number", "Use number instead"],
+      ["Object", "Use object instead"],
+      ["String", "Use string instead"],
+      ["Symbol", "Use symbol instead"]
+    ]
+  }
+}

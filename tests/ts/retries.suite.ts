@@ -1,5 +1,5 @@
-import { suite, test, slow, timeout, skip, only, pending, retries } from "../../index";
 import { assert } from "chai";
+import { only, pending, retries, skip, slow, suite, test, timeout } from "../../index";
 
 @suite class FlakyMethodDecorator {
     private static runCount1 = 0;

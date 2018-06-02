@@ -1,12 +1,3 @@
-declare namespace Mocha {
-    export interface ITest {
-        <T>(target: Object, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<T>): TypedPropertyDescriptor<T> | void;
-    }
-    export interface ISuite {
-        <TFunction extends Function>(target: TFunction): TFunction | void;
-    }
-}
-
 declare namespace MochaTypeScript {
     export interface Suite {
         prototype: {

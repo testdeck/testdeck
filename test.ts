@@ -114,6 +114,8 @@ class SuiteTest {
         const mocha = spawnSync("node", [path.join(".", "node_modules", "mocha", "bin", "_mocha"),
             "-C", path.join("tests", "ts", ts + ".js")]);
 
+        assert.equal(mocha.stderr.toString(), "", "Excpected mocha to no fail with error");
+
         const actual = cleanup(mocha.stdout.toString());
         assertOutput(actual, path.join("tests", "ts", ts + ".expected.txt"));
     }
@@ -152,6 +154,9 @@ class PackageTest {
         assert.equal(npmitgz.status, 0, "'npm i <tgz>' failed.");
 
         npmtest = spawnSync("npm", ["test"], { cwd });
+
+        assert.equal(npmtest.stderr.toString(), "", "Excpected mocha to no fail with error");
+
         assertOutput(npmtest.stdout.toString(), path.join(cwd, "expected.txt"));
     }
 

@@ -38,6 +38,8 @@ When the tests run, the class will be instantiated once for each `@test` method 
  - [Extending Test Behavior](#extending-test-behavior)
     - [Accessing the Mocha Context Within Class Methods](#accessing-the-mocha-context-within-class-methods)
     - [Skipping Tests In Suite After First Failure - skipOnError](#skipping-tests-in-suite-after-first-failure---skiponerror)
+ - [Dependency Injection](#dependency-injection)
+    - [typedi](#typedi)
 
 # Summary
 ## Test UI
@@ -520,7 +522,7 @@ The retries can also be used as a decorator similar to `timeout` and `slow` - `@
 There are various aspects of the suites and tests that can be altered via the mocha context.
 Within the default mocha 'BDD' style this is done through the callback's `this` object.
 That object is exposed to the TypeScript decorators based UI through a field decorated with the `@context` decorator:
-```
+``` TypeScript
 @suite class MyClass {
   @context mocha; // Set for instenace methods such as tests and before/after
   static @context mocha; // Set for static methods such as static before/after (mocha bdd beforeEach/afterEach)
@@ -534,12 +536,41 @@ That object is exposed to the TypeScript decorators based UI through a field dec
 In functional testing it is sometimes fine to skip the rest of the suite when one of the tests fail.
 Consider the case of a web site tests where the login test fail and subsequent tests that depend on the login will hardly pass.
 This can be done with the `skipOnError` suite trait:
-```
+``` TypeScript
 @suite(skipOnError)
 class StockSequence {
     @test step1() {}
     @test step2() { throw new Error("Failed"); }
     @test step3() { /* will be skipped */ }
     @test step4() { /* will be skipped */ }
+}
+```
+# Dependency Injection
+Custom dependency injection systems can be provided using `registerDI`.
+
+## typedi
+To use the built-in support:
+ - Set your `tsconfig.json` to `emitDecoratorMetadata`.
+ - Import `mocha-typescript/di/typedi`.
+This will let test instances to be instantiated using typedi, for example:
+``` TypeScript
+import { assert } from "chai";
+import { Service } from "typedi";
+import "../../di/typedi";
+import { register, suite, test } from "../../index";
+
+@Service()
+class Add {
+  public do(a: number, b: number) {
+    return a + b;
+  }
+}
+
+@suite class TypeDITest {
+  // typedi will resolve `add` here to an instance of the `Add` service.
+  constructor(public add: Add) { }
+  @test public "test linear function"() {
+    assert.equal(this.add.do(1, 2), 3);
+  }
 }
 ```

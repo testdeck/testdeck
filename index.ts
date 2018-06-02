@@ -33,11 +33,13 @@ const globalTestFunctions: TestFunctions = {
 let nodeSymbol = key => "__mts_" + key;
 
 let testNameSymbol = nodeSymbol("test");
+let parametersSymbol = nodeSymbol("parametersSymbol");
+let nameForParametersSymbol = nodeSymbol("nameForParameters");
 let slowSymbol = nodeSymbol("slow");
 let timeoutSymbol = nodeSymbol("timout");
 let retriesSymbol = nodeSymbol("retries");
 let onlySymbol = nodeSymbol("only");
-let pendingSumbol = nodeSymbol("pending");
+let pendingSymbol = nodeSymbol("pending");
 let skipSymbol = nodeSymbol("skip");
 let traitsSymbol = nodeSymbol("traits");
 let isTraitSymbol = nodeSymbol("isTrait");
@@ -190,7 +192,9 @@ function suiteClassCallback(target: SuiteCtor, context: TestFunctions) {
 			let testName = method[testNameSymbol];
 			let shouldSkip = method[skipSymbol];
 			let shouldOnly = method[onlySymbol];
-			let shouldPending = method[pendingSumbol];
+			let shouldPending = method[pendingSymbol];
+			let parameters = method[parametersSymbol];
+			let nameForParameters = method[nameForParametersSymbol];
 
 			let testFunc = (shouldSkip && context.it.skip)
 										 || (shouldOnly && context.it.only)
@@ -200,21 +204,50 @@ function suiteClassCallback(target: SuiteCtor, context: TestFunctions) {
 				testName = testName || (<any>method).name;
 				if (shouldPending && !shouldSkip && !shouldOnly) {
 					context.it.skip(testName);
-				} else if (method.length > 0) {
-					testFunc(testName, noname(function(this: Mocha.ITestCallbackContext, done) {
-						applyDecorators(this, prototype, method, instance);
-						applyTestTraits(this, instance, method);
-						return method.call(instance, done);
-					}));
-				} else {
-					testFunc(testName, noname(function(this: Mocha.ITestCallbackContext) {
-						applyDecorators(this, prototype, method, instance);
-						applyTestTraits(this, instance, method);
-						return method.call(instance);
-					}));
+				} else if (parameters) {
+					parameters.forEach((parameterOptions, i) => {
+						const [testFunc, mark, name, parameter] = parameterOptions;
+
+						let parametersTestName = `${testName}_${i}`;
+						if (name) {
+							parametersTestName = name;
+						} else if (nameForParameters) {
+							parametersTestName = nameForParameters(parameter);
+						}
+
+						shouldSkip = mark === skipSymbol;
+						shouldOnly = mark === onlySymbol;
+						shouldPending = mark === pendingSymbol;
+
+						if (shouldPending && !shouldSkip && !shouldOnly) {
+							context.it.skip(testName);
+						}
+
+						applyTestFunc(testFunc, parametersTestName, method, [parameter], method.length <= 1);
+                    });
+                } else {
+                    applyTestFunc(testFunc, testName, method, [], method.length === 0);
 				}
 			}
-    }
+    	}
+
+		function applyTestFunc(testFunc: Function, testName: string,
+							   method: Function, callArgs: any[],
+							   sync: boolean = true) {
+			if (sync) {
+				testFunc(testName, noname(function(this: Mocha.ITestCallbackContext) {
+					applyDecorators(this, prototype, method, instance);
+					applyTestTraits(this, instance, method);
+					return method.call(instance, ...callArgs);
+				}));
+			} else {
+				testFunc(testName, noname(function(this: Mocha.ITestCallbackContext, done) {
+					applyDecorators(this, prototype, method, instance);
+					applyTestTraits(this, instance, method);
+					return method.call(instance, ...callArgs, done);
+				}));
+			}
+		}
 
     // collect all tests along the inheritance chain, allow overrides
 		const collectedTests: { [key: string]: Array<any> } = {};
@@ -292,7 +325,7 @@ function suiteFuncCheckingDecorators(context: TestFunctions) {
 		if (ctor) {
 			let shouldSkip = ctor[skipSymbol];
 			let shouldOnly = ctor[onlySymbol];
-			let shouldPending = ctor[pendingSumbol];
+			let shouldPending = ctor[pendingSymbol];
 			return (shouldSkip && context.describe.skip)
 				|| (shouldOnly && context.describe.only)
 				|| (shouldPending && context.describe.skip)
@@ -311,6 +344,25 @@ function makeSuiteObject(context: TestFunctions): Suite {
 	});
 }
 export const suite = makeSuiteObject(globalTestFunctions);
+
+function makeParamsFunction(testFunc: Function, mark: null | string | symbol) {
+	return function <TParameters>(parameters: TParameters, name?: string) {
+		return (target: Object, propertyKey: string) => {
+			target[propertyKey][testNameSymbol] = propertyKey ? propertyKey.toString() : "";
+			target[propertyKey][parametersSymbol] = target[propertyKey][parametersSymbol] || [];
+			target[propertyKey][parametersSymbol].push([testFunc, mark, name, parameters]);
+		};
+	};
+}
+
+function makeParamsObject(context: TestFunctions) {
+	return Object.assign(makeParamsFunction(context.it, null), {
+		skip: makeParamsFunction(context.describe.skip, skipSymbol),
+		only: makeParamsFunction(context.describe.only, onlySymbol),
+		pending: makeParamsFunction(context.describe.skip, pendingSymbol)
+	});
+}
+export const params = makeParamsObject(globalTestFunctions);
 
 function testOverload(overloads: {
 	test(name: string, fn: Function);
@@ -360,7 +412,7 @@ function makeTestObject(context: TestFunctions): Test {
 	return Object.assign(makeTestFunction(() => context.it, null), {
 		skip: makeTestFunction(() => context.it.skip, skipSymbol),
 		only: makeTestFunction(() => context.it.only, onlySymbol),
-		pending: makeTestFunction(() => context.it.skip, pendingSumbol)
+		pending: makeTestFunction(() => context.it.skip, pendingSymbol)
 	});
 }
 export const test = makeTestObject(globalTestFunctions);
@@ -489,9 +541,9 @@ export const skipOnError: SuiteTrait = trait(function(ctx, ctor) {
  */
 export function pending<TFunction extends Function>(target: Object | TFunction, propertyKey?: string | symbol): void {
 	if (arguments.length === 1) {
-		target[pendingSumbol] = true;
+		target[pendingSymbol] = true;
 	} else {
-		target[propertyKey][pendingSumbol] = true;
+		target[propertyKey][pendingSymbol] = true;
 	}
 }
 
@@ -587,6 +639,7 @@ function tsdd(suite) {
 		};
 
 		context.suite = makeSuiteObject(context);
+		context.params = makeParamsObject(context);
 		context.test = makeTestObject(context);
 
 		context.test.retries = common.test.retries;
@@ -596,5 +649,5 @@ function tsdd(suite) {
 		context.retries = retries;
 		context.skipOnError = skipOnError;
 	});
-};
+}
 module.exports = Object.assign(tsdd, exports);

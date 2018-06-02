@@ -1,4 +1,4 @@
-import { suite, test, slow, timeout, skip, pending, only } from "./index";
+import { suite, params, test, slow, timeout, skip, pending, only } from "./index";
 import { assert } from "chai";
 import { spawnSync } from "child_process";
 import * as path from "path";
@@ -75,124 +75,43 @@ function trimEmptyLines(str: string, eliminateAll = false): string {
 @suite("typescript", slow(5000), timeout(15000))
 class SuiteTest {
 
-    @test("target v1 es5") es5() {
-        this.run("es5", "test.suite");
-    }
-
-    @test("target v1 es6") es6() {
-        this.run("es6", "test.suite");
-    }
-
-    @test("target v2 es5") v2es5() {
-        this.run("es5", "test.v2.suite");
-    }
-
-    @test("target v2 es6") v2es6() {
-        this.run("es6", "test.v2.suite");
-    }
-
-    @test "only v2 suite es5"() {
-        this.run("es5", "only.v2.suite");
-    }
-
-    @test "only v2 suite es6"() {
-        this.run("es6", "only.v2.suite");
-    }
-
-    @test "pending v2 suite es5"() {
-        this.run("es5", "pending.v2.suite");
-    }
-
-    @test "pending v2 suite es6"() {
-        this.run("es6", "pending.v2.suite");
-    }
-
-    @test "only suite es5"() {
-        this.run("es5", "only.suite");
-    }
-
-    @test "only suite es6"() {
-        this.run("es6", "only.suite");
-    }
-
-    @test "pending suite es5"() {
-        this.run("es5", "pending.suite");
-    }
-
-    @test "pending suite es6"() {
-        this.run("es6", "pending.suite");
-    }
-
-    @test "retries suite es5"() {
-        this.run("es5", "retries.suite");
-    }
-
-    @test "retries suite es6"() {
-        this.run("es6", "retries.suite");
-    }
-
-    @test "context suite es6"() {
-        this.run("es6", "context.suite");
-    }
-
-    @test "abstract inheritance suite es5"() {
-        this.run("es5", "abstract.inheritance.suite");
-    }
-
-    @test "abstract inheritance suite es6"() {
-        this.run("es6", "abstract.inheritance.suite");
-    }
-
-    @test "suite inheritance suite es5"() {
-        this.run("es5", "suite.inheritance.suite");
-    }
-
-    @test "suite inheritance suite es6"() {
-        this.run("es6", "suite.inheritance.suite");
-    }
-
-    @test "abstract inheritance fail to override abstract test from suite es5"() {
-        this.run("es5", "abstract.inheritance.override1.suite");
-    }
-
-    @test "abstract inheritance fail override abstract test from suite es6"() {
-        this.run("es6", "abstract.inheritance.override1.suite");
-    }
-
-    @test "abstract inheritance succeed to override abstract test from suite es5"() {
-        this.run("es5", "abstract.inheritance.override2.suite");
-    }
-
-    @test "abstract inheritance succeed override abstract test from suite es6"() {
-        this.run("es6", "abstract.inheritance.override2.suite");
-    }
-
-    @test "suite inheritance fail to override abstract test from suite es5"() {
-        this.run("es5", "suite.inheritance.override1.suite");
-    }
-
-    @test "suite inheritance fail override abstract test from suite es6"() {
-        this.run("es6", "suite.inheritance.override1.suite");
-    }
-
-    @test "suite inheritance succeed to override abstract test from suite es5"() {
-        this.run("es5", "suite.inheritance.override2.suite");
-    }
-
-    @test "suite inheritance succeed override abstract test from suite es6"() {
-        this.run("es6", "suite.inheritance.override2.suite");
-    }
-
-    private run(target: string, ts: string) {
+    @params({ target: "es5", ts: "test.suite" }, "target v1 es5")
+    @params({ target: "es6", ts: "test.suite" }, "target v1 es6")
+    @params({ target: "es5", ts: "test.v2.suite" }, "target v2 es5")
+    @params({ target: "es6", ts: "test.v2.suite" }, "target v2 es6")
+    @params({ target: "es5", ts: "only.v2.suite" }, "only v2 suite es5")
+    @params({ target: "es6", ts: "only.v2.suite" }, "only v2 suite es6")
+    @params({ target: "es5", ts: "pending.v2.suite" }, "pending v2 suite es5")
+    @params({ target: "es6", ts: "pending.v2.suite" }, "pending v2 suite es6")
+    @params({ target: "es5", ts: "only.suite" }, "only suite es5")
+    @params({ target: "es6", ts: "only.suite" }, "only suite es6")
+    @params({ target: "es5", ts: "pending.suite" }, "pending suite es5")
+    @params({ target: "es6", ts: "pending.suite" }, "pending suite es6")
+    @params({ target: "es5", ts: "retries.suite" }, "retries suite es5")
+    @params({ target: "es6", ts: "retries.suite" }, "retries suite es6")
+    @params({ target: "es6", ts: "context.suite" }, "context suite es6")
+    @params({ target: "es5", ts: "abstract.inheritance.suite" }, "abstract inheritance suite es5")
+    @params({ target: "es6", ts: "abstract.inheritance.suite" }, "abstract inheritance suite es6")
+    @params({ target: "es5", ts: "suite.inheritance.suite" }, "suite inheritance suite es5")
+    @params({ target: "es6", ts: "suite.inheritance.suite" }, "suite inheritance suite es6")
+    @params({ target: "es5", ts: "abstract.inheritance.override1.suite" }, "abstract inheritance fail to override abstract test from suite es5")
+    @params({ target: "es6", ts: "abstract.inheritance.override1.suite" }, "abstract inheritance fail override abstract test from suite es6")
+    @params({ target: "es5", ts: "abstract.inheritance.override2.suite" }, "abstract inheritance succeed to override abstract test from suite es5")
+    @params({ target: "es6", ts: "abstract.inheritance.override2.suite" }, "abstract inheritance succeed override abstract test from suite es6")
+    @params({ target: "es5", ts: "suite.inheritance.override1.suite" }, "suite inheritance fail to override abstract test from suite es5")
+    @params({ target: "es6", ts: "suite.inheritance.override1.suite" }, "suite inheritance fail override abstract test from suite es6")
+    @params({ target: "es5", ts: "suite.inheritance.override2.suite" }, "suite inheritance succeed to override abstract test from suite es5")
+    @params({ target: "es6", ts: "suite.inheritance.override2.suite" }, "suite inheritance succeed override abstract test from suite es6")
+    run({ target, ts }) {
         let tsc = spawnSync("node", [path.join(".", "node_modules", "typescript", "bin", "tsc"),
-                                     "--experimentalDecorators", "--module", "commonjs", "--target", target, "--lib",
-                                     "es6", path.join("tests", "ts", ts + ".ts")]);
+            "--experimentalDecorators", "--module", "commonjs", "--target", target, "--lib",
+            "es6", path.join("tests", "ts", ts + ".ts")]);
 
         assert.equal(tsc.stdout.toString(), "", "Expected error free tsc.");
         assert.equal(tsc.status, 0);
 
         let mocha = spawnSync("node", [path.join(".", "node_modules", "mocha", "bin", "_mocha"),
-                                       "-C", path.join("tests", "ts", ts + ".js")]);
+            "-C", path.join("tests", "ts", ts + ".js")]);
 
         let actual = cleanup(mocha.stdout.toString());
         assertOutput(actual, path.join("tests", "ts", ts + ".expected.txt"));
@@ -206,42 +125,13 @@ class PackageTest {
 
     static tgzPath: string;
 
-    @test "can be consumed as module"() {
-        this.testPackage("module-usage", false);
-    }
-
-    @test "can be consumed as custom ui"() {
-        this.testPackage("custom-ui", false);
-    }
-
-    @test "readme followed custom ui"() {
-        this.testPackage("setting-up", false);
-    }
-
-    @test "can be consumed as module with @types/mocha"() {
-        this.testPackage("module-usage", true);
-    }
-
-    @test "can be consumed as custom ui with @types/mocha"() {
-        this.testPackage("custom-ui", true);
-    }
-
-    @test "readme followed custom ui with @types/mocha"() {
-        this.testPackage("setting-up", true);
-    }
-
-    @timeout(30000)
-    static before() {
-        let pack = spawnSync("npm", ["pack", "--quiet"]);
-        assert.equal(pack.stderr.toString(), "");
-        assert.equal(pack.status, 0, "npm pack failed.");
-        const lines = (<string>pack.stdout.toString()).split("\n").filter(line => !!line);
-        assert.isAtLeast(lines.length, 1,
-          "Expected atleast one line of output from npm pack with the .tgz name.");
-        PackageTest.tgzPath = path.resolve(lines[lines.length - 1]);
-    }
-
-    private testPackage(packageName: string, installTypesMocha: boolean = false): void {
+    @params({ packageName: "module-usage", installTypesMocha: false }, "can be consumed as module")
+    @params({ packageName: "custom-ui", installTypesMocha: false }, "can be consumed as custom ui")
+    @params({ packageName: "setting-up", installTypesMocha: false }, "readme followed custom ui")
+    @params({ packageName: "module-usage", installTypesMocha: true }, "can be consumed as module with @types/mocha")
+    @params({ packageName: "custom-ui", installTypesMocha: true }, "can be consumed as custom ui with @types/mocha")
+    @params({ packageName: "setting-up", installTypesMocha: true }, "readme followed custom ui with @types/mocha")
+    testPackage({ packageName, installTypesMocha = false }): void {
         let cwd;
         let npmtest;
         cwd = path.resolve(path.join("tests", "repo"), packageName);
@@ -262,5 +152,16 @@ class PackageTest {
 
         npmtest = spawnSync("npm", ["test"], { cwd });
         assertOutput(npmtest.stdout.toString(), path.join(cwd, "expected.txt"));
+    }
+
+    @timeout(30000)
+    static before() {
+        let pack = spawnSync("npm", ["pack", "--quiet"]);
+        assert.equal(pack.stderr.toString(), "");
+        assert.equal(pack.status, 0, "npm pack failed.");
+        const lines = (<string>pack.stdout.toString()).split("\n").filter(line => !!line);
+        assert.isAtLeast(lines.length, 1,
+          "Expected atleast one line of output from npm pack with the .tgz name.");
+        PackageTest.tgzPath = path.resolve(lines[lines.length - 1]);
     }
 }

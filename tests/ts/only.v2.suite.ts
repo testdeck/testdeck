@@ -1,17 +1,17 @@
-import { suite, test, slow, timeout, skip, only, pending } from "../../index";
+import { only, pending, skip, slow, suite, test, timeout } from "../../index";
 
 @suite.only class Suite1 {
-    @test test() {}
+    @test public test() {}
 }
 @suite.only() class Suite2 {
-    @test test() {}
+    @test public test() {}
 }
 @suite.only("test suite") class Suite3 {
-    @test test() {}
+    @test public test() {}
 }
 @suite.only(timeout(20)) class Suite4 {
-    @test test() {}
+    @test public test() {}
 }
 @suite class SuiteNoGo {
-    @test test1() {}
+    @test public test1() {}
 }

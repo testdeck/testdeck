@@ -1,19 +1,19 @@
-import { suite, params, test, slow, timeout, skip, pending, only } from "./index";
 import { assert } from "chai";
 import { spawnSync } from "child_process";
+import * as fs from "fs";
 import * as path from "path";
 import * as rimraf from "rimraf";
-import * as fs from "fs";
+import { only, params, pending, skip, slow, suite, test, timeout } from "./index";
 
 function assertContent(actualStr: string, expectedStr: string) {
 
-    let actual: string[] = actualStr.split("\n");
-    let expected: string[] = expectedStr.split("\n");
+    const actual: string[] = actualStr.split("\n");
+    const expected: string[] = expectedStr.split("\n");
 
     assert.equal(actual.length, expected.length, "actual and expected differ in length");
-    for(var i = 0; i < expected.length; i++) {
-      let expectedLine = expected[i].trim();
-      let actualLine = actual[i].trim();
+    for (let i = 0; i < expected.length; i++) {
+      const expectedLine = expected[i].trim();
+      const actualLine = actual[i].trim();
       assert.isTrue(actualLine.indexOf(expectedLine) !== -1,
         "Unexpected output on line '" + i + "'. Expected: '" +
         expectedLine + "' to be contained in '" + actualLine + "'");
@@ -55,7 +55,7 @@ function cleanup(str: string, eliminateAllEmptyLines = false): string {
 function trimEmptyLines(str: string, eliminateAll = false): string {
 
     const collected: string[] = [];
-    const lines = str.split('\n');
+    const lines = str.split("\n");
     let emptyLinesCount = 0;
     for (const line of lines) {
         if (line === "" || line.match(/^\s*$/) || line.indexOf(ELIMINATE_LINE) !== -1) {
@@ -63,13 +63,13 @@ function trimEmptyLines(str: string, eliminateAll = false): string {
             continue;
         }
         if (emptyLinesCount && !eliminateAll) {
-            collected.push('');
+            collected.push("");
         }
         emptyLinesCount = 0;
         collected.push(line);
     }
 
-    return collected.join('\n');
+    return collected.join("\n");
 }
 
 @suite("typescript", slow(5000), timeout(15000))
@@ -103,18 +103,18 @@ class SuiteTest {
     @params({ target: "es5", ts: "suite.inheritance.override2.suite" }, "suite inheritance succeed to override abstract test from suite es5")
     @params({ target: "es6", ts: "suite.inheritance.override2.suite" }, "suite inheritance succeed override abstract test from suite es6")
     @params.naming(({ target, ts }) => `${ts} ${target}`)
-    run({ target, ts }) {
-        let tsc = spawnSync("node", [path.join(".", "node_modules", "typescript", "bin", "tsc"),
+    public run({ target, ts }) {
+        const tsc = spawnSync("node", [path.join(".", "node_modules", "typescript", "bin", "tsc"),
             "--experimentalDecorators", "--module", "commonjs", "--target", target, "--lib",
             "es6", path.join("tests", "ts", ts + ".ts")]);
 
         assert.equal(tsc.stdout.toString(), "", "Expected error free tsc.");
         assert.equal(tsc.status, 0);
 
-        let mocha = spawnSync("node", [path.join(".", "node_modules", "mocha", "bin", "_mocha"),
+        const mocha = spawnSync("node", [path.join(".", "node_modules", "mocha", "bin", "_mocha"),
             "-C", path.join("tests", "ts", ts + ".js")]);
 
-        let actual = cleanup(mocha.stdout.toString());
+        const actual = cleanup(mocha.stdout.toString());
         assertOutput(actual, path.join("tests", "ts", ts + ".expected.txt"));
     }
 }
@@ -124,7 +124,7 @@ class SuiteTest {
 // @suite(timeout(90000), slow(10000))
 class PackageTest {
 
-    static tgzPath: string;
+    public static tgzPath: string;
 
     @params({ packageName: "module-usage", installTypesMocha: false }, "can be consumed as module")
     @params({ packageName: "custom-ui", installTypesMocha: false }, "can be consumed as custom ui")
@@ -132,13 +132,13 @@ class PackageTest {
     @params({ packageName: "module-usage", installTypesMocha: true }, "can be consumed as module with @types/mocha")
     @params({ packageName: "custom-ui", installTypesMocha: true }, "can be consumed as custom ui with @types/mocha")
     @params({ packageName: "setting-up", installTypesMocha: true }, "readme followed custom ui with @types/mocha")
-    testPackage({ packageName, installTypesMocha = false }): void {
+    public testPackage({ packageName, installTypesMocha = false }): void {
         let cwd;
         let npmtest;
         cwd = path.resolve(path.join("tests", "repo"), packageName);
         rimraf.sync(path.join(cwd, "node_modules"));
 
-        let npmi = spawnSync("npm", ["i", "--no-package-lock"], { cwd });
+        const npmi = spawnSync("npm", ["i", "--no-package-lock"], { cwd });
         assert.equal(npmi.status, 0, "'npm i' failed.");
 
         let args: string[];
@@ -148,7 +148,7 @@ class PackageTest {
             args = ["i", PackageTest.tgzPath, "--no-save", "--no-package-lock"];
         }
 
-        let npmitgz = spawnSync("npm", args, { cwd });
+        const npmitgz = spawnSync("npm", args, { cwd });
         assert.equal(npmitgz.status, 0, "'npm i <tgz>' failed.");
 
         npmtest = spawnSync("npm", ["test"], { cwd });
@@ -156,11 +156,11 @@ class PackageTest {
     }
 
     @timeout(30000)
-    static before() {
-        let pack = spawnSync("npm", ["pack", "--quiet"]);
+    public static before() {
+        const pack = spawnSync("npm", ["pack", "--quiet"]);
         assert.equal(pack.stderr.toString(), "");
         assert.equal(pack.status, 0, "npm pack failed.");
-        const lines = (<string>pack.stdout.toString()).split("\n").filter(line => !!line);
+        const lines = (pack.stdout.toString() as string).split("\n").filter((line) => !!line);
         assert.isAtLeast(lines.length, 1,
           "Expected atleast one line of output from npm pack with the .tgz name.");
         PackageTest.tgzPath = path.resolve(lines[lines.length - 1]);

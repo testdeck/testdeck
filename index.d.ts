@@ -90,4 +90,9 @@ declare module "mocha-typescript" {
     export function context(target: Object, propertyKey: string | symbol): void;
 
     export const skipOnError: MochaTypeScript.SuiteTrait;
+
+    export interface Container {
+        get(klass: any): any
+    }
+    export function useContainer(container: Container): void;
 }

@@ -136,20 +136,20 @@ function suiteClassCallback(target: SuiteCtor, context: TestFunctions) {
         if (prototype.before) {
             if (prototype.before.length > 0) {
                 beforeEachFunction = noname(function(this: Mocha.IHookCallbackContext, done: Function) {
-                    instance = new target();
+                    instance = getInstance(target);
                     applyDecorators(this, prototype, prototype.before, instance);
                     return prototype.before.call(instance, done);
                 });
             } else {
                 beforeEachFunction = noname(function(this: Mocha.IHookCallbackContext) {
-                    instance = new target();
+                    instance = getInstance(target);
                     applyDecorators(this, prototype, prototype.before, instance);
                     return prototype.before.call(instance);
                 });
             }
         } else {
             beforeEachFunction = noname(function(this: Mocha.IHookCallbackContext) {
-                instance = new target();
+                instance = getInstance(target);
             });
         }
         context.beforeEach(beforeEachFunction);
@@ -669,5 +669,17 @@ function tsdd(suite) {
         context.skipOnError = skipOnError;
     });
 }
+
+let userContainer:Container;
+
+export interface Container {
+	get(klass: any): any
+}
+export function useContainer(container: Container) {
+	userContainer = container;
+}
+
+const getInstance = (klass:any) => userContainer ? userContainer.get(klass) : new klass();
+
 module.exports = Object.assign(tsdd, exports);
 (Mocha as any).interfaces["mocha-typescript"] = tsdd;

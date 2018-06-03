@@ -20,6 +20,11 @@ function assertContent(actualStr: string, expectedStr: string) {
     }
 }
 
+function assertExactOutput(actual: string, filePath: string) {
+    const expected = fs.readFileSync(filePath, "utf-8");
+    assert.equal(actual, expected);
+}
+
 function assertOutput(actual: string, filePath: string) {
 
     let expected = "";
@@ -72,7 +77,7 @@ function trimEmptyLines(str: string, eliminateAll = false): string {
     return collected.join("\n");
 }
 
-// @suite("typescript", slow(5000), timeout(15000))
+@suite("typescript", slow(5000), timeout(15000))
 class SuiteTest {
 
     @params({ target: "es5", ts: "test.suite" })
@@ -155,8 +160,7 @@ class PackageTest {
 
         npmtest = spawnSync("npm", ["test"], { cwd });
 
-        assert.equal("", npmtest.stderr.toString(), "Excpected mocha to not fail with error");
-
+        assertExactOutput(npmtest.stderr.toString(), path.join(cwd, "expected.err.txt"));
         assertOutput(npmtest.stdout.toString(), path.join(cwd, "expected.txt"));
     }
 

@@ -183,43 +183,46 @@ function suiteClassCallback(target: SuiteCtor, context: TestFunctions) {
         context.afterEach(afterEachFunction);
 
         function runTest(prototype: any, method: Function) {
-            let testName = method[testNameSymbol];
-            let shouldSkip = method[skipSymbol];
-            let shouldOnly = method[onlySymbol];
-            let shouldPending = method[pendingSymbol];
-            const parameters = method[parametersSymbol];
-            const nameForParameters = method[nameForParametersSymbol];
-
-            const testFunc = (shouldSkip && context.it.skip)
-                || (shouldOnly && context.it.only)
-                || context.it;
+            const testName = method[testNameSymbol] || (method as any).name;
+            const shouldSkip = method[skipSymbol];
+            const shouldOnly = method[onlySymbol];
+            const shouldPending = method[pendingSymbol];
+            const parameters = method[parametersSymbol] as TestParams[];
 
             if (testName || shouldOnly || shouldPending || shouldSkip) {
-                testName = testName || (method as any).name;
                 if (shouldPending && !shouldSkip && !shouldOnly) {
                     context.it.skip(testName);
                 } else if (parameters) {
+                    const nameForParameters = method[nameForParametersSymbol];
                     parameters.forEach((parameterOptions, i) => {
-                        const [testFunc, mark, name, parameter] = parameterOptions;
+                        const { mark, name, params } = parameterOptions;
 
                         let parametersTestName = `${testName}_${i}`;
                         if (name) {
                             parametersTestName = name;
                         } else if (nameForParameters) {
-                            parametersTestName = nameForParameters(parameter);
+                            parametersTestName = nameForParameters(params);
                         }
 
-                        shouldSkip = mark === skipSymbol;
-                        shouldOnly = mark === onlySymbol;
-                        shouldPending = mark === pendingSymbol;
+                        const shouldSkipParam = shouldSkip || (mark === Mark.skip);
+                        const shouldOnlyParam = shouldOnly || (mark === Mark.only);
+                        const shouldPendingParam = shouldPending || (mark === Mark.pending);
 
-                        if (shouldPending && !shouldSkip && !shouldOnly) {
+                        if (shouldPendingParam && !shouldSkipParam && !shouldOnlyParam) {
                             context.it.skip(testName);
-                        }
+                        } else {
+                            const testFunc = (shouldSkipParam && context.it.skip)
+                                || (shouldOnlyParam && context.it.only)
+                                || context.it;
 
-                        applyTestFunc(testFunc, parametersTestName, method, [parameter], method.length <= 1);
+                            applyTestFunc(testFunc, parametersTestName, method, [params], method.length <= 1);
+                        }
                     });
                 } else {
+                    const testFunc = (shouldSkip && context.it.skip)
+                        || (shouldOnly && context.it.only)
+                        || context.it;
+
                     applyTestFunc(testFunc, testName, method, [], method.length === 0);
                 }
             }
@@ -338,12 +341,20 @@ function makeSuiteObject(context: TestFunctions): Suite {
 }
 export const suite = makeSuiteObject(globalTestFunctions);
 
-function makeParamsFunction(testFunc: Function, mark: null | string | symbol) {
-    return (parameters: any, name?: string) => {
+const enum Mark { test, skip, only, pending }
+
+interface TestParams {
+    mark: Mark;
+    name?: string;
+    params: any;
+}
+
+function makeParamsFunction(mark: Mark) {
+    return (params: any, name?: string) => {
         return (target: Object, propertyKey: string) => {
             target[propertyKey][testNameSymbol] = propertyKey ? propertyKey.toString() : "";
             target[propertyKey][parametersSymbol] = target[propertyKey][parametersSymbol] || [];
-            target[propertyKey][parametersSymbol].push([testFunc, mark, name, parameters]);
+            target[propertyKey][parametersSymbol].push({ mark, name, params } as TestParams);
         };
     };
 }
@@ -357,10 +368,10 @@ function makeParamsNameFunction() {
 }
 
 function makeParamsObject(context: TestFunctions) {
-    return Object.assign(makeParamsFunction(context.it, null), {
-        skip: makeParamsFunction(context.describe.skip, skipSymbol),
-        only: makeParamsFunction(context.describe.only, onlySymbol),
-        pending: makeParamsFunction(context.describe.skip, pendingSymbol),
+    return Object.assign(makeParamsFunction(Mark.test), {
+        skip: makeParamsFunction(Mark.skip),
+        only: makeParamsFunction(Mark.only),
+        pending: makeParamsFunction(Mark.pending),
         naming: makeParamsNameFunction(),
     });
 }
@@ -659,3 +670,4 @@ function tsdd(suite) {
     });
 }
 module.exports = Object.assign(tsdd, exports);
+(Mocha as any).interfaces["mocha-typescript"] = tsdd;

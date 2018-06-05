@@ -88,10 +88,6 @@
        should fail when asserts are broken:
 
       Error: Assert failed
-      + expected - actual
-
-      -to fail
-      +expected
 
   2) mocha typescript
        should fail async when given error:

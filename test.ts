@@ -46,13 +46,19 @@ function cleanup(str: string, eliminateAllEmptyLines = false): string {
 
     // clean up times
     let result = str.replace(/\s*[(][\d]+[^)]+[)]/g, "");
+    // clean up paths
+    result = result.replace(/\s*[(][/][^)]+[)]/g, "");
     // clean up call stacks
-    result = result.replace(/at\s<.+>.*/g, ELIMINATE_LINE);
-    result = result.replace(/at\s.+[^:]+:[^:]+:[\d]+/g, ELIMINATE_LINE);
-    result = result.replace(/at\s.+[(][^:]+:[^:]+:[^)]+[)]/g, ELIMINATE_LINE);
-    result = result.replace(/at\s.+[\[]as\s+[^\]]+[\]].*/g, ELIMINATE_LINE);
+    result = result.replace(/^\s*at\s<.+>.*/mg, ELIMINATE_LINE);
+    result = result.replace(/^\s*at\s.+[^:]+:[^:]+:[\d]+/mg, ELIMINATE_LINE);
+    result = result.replace(/^\s*at\s.+[(][^:]+:[^:]+:[^)]+[)]/mg, ELIMINATE_LINE);
+    result = result.replace(/^\s*at\s.+[\[]as\s+[^\]]+[\]].*/mg, ELIMINATE_LINE);
     // clean up calls
     result = result.replace(/>\s.+/g, ELIMINATE_LINE);
+    // clean up extraneous other stuff
+    result = result.replace(/^\s*[+] expected - actual/mg, ELIMINATE_LINE);
+    result = result.replace(/^\s*[-](actual|to fail|false|true)$/mg, ELIMINATE_LINE);
+    result = result.replace(/^\s*[+](expected|false|true)$/mg, ELIMINATE_LINE);
 
     return trimEmptyLines(result, eliminateAllEmptyLines);
 }
@@ -63,7 +69,7 @@ function trimEmptyLines(str: string, eliminateAll = false): string {
     const lines = str.split("\n");
     let emptyLinesCount = 0;
     for (const line of lines) {
-        if (line === "" || line.match(/^\s*$/) || line.indexOf(ELIMINATE_LINE) !== -1) {
+        if (line.trim() === "" || line.indexOf(ELIMINATE_LINE) !== -1) {
             emptyLinesCount++;
             continue;
         }

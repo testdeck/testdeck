@@ -14,8 +14,10 @@
 
   1) FlakyMethodDecorator
        tryOnce:
-     AssertionError: expected 2 to be above 2
+
+      AssertionError: expected 2 to be above 2
 
   2) FlakySuiteDecorator
        tryToGetPass4:
-     AssertionError: expected 4 to be above 4
+
+      AssertionError: expected 4 to be above 4

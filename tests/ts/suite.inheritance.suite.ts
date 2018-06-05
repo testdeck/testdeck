@@ -1,34 +1,34 @@
-import { suite, test } from "../../index";
 import { assert } from "chai";
+import { suite, test } from "../../index";
 
 @suite class PartialTest {
 
-  protected _truthyValue: boolean;
+  protected truthyValue: boolean;
 
-  before() {
+  public before() {
 
-    this._truthyValue = true;
+    this.truthyValue = true;
   }
 
-  @test "test from PartialTest"() {
+  @test public "test from PartialTest"() {
 
-    assert.isTrue(this._truthyValue, "truthyValue should have been true");
+    assert.isTrue(this.truthyValue, "truthyValue should have been true");
   }
 }
 
 @suite class CompleteTest extends PartialTest {
 
-  private _falsyValue = true;
+  private falsyValue = true;
 
-  before(): void {
+  public before(): void {
 
     super.before();
 
-    this._falsyValue = false;
+    this.falsyValue = false;
   }
 
-  @test "test from CompleteTest"() {
+  @test public "test from CompleteTest"() {
 
-    assert.isFalse(this._falsyValue, "falsyValue should have been false");
+    assert.isFalse(this.falsyValue, "falsyValue should have been false");
   }
 }

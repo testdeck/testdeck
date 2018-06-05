@@ -136,8 +136,10 @@
 
   12) InstanceTests
        testFailing:
-     AssertionError: expected false to be true
+
+      AssertionError: expected false to be true
 
   13) AsyncInstanceTests
        testFailing:
-     AssertionError: expected false to be true
+
+      AssertionError: expected false to be true

@@ -1,8 +1,8 @@
-import { suite, test, slow, timeout, skip, only, pending } from "../../index";
+import { only, pending, skip, slow, suite, test, timeout } from "../../index";
 
 @suite @pending class Suite1 {
-    @test test1() {}
+    @test public test1() {}
 }
 @suite class Suite2 {
-    @test test1() {}
+    @test public test1() {}
 }

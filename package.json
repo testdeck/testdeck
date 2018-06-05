@@ -13,8 +13,10 @@
   },
   "scripts": {
     "pretest": "tsc",
-    "test": "mocha test.js --opts mocha.opts",
-    "prepare": "tsc"
+    "test": "mocha test.js --opts mocha.opts && tslint --project .",
+    "prepare": "tsc",
+    "tslint-fix": "tslint --fix --project .",
+    "tslint": "tslint --project ."
   },
   "author": "Panayot Cankov",
   "contributors": [
@@ -39,6 +41,7 @@
     "mocha": "^5.2.0",
     "rimraf": "^2.6.1",
     "source-map-support": "^0.4.15",
+    "tslint": "^5.10.0",
     "typescript": "^2.4.1"
   },
   "files": [

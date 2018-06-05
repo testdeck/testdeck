@@ -1,39 +1,39 @@
 import * as mocha from "mocha";
-import { suite, test, slow, timeout, skip, only, pending, context } from "../../index";
+import { context, only, pending, skip, slow, suite, test, timeout } from "../../index";
 
 @suite class Static {
-    @test one() {
+    @test public one() {
     }
 }
 
 [
     { url: "google.com", title: "google" },
     { url: "github.com", title: "github" },
-    { url: "npmjs.com", title: "npmjs" }
+    { url: "npmjs.com", title: "npmjs" },
 ].forEach(({ url, title }) => {
     // Nice question: How to share the same instance for all tests?
     @suite(`OAuth ${title}`) class OAuthTest {
 
         // Get the mocha context in for instance before and after (before/after each) and test methods.
-        @context mocha: mocha.IBeforeAndAfterContext & mocha.IHookCallbackContext;
+        @context public mocha: mocha.IBeforeAndAfterContext & mocha.IHookCallbackContext;
 
         // Get the mocha context for static before and after.
-        @context static mocha: mocha.IBeforeAndAfterContext & mocha.IHookCallbackContext;
+        @context public static mocha: mocha.IBeforeAndAfterContext & mocha.IHookCallbackContext;
 
-        @test async "Request token"() {
+        @test public async "Request token"() {
             // return (await request(url)).responce.headers.token;
             return Promise.resolve();
         }
-        @test async "Exchange token for oauth session"() {
+        @test public async "Exchange token for oauth session"() {
             return Promise.resolve();
         }
-        @test async "Request sensitive data"() {
+        @test public async "Request sensitive data"() {
             return Promise.resolve();
         }
-        after() {
+        public after() {
             console.log("End of test: " + this.mocha.currentTest.fullTitle());
         }
-        static after() {
+        public static after() {
             // After all tests
             console.log("End of test: " + !!this.mocha);
         }

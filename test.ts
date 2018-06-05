@@ -3,7 +3,7 @@ import { spawnSync } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
 import * as rimraf from "rimraf";
-import { only, params, pending, skip, slow, suite, test, timeout } from "./index";
+import { params, slow, suite, timeout } from "./index";
 
 function assertContent(actualStr: string, expectedStr: string) {
 
@@ -107,6 +107,14 @@ class SuiteTest {
     @params({ target: "es6", ts: "suite.inheritance.override1.suite" }, "suite inheritance fail override abstract test from suite es6")
     @params({ target: "es5", ts: "suite.inheritance.override2.suite" }, "suite inheritance succeed to override abstract test from suite es5")
     @params({ target: "es6", ts: "suite.inheritance.override2.suite" }, "suite inheritance succeed override abstract test from suite es6")
+    @params({ target: "es5", ts: "params.suite" })
+    @params({ target: "es6", ts: "params.suite" })
+    @params({ target: "es5", ts: "params.skip.suite" })
+    @params({ target: "es6", ts: "params.skip.suite" })
+    @params({ target: "es5", ts: "params.only.suite" })
+    @params({ target: "es6", ts: "params.only.suite" })
+    @params({ target: "es5", ts: "params.naming.suite" })
+    @params({ target: "es6", ts: "params.naming.suite" })
     @params.naming(({ target, ts }) => `${ts} ${target}`)
     public run({ target, ts }) {
         const tsc = spawnSync("node", [path.join(".", "node_modules", "typescript", "bin", "tsc"),

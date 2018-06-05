@@ -100,11 +100,11 @@
 
   3) Timeouts
        pass2:
-     Error: Timeout of 10ms exceeded. For async tests and hooks, ensure "done()" is called; if returning a Promise, ensure it resolves.
+     Error: Timeout of 10ms exceeded. For async tests and hooks, ensure "done()" is called; if returning a Promise, ensure it resolves. (/Volumes/workspaces/01-coldrye/01-collaboration/mocha-typescript/tests/ts/test.v2.suite.js)
 
   4) InlineTrait
        timeout:
-     Error: Timeout of 10ms exceeded. For async tests and hooks, ensure "done()" is called; if returning a Promise, ensure it resolves.
+     Error: Timeout of 10ms exceeded. For async tests and hooks, ensure "done()" is called; if returning a Promise, ensure it resolves. (/Volumes/workspaces/01-coldrye/01-collaboration/mocha-typescript/tests/ts/test.v2.suite.js)
 
   5) StockSequence
        step2:
@@ -128,7 +128,7 @@
 
   10) mocha typescript
        test intentinally timeout:
-     Error: Timeout of 5ms exceeded. For async tests and hooks, ensure "done()" is called; if returning a Promise, ensure it resolves.
+     Error: Timeout of 5ms exceeded. For async tests and hooks, ensure "done()" is called; if returning a Promise, ensure it resolves. (/Volumes/workspaces/01-coldrye/01-collaboration/mocha-typescript/tests/ts/test.v2.suite.js)
 
   11) mocha typescript
        test intentinall fail due error before timeout:
@@ -136,8 +136,18 @@
 
   12) InstanceTests
        testFailing:
-     AssertionError: expected false to be true
+
+      AssertionError: expected false to be true
+      + expected - actual
+
+      -false
+      +true
 
   13) AsyncInstanceTests
        testFailing:
-     AssertionError: expected false to be true
+
+      AssertionError: expected false to be true
+      + expected - actual
+
+      -false
+      +true

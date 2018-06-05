@@ -1,0 +1,6 @@
+
+  ParamsOnlySuite
+    ✓ must be run 2
+    ✓ must be run 1
+
+  2 passing

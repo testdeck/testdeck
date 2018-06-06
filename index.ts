@@ -63,10 +63,10 @@ interface SuiteProto {
 export type SuiteTrait = (this: Mocha.ISuiteCallbackContext, ctx: Mocha.ISuiteCallbackContext, ctor: SuiteCtor) => void;
 export type TestTrait = (this: Mocha.ITestCallbackContext, ctx: Mocha.ITestCallbackContext, instance: SuiteProto, method: Function) => void;
 
-const noname = (cb: Function, innerFunction?: Function): () => any => {
+const noname = (cb: ((context, done?) => any), innerFunction?: Function): () => any => {
     if (innerFunction && cb) {
-        let wrapperResult: any = function() {
-            return cb.apply(this, arguments);
+        let wrapperResult: any = function(context) {
+            cb.apply(this, arguments);
         };
         if (cb.length === 2) {
             // we need to handle the done callback explicitly in the definition for mocha to respect it correctly

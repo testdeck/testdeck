@@ -64,7 +64,27 @@ interface SuiteProto {
 export type SuiteTrait = (this: Mocha.ISuiteCallbackContext, ctx: Mocha.ISuiteCallbackContext, ctor: SuiteCtor) => void;
 export type TestTrait = (this: Mocha.ITestCallbackContext, ctx: Mocha.ITestCallbackContext, instance: SuiteProto, method: Function) => void;
 
-const noname = (cb) => cb;
+const noname = (cb: ((done?: Function) => any), innerFunction?: Function): () => any => {
+    if (innerFunction && cb) {
+        let wrapperResult: any = function() {
+            return cb.apply(this, arguments);
+        };
+        if (cb.length === 1) {
+            // we need to handle the done callback explicitly in the definition for mocha to respect it correctly
+            wrapperResult = function(done) {
+                return cb.apply(this, arguments);
+            };
+        }
+
+        // wrap the toString method
+        wrapperResult.toString = () => {
+            return innerFunction && innerFunction.toString();
+        };
+        return wrapperResult;
+    } else {
+        return cb as any;
+    }
+};
 
 function applyDecorators(mocha: Mocha.IHookCallbackContext, ctorOrProto, method, instance) {
     const timeoutValue = method[timeoutSymbol];
@@ -237,13 +257,13 @@ function suiteClassCallback(target: SuiteCtor, context: TestFunctions) {
                     applyDecorators(this, prototype, method, instance);
                     applyTestTraits(this, instance, method);
                     return method.call(instance, ...callArgs);
-                }));
+                }, method));
             } else {
                 testFunc(testName, noname(function(this: Mocha.ITestCallbackContext, done) {
                     applyDecorators(this, prototype, method, instance);
                     applyTestTraits(this, instance, method);
                     return method.call(instance, ...callArgs, done);
-                }));
+                }, method));
             }
         }
 

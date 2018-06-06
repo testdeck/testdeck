@@ -122,7 +122,7 @@ function compilationComplete() {
 const tscp = spawn(argv.tsc, ["-p", argv.project, "-w"]);
 const tscl = readline.createInterface({ input: tscp.stdout });
 tscl.on("line", (line) => {
-    if (line.indexOf("Compilation complete.") >= 0) {
+    if (line.indexOf("Compilation complete.") >= 0 || line.indexOf("Found ") >= 0) {
         console.log(line);
         compilationComplete();
     } else if (line.indexOf("File change detected.") >= 0) {

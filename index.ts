@@ -684,24 +684,24 @@ const defaultDependencyInjectionSystem: DependencyInjectionSystem = {
     handles() { return true; },
     create<T>(cls: TestClass<T>) {
         return new cls();
-    }
-}
+    },
+};
 
 const dependencyInjectionSystems: DependencyInjectionSystem[] = [defaultDependencyInjectionSystem];
 
 function getInstance<T>(testClass: TestClass<T>) {
-	const di = dependencyInjectionSystems.find(di => di.handles(testClass));
-	return di.create(testClass);
+    const di = dependencyInjectionSystems.find((di) => di.handles(testClass));
+    return di.create(testClass);
 }
 
 /**
  * Register a dependency injection system.
  */
 export function register(instantiator: DependencyInjectionSystem) {
-	// Maybe check if it is not already added?
-	if (dependencyInjectionSystems.some(di => di === instantiator)) { return false };
-	dependencyInjectionSystems.unshift(instantiator);
-	return true;
+    // Maybe check if it is not already added?
+    if (dependencyInjectionSystems.some((di) => di === instantiator)) { return false; }
+    dependencyInjectionSystems.unshift(instantiator);
+    return true;
 }
 
 module.exports = Object.assign(tsdd, exports);

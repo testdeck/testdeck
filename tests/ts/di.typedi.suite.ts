@@ -1,7 +1,7 @@
-import { suite, test, register } from "../../index";
 import { assert } from "chai";
 import { Service } from "typedi";
 import "../../di/typedi";
+import { register, suite, test } from "../../index";
 
 @Service()
 class Add {
@@ -27,8 +27,10 @@ class Linear {
 
 @suite class TypeDITest {
   constructor(public liner: Linear) { }
-  @test "test linear function"() {
-    const k = 123, x = 63, b = 235;
+  @test public "test linear function"() {
+    const k = 123;
+    const x = 63;
+    const b = 235;
     assert.equal(this.liner.do(k, x, b), k * x + b,
       `this.liner.do(${k}, ${x}, ${b}) should equal ${k} * ${x} + ${b}`);
   }

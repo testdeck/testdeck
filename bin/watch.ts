@@ -2,9 +2,9 @@
 
 // Run "tsc" with watch, upon successful compilation run mocha tests.
 
-import * as chalk from "chalk";
+import chalk from "chalk";
 import * as child_process from "child_process";
-import { spawn } from "cross-spawn";
+import * as spawn from "cross-spawn";
 import * as readline from "readline";
 import * as yargs from "yargs";
 

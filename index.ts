@@ -63,7 +63,15 @@ interface SuiteProto {
 export type SuiteTrait = (this: Mocha.ISuiteCallbackContext, ctx: Mocha.ISuiteCallbackContext, ctor: SuiteCtor) => void;
 export type TestTrait = (this: Mocha.ITestCallbackContext, ctx: Mocha.ITestCallbackContext, instance: SuiteProto, method: Function) => void;
 
-const noname = (cb) => cb;
+const noname = (cb: Function, innerFunction?: Function) => {
+    const wrapperResult = function (...args: any[]) {
+        return cb.apply(this, args);
+    };
+    //wrap the toString method 
+    wrapperResult.toString = () => innerFunction && innerFunction.toString() || cb.toString();
+
+    return wrapperResult;
+}
 
 function applyDecorators(mocha: Mocha.IHookCallbackContext, ctorOrProto, method, instance) {
     const timeoutValue = method[timeoutSymbol];
@@ -101,18 +109,18 @@ function applySuiteTraits(context: Mocha.ISuiteCallbackContext, target: SuiteCto
 }
 
 function suiteClassCallback(target: SuiteCtor, context: TestFunctions) {
-    return function() {
+    return function () {
         applySuiteTraits(this, target);
         applyDecorators(this, target, target, target);
         let instance;
         if (target.before) {
             if (target.before.length > 0) {
-                context.before(function(done) {
+                context.before(function (done) {
                     applyDecorators(this, target, target.before, target);
                     return target.before(done);
                 });
             } else {
-                context.before(function() {
+                context.before(function () {
                     applyDecorators(this, target, target.before, target);
                     return target.before();
                 });
@@ -120,12 +128,12 @@ function suiteClassCallback(target: SuiteCtor, context: TestFunctions) {
         }
         if (target.after) {
             if (target.after.length > 0) {
-                context.after(function(done) {
+                context.after(function (done) {
                     applyDecorators(this, target, target.after, target);
                     return target.after(done);
                 });
             } else {
-                context.after(function() {
+                context.after(function () {
                     applyDecorators(this, target, target.after, target);
                     return target.after();
                 });
@@ -135,20 +143,20 @@ function suiteClassCallback(target: SuiteCtor, context: TestFunctions) {
         let beforeEachFunction: (() => any) | ((done: Function) => any);
         if (prototype.before) {
             if (prototype.before.length > 0) {
-                beforeEachFunction = noname(function(this: Mocha.IHookCallbackContext, done: Function) {
+                beforeEachFunction = noname(function (this: Mocha.IHookCallbackContext, done: Function) {
                     instance = new target();
                     applyDecorators(this, prototype, prototype.before, instance);
                     return prototype.before.call(instance, done);
                 });
             } else {
-                beforeEachFunction = noname(function(this: Mocha.IHookCallbackContext) {
+                beforeEachFunction = noname(function (this: Mocha.IHookCallbackContext) {
                     instance = new target();
                     applyDecorators(this, prototype, prototype.before, instance);
                     return prototype.before.call(instance);
                 });
             }
         } else {
-            beforeEachFunction = noname(function(this: Mocha.IHookCallbackContext) {
+            beforeEachFunction = noname(function (this: Mocha.IHookCallbackContext) {
                 instance = new target();
             });
         }
@@ -157,7 +165,7 @@ function suiteClassCallback(target: SuiteCtor, context: TestFunctions) {
         let afterEachFunction: (() => any) | ((done: Function) => any);
         if (prototype.after) {
             if (prototype.after.length > 0) {
-                afterEachFunction = noname(function(this: Mocha.IHookCallbackContext, done) {
+                afterEachFunction = noname(function (this: Mocha.IHookCallbackContext, done) {
                     try {
                         applyDecorators(this, prototype, prototype.after, instance);
                         return prototype.after.call(instance, done);
@@ -166,7 +174,7 @@ function suiteClassCallback(target: SuiteCtor, context: TestFunctions) {
                     }
                 });
             } else {
-                afterEachFunction = noname(function(this: Mocha.IHookCallbackContext) {
+                afterEachFunction = noname(function (this: Mocha.IHookCallbackContext) {
                     try {
                         applyDecorators(this, prototype, prototype.after, instance);
                         return prototype.after.call(instance);
@@ -176,7 +184,7 @@ function suiteClassCallback(target: SuiteCtor, context: TestFunctions) {
                 });
             }
         } else {
-            afterEachFunction = noname(function(this: Mocha.IHookCallbackContext) {
+            afterEachFunction = noname(function (this: Mocha.IHookCallbackContext) {
                 instance = undefined;
             });
         }
@@ -229,20 +237,20 @@ function suiteClassCallback(target: SuiteCtor, context: TestFunctions) {
         }
 
         function applyTestFunc(testFunc: Function, testName: string,
-                               method: Function, callArgs: any[],
-                               sync: boolean = true) {
+            method: Function, callArgs: any[],
+            sync: boolean = true) {
             if (sync) {
-                testFunc(testName, noname(function(this: Mocha.ITestCallbackContext) {
+                testFunc(testName, noname(function (this: Mocha.ITestCallbackContext) {
                     applyDecorators(this, prototype, method, instance);
                     applyTestTraits(this, instance, method);
                     return method.call(instance, ...callArgs);
-                }));
+                }, method));
             } else {
-                testFunc(testName, noname(function(this: Mocha.ITestCallbackContext, done) {
+                testFunc(testName, noname(function (this: Mocha.ITestCallbackContext, done) {
                     applyDecorators(this, prototype, method, instance);
                     applyTestTraits(this, instance, method);
                     return method.call(instance, ...callArgs, done);
-                }));
+                }, method));
             }
         }
 
@@ -280,7 +288,7 @@ function suiteOverload(overloads: {
     suiteDecorator(...traits: SuiteTrait[]): ClassDecorator;
     suiteDecoratorNamed(name: string, ...traits: SuiteTrait[]): ClassDecorator;
 }) {
-    return function() {
+    return function () {
         if (arguments.length === 2 && typeof arguments[0] === "string" && typeof arguments[1] === "function" && !arguments[1][isTraitSymbol]) {
             return overloads.suite.apply(this, arguments);
         } else if (arguments.length === 1 && typeof arguments[0] === "function" && !arguments[0][isTraitSymbol]) {
@@ -317,7 +325,7 @@ function makeSuiteFunction(suiteFunc: (ctor?: SuiteCtor) => Function, context: T
 }
 
 function suiteFuncCheckingDecorators(context: TestFunctions) {
-    return function(ctor?: SuiteCtor) {
+    return function (ctor?: SuiteCtor) {
         if (ctor) {
             const shouldSkip = ctor[skipSymbol];
             const shouldOnly = ctor[onlySymbol];
@@ -383,7 +391,7 @@ function testOverload(overloads: {
     testDecorator(...traits: TestTrait[]): PropertyDecorator & MethodDecorator;
     testDecoratorNamed(name: string, ...traits: TestTrait[]): PropertyDecorator & MethodDecorator;
 }) {
-    return function() {
+    return function () {
         if (arguments.length === 2 && typeof arguments[0] === "string" && typeof arguments[1] === "function" && !arguments[1][isTraitSymbol]) {
             return overloads.test.apply(this, arguments);
         } else if (arguments.length >= 2 && typeof arguments[0] !== "string" && typeof arguments[0] !== "function") {
@@ -408,7 +416,7 @@ function makeTestFunction(testFunc: () => Function, mark: null | string | symbol
             }
         },
         testDecorator(...traits: TestTrait[]): PropertyDecorator & MethodDecorator {
-            return function(target: Object, propertyKey: string | symbol, descriptor?: PropertyDescriptor): void {
+            return function (target: Object, propertyKey: string | symbol, descriptor?: PropertyDescriptor): void {
                 target[propertyKey][testNameSymbol] = propertyKey ? propertyKey.toString() : "";
                 target[propertyKey][traitsSymbol] = traits;
                 if (mark) {
@@ -417,7 +425,7 @@ function makeTestFunction(testFunc: () => Function, mark: null | string | symbol
             };
         },
         testDecoratorNamed(name: string, ...traits: TestTrait[]): PropertyDecorator & MethodDecorator {
-            return function(target: Object, propertyKey: string | symbol, descriptor?: PropertyDescriptor): void {
+            return function (target: Object, propertyKey: string | symbol, descriptor?: PropertyDescriptor): void {
                 target[propertyKey][testNameSymbol] = name;
                 target[propertyKey][traitsSymbol] = traits;
                 if (mark) {
@@ -446,7 +454,7 @@ export function trait<T extends SuiteTrait | TestTrait>(arg: T): T {
  * @param time The time in miliseconds.
  */
 export function slow(time: number): PropertyDecorator & ClassDecorator & SuiteTrait & TestTrait {
-    return trait(function() {
+    return trait(function () {
         if (arguments.length === 1) {
             const target = arguments[0];
             target[slowSymbol] = time;
@@ -479,7 +487,7 @@ export function slow(time: number): PropertyDecorator & ClassDecorator & SuiteTr
  * @param time The time in miliseconds.
  */
 export function timeout(time: number): MethodDecorator & PropertyDecorator & ClassDecorator & SuiteTrait & TestTrait {
-    return trait(function() {
+    return trait(function () {
         if (arguments.length === 1) {
             const target = arguments[0];
             target[timeoutSymbol] = time;
@@ -512,7 +520,7 @@ export function timeout(time: number): MethodDecorator & PropertyDecorator & Cla
  * @param count The number of retries to attempt when running the test.
  */
 export function retries(count: number): MethodDecorator & PropertyDecorator & ClassDecorator & SuiteTrait & TestTrait {
-    return trait(function() {
+    return trait(function () {
         if (arguments.length === 1) {
             const target = arguments[0];
             target[retriesSymbol] = count;
@@ -540,13 +548,13 @@ export function retries(count: number): MethodDecorator & PropertyDecorator & Cl
     });
 }
 
-export const skipOnError: SuiteTrait = trait(function(ctx, ctor) {
-    ctx.beforeEach(function() {
+export const skipOnError: SuiteTrait = trait(function (ctx, ctor) {
+    ctx.beforeEach(function () {
         if (ctor.__skip_all) {
             this.skip();
         }
     });
-    ctx.afterEach(function() {
+    ctx.afterEach(function () {
         if (this.currentTest.state === "failed") {
             ctor.__skip_all = true;
         }
@@ -606,7 +614,7 @@ export function context(target: Object, propertyKey: string | symbol): void {
 function tsdd(suite) {
     const suites = [suite];
 
-    suite.on("pre-require", function(context, file, mocha) {
+    suite.on("pre-require", function (context, file, mocha) {
         const common = Common(suites, context, mocha);
 
         context.before = common.before;
@@ -616,28 +624,28 @@ function tsdd(suite) {
         context.run = mocha.options.delay && common.runWithSuite(suite);
 
         // Copy of bdd
-        context.describe = context.context = function(title, fn) {
+        context.describe = context.context = function (title, fn) {
             return common.suite.create({
                 title,
                 file,
                 fn,
             });
         };
-        context.xdescribe = context.xcontext = context.describe.skip = function(title, fn) {
+        context.xdescribe = context.xcontext = context.describe.skip = function (title, fn) {
             return common.suite.skip({
                 title,
                 file,
                 fn,
             });
         };
-        context.describe.only = function(title, fn) {
+        context.describe.only = function (title, fn) {
             return common.suite.only({
                 title,
                 file,
                 fn,
             });
         };
-        context.it = context.specify = function(title, fn) {
+        context.it = context.specify = function (title, fn) {
             const suite = suites[0];
             if (suite.isPending()) {
                 fn = null;
@@ -647,13 +655,13 @@ function tsdd(suite) {
             suite.addTest(test);
             return test;
         };
-        context.it.only = function(title, fn) {
+        context.it.only = function (title, fn) {
             return common.test.only(mocha, context.it(title, fn));
         };
-        context.xit = context.xspecify = context.it.skip = function(title) {
+        context.xit = context.xspecify = context.it.skip = function (title) {
             context.it(title);
         };
-        context.it.retries = function(n) {
+        context.it.retries = function (n) {
             context.retries(n);
         };
 

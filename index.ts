@@ -63,15 +63,20 @@ interface SuiteProto {
 export type SuiteTrait = (this: Mocha.ISuiteCallbackContext, ctx: Mocha.ISuiteCallbackContext, ctor: SuiteCtor) => void;
 export type TestTrait = (this: Mocha.ITestCallbackContext, ctx: Mocha.ITestCallbackContext, instance: SuiteProto, method: Function) => void;
 
-const noname = (cb: Function, innerFunction?: Function) => {
-    const wrapperResult = function(...args: any[]) {
-        return cb.apply(this, args);
-    };
-    //wrap the toString method 
-    wrapperResult.toString = () => innerFunction && innerFunction.toString() || cb.toString();
-
-    return wrapperResult;
-}
+const noname = (cb: any | Function, innerFunction?: Function): () => any => {
+    if (innerFunction && cb && typeof cb === "function") {
+        const wrapperResult = function() {
+            return cb.apply(this, arguments);
+        };
+        // wrap the toString method
+        wrapperResult.toString = () => {
+            return innerFunction && innerFunction.toString();
+        };
+        return wrapperResult;
+    } else {
+        return cb;
+    }
+};
 
 function applyDecorators(mocha: Mocha.IHookCallbackContext, ctorOrProto, method, instance) {
     const timeoutValue = method[timeoutSymbol];
@@ -237,8 +242,8 @@ function suiteClassCallback(target: SuiteCtor, context: TestFunctions) {
         }
 
         function applyTestFunc(testFunc: Function, testName: string,
-            method: Function, callArgs: any[],
-            sync: boolean = true) {
+                               method: Function, callArgs: any[],
+                               sync: boolean = true) {
             if (sync) {
                 testFunc(testName, noname(function(this: Mocha.ITestCallbackContext) {
                     applyDecorators(this, prototype, method, instance);

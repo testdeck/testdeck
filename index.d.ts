@@ -70,6 +70,16 @@ declare namespace MochaTypeScript {
         skip(name: string, ... traits: MochaTypeScript.TestTrait[]): PropertyDecorator;
         skip(... traits: MochaTypeScript.TestTrait[]): PropertyDecorator;
     }
+
+    export interface TestClass<T> {
+        new(...args: any[]): T;
+        prototype: T;
+    }
+
+    export interface DependencyInjectionSystem {
+        handles<T>(cls: TestClass<T>): boolean;
+        create<T>(cls: TestClass<T>): typeof cls.prototype;
+    }
 }
 
 declare module "mocha-typescript" {
@@ -91,8 +101,5 @@ declare module "mocha-typescript" {
 
     export const skipOnError: MochaTypeScript.SuiteTrait;
 
-    export interface Container {
-        get(klass: any): any
-    }
-    export function useContainer(container: Container): void;
+    export function register(instantiator: MochaTypeScript.DependencyInjectionSystem): boolean;
 }

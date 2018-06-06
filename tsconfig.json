@@ -5,6 +5,7 @@
         "removeComments": false,
         "preserveConstEnums": true,
         "sourceMap": true,
+        "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
         "declaration": false,
         "listFiles": false

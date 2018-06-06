@@ -121,11 +121,14 @@ class SuiteTest {
     @params({ target: "es6", ts: "params.only.suite" })
     @params({ target: "es5", ts: "params.naming.suite" })
     @params({ target: "es6", ts: "params.naming.suite" })
+    @params({ target: "es5", ts: "di.typedi.suite" })
+    @params({ target: "es6", ts: "di.typedi.suite" })
+
     @params.naming(({ target, ts }) => `${ts} ${target}`)
     public run({ target, ts }) {
         const tsc = spawnSync("node", [path.join(".", "node_modules", "typescript", "bin", "tsc"),
-            "--experimentalDecorators", "--module", "commonjs", "--target", target, "--lib",
-            "es6", path.join("tests", "ts", ts + ".ts")]);
+            "--emitDecoratorMetadata", "--experimentalDecorators", "--module", "commonjs",
+            "--target", target, "--lib", "es6", path.join("tests", "ts", ts + ".ts")]);
 
         assert.equal(tsc.stdout.toString(), "", "Expected error free tsc.");
         assert.equal(tsc.status, 0);

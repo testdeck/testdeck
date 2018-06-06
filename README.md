@@ -336,12 +336,9 @@ export abstract class AbstractTestBase {
 }
 ```
 
-One can also inherit from another concrete test class or suite, but keep in mind that that the tests declared by that suite will
-be run multiple times and not just in the context of the concrete test classes, see the example provided in `tests/ts/suite.inheritance.suite.ts`.
+Note: You can override test methods inherited from a base class and then call `super()` in order to run the assertions implemented by the super class.
 
-Important: One should not override test methods inherited from a base class and then call `super()` as this will run the tests from the base class twice.
-
-Best practice: Do not inherit from other classes that have been decorated with the ``suite`` decorator. Instead use abstract test base classes.
+Best practice: You must not inherit from other classes that have been decorated with the ``suite`` decorator. Doing so will result in an exception. Use abstract base classes instead.
 
 ### Overriding Tests
 Sometimes you might want to override tests inherited from a given base class. You can do this by redeclaring the same test method in your sub class, e.g.
@@ -356,14 +353,18 @@ export abstract class AbstractTestBase {
 
 export class ConcreteTest extends AbstractTestBase {
 
-  @test.skip 'test that will be overridden by sub classes'() {
+  @test 'test that will be overridden by sub classes'() {
+
+     chai.assertTrue(somethingTruthy);
   }
 }
 ```
 
-You may now either implement the test or simply just skip it, and so on.
+You may now either implement the test or simply just skip it.
 
-Given that ``skip`` actually marks the test as pending, this might not be what you want for your test reports. In that case, just override the test with an empty body.
+Given that ``skip`` actually marks the test as pending, this might not be what you want for your test reports. In that case, you could just override the test with an empty body.
+Which, of course, is considered to be a bad practice, yet sometimes it will become a necessity when testing class hierarchies. So the best practice is to actually
+provide an assertion for that test.
 
 ### Inheritance and Both Synchronous and Asynchronous Before and After Actions
 As for both static and instance `before()` and `after()` actions, one must make sure that the hooks from the parent class are called, see the

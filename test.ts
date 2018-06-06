@@ -20,11 +20,6 @@ function assertContent(actualStr: string, expectedStr: string) {
     }
 }
 
-function assertExactOutput(actual: string, filePath: string) {
-    const expected = fs.readFileSync(filePath, "utf-8");
-    assert.equal(actual, expected);
-}
-
 function assertOutput(actual: string, filePath: string) {
 
     let expected = "";
@@ -59,6 +54,12 @@ function cleanup(str: string, eliminateAllEmptyLines = false): string {
     result = result.replace(/^\s*[+] expected - actual/mg, ELIMINATE_LINE);
     result = result.replace(/^\s*[-](actual|to fail|false|true)$/mg, ELIMINATE_LINE);
     result = result.replace(/^\s*[+](expected|false|true)$/mg, ELIMINATE_LINE);
+    // clean up stderr related stuff
+    result = result.replace(/^([/][^/]+)+:\d+$/mg, ELIMINATE_LINE);
+    result = result.replace(/^\s*throw new/mg, ELIMINATE_LINE);
+    result = result.replace(/^\s*[\^]/mg, ELIMINATE_LINE);
+    // cleanup npm bailing out something that we already know
+    result = result.replace("npm ERR! Test failed.  See above for more details.", ELIMINATE_LINE);
 
     return trimEmptyLines(result, eliminateAllEmptyLines);
 }
@@ -103,16 +104,12 @@ class SuiteTest {
     @params({ target: "es6", ts: "context.suite" })
     @params({ target: "es5", ts: "abstract.inheritance.suite" })
     @params({ target: "es6", ts: "abstract.inheritance.suite" })
-    @params({ target: "es5", ts: "suite.inheritance.suite" })
-    @params({ target: "es6", ts: "suite.inheritance.suite" })
     @params({ target: "es5", ts: "abstract.inheritance.override1.suite" }, "abstract inheritance fail to override abstract test from suite es5")
     @params({ target: "es6", ts: "abstract.inheritance.override1.suite" }, "abstract inheritance fail override abstract test from suite es6")
     @params({ target: "es5", ts: "abstract.inheritance.override2.suite" }, "abstract inheritance succeed to override abstract test from suite es5")
     @params({ target: "es6", ts: "abstract.inheritance.override2.suite" }, "abstract inheritance succeed override abstract test from suite es6")
-    @params({ target: "es5", ts: "suite.inheritance.override1.suite" }, "suite inheritance fail to override abstract test from suite es5")
-    @params({ target: "es6", ts: "suite.inheritance.override1.suite" }, "suite inheritance fail override abstract test from suite es6")
-    @params({ target: "es5", ts: "suite.inheritance.override2.suite" }, "suite inheritance succeed to override abstract test from suite es5")
-    @params({ target: "es6", ts: "suite.inheritance.override2.suite" }, "suite inheritance succeed override abstract test from suite es6")
+    @params({ target: "es5", ts: "suite.inheritance.suite", expectError: true })
+    @params({ target: "es6", ts: "suite.inheritance.suite", expectError: true })
     @params({ target: "es5", ts: "params.suite" })
     @params({ target: "es6", ts: "params.suite" })
     @params({ target: "es5", ts: "params.skip.suite" })
@@ -122,7 +119,7 @@ class SuiteTest {
     @params({ target: "es5", ts: "params.naming.suite" })
     @params({ target: "es6", ts: "params.naming.suite" })
     @params.naming(({ target, ts }) => `${ts} ${target}`)
-    public run({ target, ts }) {
+    public run({ target, ts, expectError = false }) {
         const tsc = spawnSync("node", [path.join(".", "node_modules", "typescript", "bin", "tsc"),
             "--experimentalDecorators", "--module", "commonjs", "--target", target, "--lib",
             "es6", path.join("tests", "ts", ts + ".ts")]);
@@ -133,10 +130,15 @@ class SuiteTest {
         const mocha = spawnSync("node", [path.join(".", "node_modules", "mocha", "bin", "_mocha"),
             "-C", path.join("tests", "ts", ts + ".js")]);
 
-        assert.equal("", mocha.stderr.toString(), "Excpected mocha to not fail with error");
-
-        const actual = cleanup(mocha.stdout.toString());
-        assertOutput(actual, path.join("tests", "ts", ts + ".expected.txt"));
+        if (expectError) {
+            assert.equal("", mocha.stdout.toString(), "Expected mocha to fail with error");
+            const actual = cleanup(mocha.stderr.toString());
+            assertOutput(actual, path.join("tests", "ts", ts + ".expected.err.txt"));
+        } else {
+            assert.equal("", mocha.stderr.toString(), "Expected mocha to not fail with error");
+            const actual = cleanup(mocha.stdout.toString());
+            assertOutput(actual, path.join("tests", "ts", ts + ".expected.txt"));
+        }
     }
 }
 
@@ -174,7 +176,7 @@ class PackageTest {
 
         npmtest = spawnSync("npm", ["test"], { cwd });
 
-        assertExactOutput(npmtest.stderr.toString(), path.join(cwd, "expected.err.txt"));
+        assert.equal("", cleanup(npmtest.stderr.toString()), "should not have failed");
         assertOutput(npmtest.stdout.toString(), path.join(cwd, "expected.txt"));
     }
 

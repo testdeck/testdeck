@@ -32,6 +32,7 @@ const globalTestFunctions: TestFunctions = {
 // key => Symbol("mocha-typescript:" + key)
 const nodeSymbol = (key) => "__mts_" + key;
 
+const suiteSymbol = nodeSymbol("suite");
 const testNameSymbol = nodeSymbol("test");
 const parametersSymbol = nodeSymbol("parametersSymbol");
 const nameForParametersSymbol = nodeSymbol("nameForParameters");
@@ -264,6 +265,9 @@ function suiteClassCallback(target: SuiteCtor, context: TestFunctions) {
                 }
             });
             currentPrototype = (Object as any).getPrototypeOf(currentPrototype);
+            if (currentPrototype !== Object.prototype && currentPrototype.constructor[suiteSymbol]) {
+                throw new Error("deriving from other suites is bad practice and thus prohibited");
+            }
         }
 
         // run all collected tests
@@ -299,16 +303,19 @@ function makeSuiteFunction(suiteFunc: (ctor?: SuiteCtor) => Function, context: T
             return suiteFunc()(name, fn);
         },
         suiteCtor(ctor: SuiteCtor): void {
+            ctor[suiteSymbol] = true;
             suiteFunc(ctor)(ctor.name, suiteClassCallback(ctor, context));
         },
         suiteDecorator(...traits: SuiteTrait[]): ClassDecorator {
             return function <TFunction extends Function>(ctor: TFunction): void {
+                ctor[suiteSymbol] = true;
                 ctor[traitsSymbol] = traits;
                 suiteFunc(ctor as any)(ctor.name, suiteClassCallback(ctor as any, context));
             };
         },
         suiteDecoratorNamed(name: string, ...traits: SuiteTrait[]): ClassDecorator {
             return function <TFunction extends Function>(ctor: TFunction): void {
+                ctor[suiteSymbol] = true;
                 ctor[traitsSymbol] = traits;
                 suiteFunc(ctor as any)(name, suiteClassCallback(ctor as any, context));
             };

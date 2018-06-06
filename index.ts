@@ -65,12 +65,12 @@ export type TestTrait = (this: Mocha.ITestCallbackContext, ctx: Mocha.ITestCallb
 
 const noname = (cb: ((context, done?) => any), innerFunction?: Function): () => any => {
     if (innerFunction && cb) {
-        let wrapperResult: any = function(context) {
+        let wrapperResult: any = function() {
             cb.apply(this, arguments);
         };
-        if (cb.length === 2) {
+        if (cb.length === 1) {
             // we need to handle the done callback explicitly in the definition for mocha to respect it correctly
-            wrapperResult = function(context, done) {
+            wrapperResult = function(done) {
                 return cb.apply(this, arguments);
             };
         }

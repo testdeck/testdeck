@@ -2,9 +2,9 @@
 
 // Run "tsc" with watch, upon successful compilation run mocha tests.
 
-import * as chalk from "chalk";
+import chalk from "chalk";
 import * as child_process from "child_process";
-import { spawn } from "cross-spawn";
+import * as spawn from "cross-spawn";
 import * as readline from "readline";
 import * as yargs from "yargs";
 
@@ -122,7 +122,7 @@ function compilationComplete() {
 const tscp = spawn(argv.tsc, ["-p", argv.project, "-w"]);
 const tscl = readline.createInterface({ input: tscp.stdout });
 tscl.on("line", (line) => {
-    if (line.indexOf("Compilation complete.") >= 0) {
+    if (line.indexOf("Compilation complete.") >= 0 || line.indexOf("Found ") >= 0) {
         console.log(line);
         compilationComplete();
     } else if (line.indexOf("File change detected.") >= 0) {

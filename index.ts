@@ -137,20 +137,20 @@ function suiteClassCallback(target: SuiteCtor, context: TestFunctions) {
         if (prototype.before) {
             if (prototype.before.length > 0) {
                 beforeEachFunction = noname(function(this: Mocha.IHookCallbackContext, done: Function) {
-                    instance = new target();
+                    instance = getInstance(target);
                     applyDecorators(this, prototype, prototype.before, instance);
                     return prototype.before.call(instance, done);
                 });
             } else {
                 beforeEachFunction = noname(function(this: Mocha.IHookCallbackContext) {
-                    instance = new target();
+                    instance = getInstance(target);
                     applyDecorators(this, prototype, prototype.before, instance);
                     return prototype.before.call(instance);
                 });
             }
         } else {
             beforeEachFunction = noname(function(this: Mocha.IHookCallbackContext) {
-                instance = new target();
+                instance = getInstance(target);
             });
         }
         context.beforeEach(beforeEachFunction);
@@ -676,5 +676,40 @@ function tsdd(suite) {
         context.skipOnError = skipOnError;
     });
 }
+
+interface TestClass<T> {
+    new(...args: any[]): T;
+    prototype: T;
+}
+
+interface DependencyInjectionSystem {
+    handles<T>(cls: TestClass<T>): boolean;
+    create<T>(cls: TestClass<T>): typeof cls.prototype;
+}
+
+const defaultDependencyInjectionSystem: DependencyInjectionSystem = {
+    handles() { return true; },
+    create<T>(cls: TestClass<T>) {
+        return new cls();
+    },
+};
+
+const dependencyInjectionSystems: DependencyInjectionSystem[] = [defaultDependencyInjectionSystem];
+
+function getInstance<T>(testClass: TestClass<T>) {
+    const di = dependencyInjectionSystems.find((di) => di.handles(testClass));
+    return di.create(testClass);
+}
+
+/**
+ * Register a dependency injection system.
+ */
+export function register(instantiator: DependencyInjectionSystem) {
+    // Maybe check if it is not already added?
+    if (dependencyInjectionSystems.some((di) => di === instantiator)) { return false; }
+    dependencyInjectionSystems.unshift(instantiator);
+    return true;
+}
+
 module.exports = Object.assign(tsdd, exports);
 (Mocha as any).interfaces["mocha-typescript"] = tsdd;

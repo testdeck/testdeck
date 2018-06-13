@@ -53,6 +53,7 @@
     "index.js.map",
     "index.ts",
     "globals.d.ts",
-    "bin/watch.js"
+    "bin/watch.js",
+    "di/typedi.js"
   ]
 }

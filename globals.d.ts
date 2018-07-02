@@ -46,6 +46,46 @@ declare namespace Mocha {
         skip(name: string, ... traits: MochaTypeScript.TestTrait[]): PropertyDecorator;
         skip(... traits: MochaTypeScript.TestTrait[]): PropertyDecorator;
     }
+    // @types/mocha v5.2.4
+    interface SuiteFunction {
+        (args: any): any;
+        (): ClassDecorator;
+        (name: string): ClassDecorator;
+        (name: string, ... traits: MochaTypeScript.SuiteTrait[]): ClassDecorator;
+        (trait: MochaTypeScript.SuiteTrait, ... traits:MochaTypeScript.SuiteTrait[]): ClassDecorator;
+    }
+    interface PendingSuiteFunction {
+        (args: any): any;
+        (): ClassDecorator;
+        (name: string): ClassDecorator;
+        (name: string, ... traits: MochaTypeScript.SuiteTrait[]): ClassDecorator;
+        (trait: MochaTypeScript.SuiteTrait, ... traits:MochaTypeScript.SuiteTrait[]): ClassDecorator;
+    }
+    interface ExclusiveSuiteFunction {
+        (args: any): any;
+        (): ClassDecorator;
+        (name: string): ClassDecorator;
+        (name: string, ... traits: MochaTypeScript.SuiteTrait[]): ClassDecorator;
+        (trait: MochaTypeScript.SuiteTrait, ... traits:MochaTypeScript.SuiteTrait[]): ClassDecorator;
+    }
+    interface TestFunction {
+        (target: Object, propertyKey: string | symbol): void;
+        (name: string): PropertyDecorator;
+        (name: string, ... traits: MochaTypeScript.TestTrait[]): PropertyDecorator;
+        (... traits: MochaTypeScript.TestTrait[]): PropertyDecorator;
+    }
+    interface PendingTestFunction {
+        (target: Object, propertyKey: string | symbol): void;
+        (name: string): PropertyDecorator;
+        (name: string, ... traits: MochaTypeScript.TestTrait[]): PropertyDecorator;
+        (... traits: MochaTypeScript.TestTrait[]): PropertyDecorator;
+    }
+    interface ExclusiveTestFunction {
+        (target: Object, propertyKey: string | symbol): void;
+        (name: string): PropertyDecorator;
+        (name: string, ... traits: MochaTypeScript.TestTrait[]): PropertyDecorator;
+        (... traits: MochaTypeScript.TestTrait[]): PropertyDecorator;
+    }
 }
 
 declare var skipOnError: MochaTypeScript.SuiteTrait;

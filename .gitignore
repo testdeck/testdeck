@@ -7,3 +7,5 @@ typings/
 .idea/
 package-lock.json
 npm-debug.log
+.nyc_output
+coverage

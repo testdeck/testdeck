@@ -143,3 +143,4 @@ declare module "mocha-typescript" {
 
     export function registerDI(instantiator: MochaTypeScript.DependencyInjectionSystem): boolean;
 }
+

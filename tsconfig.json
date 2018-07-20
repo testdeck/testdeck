@@ -10,8 +10,9 @@
         "declaration": false,
         "listFiles": false
     },
+    "compileOnSave": false,
     "exclude": [
         "node_modules",
-        "tests/repo"
+        "test/it/fixtures/packages"
     ]
 }

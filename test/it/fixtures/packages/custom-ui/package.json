@@ -1,0 +1,17 @@
+{
+  "name": "custom-ui",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha test/test.ts"
+  },
+  "author": "",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "chai": "^4.0.2",
+    "mocha": "*",
+    "source-map-support": "^0.4.14",
+    "typescript": "^2.4.0"
+  }
+}

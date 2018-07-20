@@ -1,2 +1,5 @@
---reporter list
 --require source-map-support/register
+--require ts-node/register
+--require ./index.ts
+--reporter list
+--ui mocha-typescript

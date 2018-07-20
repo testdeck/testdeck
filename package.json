@@ -3,7 +3,7 @@
   "version": "1.1.17",
   "description": "TypeScript decorators based wrapper over mocha's interface",
   "main": "index.js",
-  "typings": "index.d.ts",
+  "typings": "typings.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/PanayotCankov/mocha-typescript"
@@ -12,12 +12,17 @@
     "mocha-typescript-watch": "./bin/watch.js"
   },
   "scripts": {
-    "pretest": "tsc",
-    "test": "mocha test.js --opts mocha.opts && tslint --project .",
+    "clean": "rm -Rf coverage *.tgz *.js.map *.js bin/*.js* di/*.js* test/it/*.js* test/it/fixtures/*.js* test/it/fixtures/packages/*/node_modules",
+    "test": "npm run tslint && npm run it",
+    "it": "npm run clean && mocha test/it/*IT.ts --opts mocha.opts --ui mocha-typescript",
+    "itrun": "npm run clean && mocha --opts mocha.opts --ui mocha-typescript",
+    "itsuite": "mocha test/it/*SuiteIT.ts --opts mocha.opts --ui mocha-typescript",
+    "itpackage": "mocha test/it/*PackageIT.ts --opts mocha.opts --ui mocha-typescript",
     "prepare": "tsc",
     "tslint-fix": "tslint --fix --project .",
     "tslint": "tslint --project .",
-    "changelog": "conventional-changelog --infile CHANGELOG.md --same-file --preset angular --append --release-count 1 --verbose"
+    "changelog": "conventional-changelog --infile CHANGELOG.md --same-file --preset angular --append --release-count 1 --verbose",
+    "coverage": "npm run clean && npm run prepare && nyc mocha test/it/*SuiteIT.ts --opts mocha.opts"
   },
   "author": "Panayot Cankov",
   "contributors": [
@@ -45,14 +50,37 @@
     "tslint": "^5.10.0",
     "typescript": "^2.9.1",
     "reflect-metadata": "^0.1.12",
-    "typedi": "^0.7.3"
+    "typedi": "^0.7.3",
+    "nyc": "^12.0.2",
+    "ts-node": "^6.1.0"
   },
   "files": [
     "index.js",
-    "index.d.ts",
+    "typings.d.ts",
     "index.js.map",
     "index.ts",
     "globals.d.ts",
-    "bin/watch.js"
-  ]
+    "bin/watch.js",
+    "di/typedi.js"
+  ],
+  "nyc": {
+    "check-coverage": true,
+    "lines": 80,
+    "statements": 80,
+    "functions": 80,
+    "branches": 80,
+    "include": [
+      "**/*.js"
+    ],
+    "exclude": [
+      "bin",
+      "coverage",
+      "test/**/*.js"
+    ],
+    "reporter": [
+      "lcov",
+      "text-summary"
+    ],
+    "all": true
+  }
 }

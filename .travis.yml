@@ -1,3 +1,21 @@
 language: node_js
 node_js:
   - "node"
+  - "10"
+  - "9"
+  - "8"
+sudo: false
+cache:
+  directories:
+    - node_modules
+install:
+  - test -d node_modules && npm prune
+  - npm install
+script:
+  - npm run tslint
+  - npm run itpackage
+  - npm run coverage
+branches:
+  except:
+    - /^gh-.*$/
+

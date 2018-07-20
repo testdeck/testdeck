@@ -127,7 +127,7 @@ function suiteClassCallback(target: SuiteCtor, context: TestFunctions) {
         applyDecorators(this, target, target, target);
         let instance;
         if (target.before) {
-            if (target.before.length > 0) {
+            if (isAsync(target.before)) {
                 context.before(function(done) {
                     applyDecorators(this, target, target.before, target);
                     return target.before(done);
@@ -140,7 +140,7 @@ function suiteClassCallback(target: SuiteCtor, context: TestFunctions) {
             }
         }
         if (target.after) {
-            if (target.after.length > 0) {
+            if (isAsync(target.after)) {
                 context.after(function(done) {
                     applyDecorators(this, target, target.after, target);
                     return target.after(done);
@@ -155,7 +155,7 @@ function suiteClassCallback(target: SuiteCtor, context: TestFunctions) {
         const prototype = target.prototype;
         let beforeEachFunction: (() => any) | ((done: Function) => any);
         if (prototype.before) {
-            if (prototype.before.length > 0) {
+            if (isAsync(prototype.before)) {
                 beforeEachFunction = noname(function(this: Mocha.IHookCallbackContext, done: Function) {
                     instance = getInstance(target);
                     applyDecorators(this, prototype, prototype.before, instance);
@@ -177,7 +177,7 @@ function suiteClassCallback(target: SuiteCtor, context: TestFunctions) {
 
         let afterEachFunction: (() => any) | ((done: Function) => any);
         if (prototype.after) {
-            if (prototype.after.length > 0) {
+            if (isAsync(prototype.after)) {
                 afterEachFunction = noname(function(this: Mocha.IHookCallbackContext, done) {
                     try {
                         applyDecorators(this, prototype, prototype.after, instance);
@@ -236,7 +236,7 @@ function suiteClassCallback(target: SuiteCtor, context: TestFunctions) {
                                 || (shouldOnlyParam && context.it.only)
                                 || context.it;
 
-                            applyTestFunc(testFunc, parametersTestName, method, [params], method.length <= 1);
+                            applyTestFunc(testFunc, parametersTestName, method, [params]);
                         }
                     });
                 } else {
@@ -244,26 +244,32 @@ function suiteClassCallback(target: SuiteCtor, context: TestFunctions) {
                         || (shouldOnly && context.it.only)
                         || context.it;
 
-                    applyTestFunc(testFunc, testName, method, [], method.length === 0);
+                    applyTestFunc(testFunc, testName, method, []);
                 }
             }
         }
 
+        function isAsync(method: Function): boolean {
+
+            const isParameterised = method[parametersSymbol] !== undefined;
+            const length = method.length;
+            return (isParameterised && length > 1) || (!isParameterised && length > 0);
+        }
+
         function applyTestFunc(testFunc: Function, testName: string,
-                               method: Function, callArgs: any[],
-                               sync: boolean = true) {
-            if (sync) {
-                testFunc(testName, noname(function(this: Mocha.ITestCallbackContext) {
-                    applyDecorators(this, prototype, method, instance);
-                    applyTestTraits(this, instance, method);
-                    return method.call(instance, ...callArgs);
-                }, method));
-            } else {
+                               method: Function, callArgs: any[]) {
+            if (isAsync(method)) {
                 testFunc(testName, noname(function(this: Mocha.ITestCallbackContext, done) {
-                    applyDecorators(this, prototype, method, instance);
-                    applyTestTraits(this, instance, method);
-                    return method.call(instance, ...callArgs, done);
-                }, method));
+                  applyDecorators(this, prototype, method, instance);
+                  applyTestTraits(this, instance, method);
+                  return method.call(instance, done, ...callArgs);
+                }));
+            } else {
+                testFunc(testName, noname(function(this: Mocha.ITestCallbackContext) {
+                  applyDecorators(this, prototype, method, instance);
+                  applyTestTraits(this, instance, method);
+                  return method.call(instance, ...callArgs);
+                }));
             }
         }
 
@@ -286,7 +292,7 @@ function suiteClassCallback(target: SuiteCtor, context: TestFunctions) {
             });
             currentPrototype = (Object as any).getPrototypeOf(currentPrototype);
             if (currentPrototype !== Object.prototype && currentPrototype.constructor[suiteSymbol]) {
-                throw new Error("deriving from other suites is bad practice and thus prohibited");
+                throw new Error(`@suite ${prototype.constructor.name} cannot be a subclass of @suite ${currentPrototype.constructor.name}.`);
             }
         }
 

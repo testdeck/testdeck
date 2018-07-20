@@ -1,2 +1,0 @@
-
-Error: deriving from other suites is bad practice and thus prohibited

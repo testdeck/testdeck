@@ -46,3 +46,16 @@ Updating README.md, version patch commits, etc.
 ```
 chore: bump version to 1.1.15
 ```
+
+## Maintainers
+### Publishing
+Publishing prerequisits:
+ - The `package.json` version must have been bumped.
+ - Tag the commit locally. For example `git tag v1.1.17`. The version must match exactly the version in the `package.json`.
+ - Run `npm run changelog` and edit by hand if necessary the `CHANGELOG.md`, commit, push.
+ - The commit to be published must have all green github CI builds.
+ - Run `git clean -xdf`, `git reset --hard`, `npm i`, `npm test` locally.
+
+When you have this in place:
+ - Publish `npm publish`.
+ - Push the tag to the origin. For example `git push origin v1.1.17`.

@@ -65,10 +65,10 @@
   ],
   "nyc": {
     "check-coverage": true,
-    "lines": 80,
-    "statements": 80,
-    "functions": 80,
-    "branches": 80,
+    "lines": 95,
+    "statements": 85,
+    "functions": 95,
+    "branches": 95,
     "include": [
       "**/*.js"
     ],

@@ -8,6 +8,10 @@ class OnlySuiteIT extends AbstractSuiteITBase {
   @params({ target: "es6", fixture: "only.suite" })
   @params({ target: "es5", fixture: "only.v2.suite" })
   @params({ target: "es6", fixture: "only.v2.suite" })
+  @params({ target: "es5", fixture: "only.test.suite" })
+  @params({ target: "es6", fixture: "only.test.suite" })
+  @params({ target: "es5", fixture: "only.tbdd.suite" })
+  @params({ target: "es6", fixture: "only.tbdd.suite" })
   @params.naming(({ target, fixture }: SuiteTestParams) => `${fixture} ${target}`)
   runTest(params: SuiteTestParams) {
 

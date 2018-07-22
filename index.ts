@@ -30,7 +30,7 @@ const globalTestFunctions: TestFunctions = {
 };
 
 // key => Symbol("mocha-typescript:" + key)
-const nodeSymbol = (key) => "__mts_" + key;
+const nodeSymbol = (key): string => "__mts_" + key;
 
 const suiteSymbol = nodeSymbol("suite");
 const testNameSymbol = nodeSymbol("test");
@@ -64,26 +64,10 @@ interface SuiteProto {
 export type SuiteTrait = (this: Mocha.ISuiteCallbackContext, ctx: Mocha.ISuiteCallbackContext, ctor: SuiteCtor) => void;
 export type TestTrait = (this: Mocha.ITestCallbackContext, ctx: Mocha.ITestCallbackContext, instance: SuiteProto, method: Function) => void;
 
-const noname = (cb: ((done?: Function) => any), innerFunction?: Function): () => any => {
-    if (innerFunction && cb) {
-        let wrapperResult: any = function() {
-            return cb.apply(this, arguments);
-        };
-        if (cb.length === 1) {
-            // we need to handle the done callback explicitly in the definition for mocha to respect it correctly
-            wrapperResult = function(done) {
-                return cb.apply(this, arguments);
-            };
-        }
-
-        // wrap the toString method
-        wrapperResult.toString = () => {
-            return innerFunction && innerFunction.toString();
-        };
-        return wrapperResult;
-    } else {
-        return cb as any;
-    }
+const wrapNameAndToString = (cb: (done?: Function) => any, innerFunction: Function): () => any => {
+    cb.toString = () => innerFunction.toString();
+    Object.defineProperty(cb, "name", { value: innerFunction.name, writable: false });
+    return cb;
 };
 
 function applyDecorators(mocha: Mocha.IHookCallbackContext, ctorOrProto, method, instance) {
@@ -156,64 +140,63 @@ function suiteClassCallback(target: SuiteCtor, context: TestFunctions) {
         let beforeEachFunction: (() => any) | ((done: Function) => any);
         if (prototype.before) {
             if (isAsync(prototype.before)) {
-                beforeEachFunction = noname(function(this: Mocha.IHookCallbackContext, done: Function) {
+                beforeEachFunction = wrapNameAndToString(function(this: Mocha.IHookCallbackContext, done: Function) {
                     instance = getInstance(target);
                     applyDecorators(this, prototype, prototype.before, instance);
                     return prototype.before.call(instance, done);
-                });
+                }, prototype.before);
             } else {
-                beforeEachFunction = noname(function(this: Mocha.IHookCallbackContext) {
+                beforeEachFunction = wrapNameAndToString(function(this: Mocha.IHookCallbackContext) {
                     instance = getInstance(target);
                     applyDecorators(this, prototype, prototype.before, instance);
                     return prototype.before.call(instance);
-                });
+                }, prototype.before);
             }
         } else {
-            beforeEachFunction = noname(function(this: Mocha.IHookCallbackContext) {
+            beforeEachFunction = function(this: Mocha.IHookCallbackContext) {
                 instance = getInstance(target);
-            });
+            };
         }
         context.beforeEach(beforeEachFunction);
 
         let afterEachFunction: (() => any) | ((done: Function) => any);
         if (prototype.after) {
             if (isAsync(prototype.after)) {
-                afterEachFunction = noname(function(this: Mocha.IHookCallbackContext, done) {
+                afterEachFunction = wrapNameAndToString(function(this: Mocha.IHookCallbackContext, done) {
                     try {
                         applyDecorators(this, prototype, prototype.after, instance);
                         return prototype.after.call(instance, done);
                     } finally {
                         instance = undefined;
                     }
-                });
+                }, prototype.after);
             } else {
-                afterEachFunction = noname(function(this: Mocha.IHookCallbackContext) {
+                afterEachFunction = wrapNameAndToString(function(this: Mocha.IHookCallbackContext) {
                     try {
                         applyDecorators(this, prototype, prototype.after, instance);
                         return prototype.after.call(instance);
                     } finally {
                         instance = undefined;
                     }
-                });
+                }, prototype.after);
             }
         } else {
-            afterEachFunction = noname(function(this: Mocha.IHookCallbackContext) {
+            afterEachFunction = function(this: Mocha.IHookCallbackContext) {
                 instance = undefined;
-            });
+            };
         }
         context.afterEach(afterEachFunction);
 
         function runTest(prototype: any, method: Function) {
-            const testName = method[testNameSymbol] || (method as any).name;
+            const testName = method[testNameSymbol];
             const shouldSkip = method[skipSymbol];
             const shouldOnly = method[onlySymbol];
             const shouldPending = method[pendingSymbol];
             const parameters = method[parametersSymbol] as TestParams[];
 
-            if (testName || shouldOnly || shouldPending || shouldSkip) {
-                if (shouldPending && !shouldSkip && !shouldOnly) {
-                    context.it.skip(testName);
-                } else if (parameters) {
+            /* istanbul ignore else */
+            if (testName) {
+                if (parameters) {
                     const nameForParameters = method[nameForParametersSymbol];
                     parameters.forEach((parameterOptions, i) => {
                         const { mark, name, params } = parameterOptions;
@@ -229,18 +212,14 @@ function suiteClassCallback(target: SuiteCtor, context: TestFunctions) {
                         const shouldOnlyParam = shouldOnly || (mark === Mark.only);
                         const shouldPendingParam = shouldPending || (mark === Mark.pending);
 
-                        if (shouldPendingParam && !shouldSkipParam && !shouldOnlyParam) {
-                            context.it.skip(testName);
-                        } else {
-                            const testFunc = (shouldSkipParam && context.it.skip)
+                        const testFunc = ((shouldPendingParam || shouldSkipParam) && context.it.skip)
                                 || (shouldOnlyParam && context.it.only)
                                 || context.it;
 
-                            applyTestFunc(testFunc, parametersTestName, method, [params]);
-                        }
+                        applyTestFunc(testFunc, parametersTestName, method, [params]);
                     });
                 } else {
-                    const testFunc = (shouldSkip && context.it.skip)
+                    const testFunc = ((shouldPending || shouldSkip) && context.it.skip)
                         || (shouldOnly && context.it.only)
                         || context.it;
 
@@ -259,17 +238,17 @@ function suiteClassCallback(target: SuiteCtor, context: TestFunctions) {
         function applyTestFunc(testFunc: Function, testName: string,
                                method: Function, callArgs: any[]) {
             if (isAsync(method)) {
-                testFunc(testName, noname(function(this: Mocha.ITestCallbackContext, done) {
+                testFunc(testName, wrapNameAndToString(function(this: Mocha.ITestCallbackContext, done) {
                   applyDecorators(this, prototype, method, instance);
                   applyTestTraits(this, instance, method);
                   return method.call(instance, done, ...callArgs);
-                }));
+                }, method));
             } else {
-                testFunc(testName, noname(function(this: Mocha.ITestCallbackContext) {
+                testFunc(testName, wrapNameAndToString(function(this: Mocha.ITestCallbackContext) {
                   applyDecorators(this, prototype, method, instance);
                   applyTestTraits(this, instance, method);
                   return method.call(instance, ...callArgs);
-                }));
+                }, method));
             }
         }
 
@@ -355,9 +334,8 @@ function suiteFuncCheckingDecorators(context: TestFunctions) {
             const shouldSkip = ctor[skipSymbol];
             const shouldOnly = ctor[onlySymbol];
             const shouldPending = ctor[pendingSymbol];
-            return (shouldSkip && context.describe.skip)
-                || (shouldOnly && context.describe.only)
-                || (shouldPending && context.describe.skip)
+            return (shouldOnly && context.describe.only)
+                || ((shouldSkip || shouldPending) && context.describe.skip)
                 || context.describe;
         } else {
             return context.describe;
@@ -385,7 +363,7 @@ interface TestParams {
 function makeParamsFunction(mark: Mark) {
     return (params: any, name?: string) => {
         return (target: Object, propertyKey: string) => {
-            target[propertyKey][testNameSymbol] = propertyKey ? propertyKey.toString() : "";
+            target[propertyKey][testNameSymbol] = propertyKey;
             target[propertyKey][parametersSymbol] = target[propertyKey][parametersSymbol] || [];
             target[propertyKey][parametersSymbol].push({ mark, name, params } as TestParams);
         };
@@ -435,14 +413,14 @@ function makeTestFunction(testFunc: () => Function, mark: null | string | symbol
             testFunc()(name, fn);
         },
         testProperty(target: Object, propertyKey: string | symbol, descriptor?: PropertyDescriptor): void {
-            target[propertyKey][testNameSymbol] = propertyKey ? propertyKey.toString() : "";
+            target[propertyKey][testNameSymbol] = propertyKey;
             if (mark) {
                 target[propertyKey][mark] = true;
             }
         },
         testDecorator(...traits: TestTrait[]): PropertyDecorator & MethodDecorator {
             return function(target: Object, propertyKey: string | symbol, descriptor?: PropertyDescriptor): void {
-                target[propertyKey][testNameSymbol] = propertyKey ? propertyKey.toString() : "";
+                target[propertyKey][testNameSymbol] = propertyKey;
                 target[propertyKey][traitsSymbol] = traits;
                 if (mark) {
                     target[propertyKey][mark] = true;
@@ -474,104 +452,54 @@ export function trait<T extends SuiteTrait | TestTrait>(arg: T): T {
     return arg;
 }
 
+function createNumericBuiltinTrait(traitSymbol: any, fn: (ctx: Mocha.ISuiteCallbackContext, value: number) => void) {
+    return function(value: number): MethodDecorator & PropertyDecorator & ClassDecorator & SuiteTrait & TestTrait {
+        return trait(function() {
+            if (arguments.length === 1) {
+                const target = arguments[0];
+                target[traitSymbol] = value;
+            } else if (arguments.length === 2 && typeof arguments[1] === "string") {
+                const target = arguments[0];
+                const property = arguments[1];
+                target[property][traitSymbol] = value;
+            } else if (arguments.length === 2) {
+                const context: Mocha.ISuiteCallbackContext = arguments[0];
+                const ctor = arguments[1];
+                fn(context, value);
+            } else if (arguments.length === 3) {
+                if (typeof arguments[2] === "function") {
+                    const context: Mocha.ITestCallbackContext = arguments[0];
+                    const instance = arguments[1];
+                    const method = arguments[2];
+                    fn(context, value);
+                } else if (typeof arguments[1] === "string") {
+                    const proto: Mocha.ITestCallbackContext = arguments[0];
+                    const prop = arguments[1];
+                    const descriptor = arguments[2];
+                    proto[prop][traitSymbol] = value;
+                }
+            }
+        });
+    };
+}
+
 /**
  * Set a test method execution time that is considered slow.
- * @param time The time in miliseconds.
+ * @param value The time in miliseconds.
  */
-export function slow(time: number): PropertyDecorator & ClassDecorator & SuiteTrait & TestTrait {
-    return trait(function() {
-        if (arguments.length === 1) {
-            const target = arguments[0];
-            target[slowSymbol] = time;
-        } else if (arguments.length === 2 && typeof arguments[1] === "string" || typeof arguments[1] === "symbol") {
-            const target = arguments[0];
-            const property = arguments[1];
-            target[property][slowSymbol] = time;
-        } else if (arguments.length === 2) {
-            const context: Mocha.ISuiteCallbackContext = arguments[0];
-            const ctor = arguments[1];
-            context.slow(time);
-        } else if (arguments.length === 3) {
-            if (typeof arguments[2] === "function") {
-                const context: Mocha.ITestCallbackContext = arguments[0];
-                const instance = arguments[1];
-                const method = arguments[2];
-                context.slow(time);
-            } else if (typeof arguments[1] === "string" || typeof arguments[1] === "symbol") {
-                const proto: Mocha.ITestCallbackContext = arguments[0];
-                const prop = arguments[1];
-                const descriptor = arguments[2];
-                proto[prop][slowSymbol] = time;
-            }
-        }
-    });
-}
+export const slow = createNumericBuiltinTrait(slowSymbol, (context, value) => context.slow(value));
 
 /**
  * Set a test method or suite timeout time.
- * @param time The time in miliseconds.
+ * @param value The time in miliseconds.
  */
-export function timeout(time: number): MethodDecorator & PropertyDecorator & ClassDecorator & SuiteTrait & TestTrait {
-    return trait(function() {
-        if (arguments.length === 1) {
-            const target = arguments[0];
-            target[timeoutSymbol] = time;
-        } else if (arguments.length === 2 && typeof arguments[1] === "string" || typeof arguments[1] === "symbol") {
-            const target = arguments[0];
-            const property = arguments[1];
-            target[property][timeoutSymbol] = time;
-        } else if (arguments.length === 2) {
-            const context: Mocha.ISuiteCallbackContext = arguments[0];
-            const ctor = arguments[1];
-            context.timeout(time);
-        } else if (arguments.length === 3) {
-            if (typeof arguments[2] === "function") {
-                const context: Mocha.ITestCallbackContext = arguments[0];
-                const instance = arguments[1];
-                const method = arguments[2];
-                context.timeout(time);
-            } else if (typeof arguments[1] === "string" || typeof arguments[1] === "symbol") {
-                const proto: Mocha.ITestCallbackContext = arguments[0];
-                const prop = arguments[1];
-                const descriptor = arguments[2];
-                proto[prop][timeoutSymbol] = time;
-            }
-        }
-    });
-}
+export const timeout = createNumericBuiltinTrait(timeoutSymbol, (context, value) => context.timeout(value));
 
 /**
  * Set a test method or site retries count.
- * @param count The number of retries to attempt when running the test.
+ * @param value The number of retries to attempt when running the test.
  */
-export function retries(count: number): MethodDecorator & PropertyDecorator & ClassDecorator & SuiteTrait & TestTrait {
-    return trait(function() {
-        if (arguments.length === 1) {
-            const target = arguments[0];
-            target[retriesSymbol] = count;
-        } else if (arguments.length === 2 && typeof arguments[1] === "string" || typeof arguments[1] === "symbol") {
-            const target = arguments[0];
-            const property = arguments[1];
-            target[property][retriesSymbol] = count;
-        } else if (arguments.length === 2) {
-            const context: Mocha.ISuiteCallbackContext = arguments[0];
-            const ctor = arguments[1];
-            context.retries(count);
-        } else if (arguments.length === 3) {
-            if (typeof arguments[2] === "function") {
-                const context: Mocha.ITestCallbackContext = arguments[0];
-                const instance = arguments[1];
-                const method = arguments[2];
-                context.retries(count);
-            } else if (typeof arguments[1] === "string" || typeof arguments[1] === "symbol") {
-                const proto: Mocha.ITestCallbackContext = arguments[0];
-                const prop = arguments[1];
-                const descriptor = arguments[2];
-                proto[prop][retriesSymbol] = count;
-            }
-        }
-    });
-}
+export const retries = createNumericBuiltinTrait(retriesSymbol, (context, value) => context.retries(value));
 
 export const skipOnError: SuiteTrait = trait(function(ctx, ctor) {
     ctx.beforeEach(function() {
@@ -586,44 +514,36 @@ export const skipOnError: SuiteTrait = trait(function(ctx, ctor) {
     });
 });
 
+function createExecutionModifier(executionSymbol: any): <TFunction extends Function>(target: Object | TFunction, propertyKey?: string | symbol) => void {
+    return function <TFunction extends Function>(target: Object | TFunction, propertyKey?: string | symbol): void {
+        if (arguments.length === 1) {
+            target[executionSymbol] = true;
+        } else {
+            target[propertyKey][executionSymbol] = true;
+        }
+    };
+}
+
 /**
  * Mart a test or suite as pending.
  *  - Used as `@suite @pending class` is `describe.skip("name", ...);`.
  *  - Used as `@test @pending method` is `it("name");`
  */
-export function pending<TFunction extends Function>(target: Object | TFunction, propertyKey?: string | symbol): void {
-    if (arguments.length === 1) {
-        target[pendingSymbol] = true;
-    } else {
-        target[propertyKey][pendingSymbol] = true;
-    }
-}
+export const pending = createExecutionModifier(pendingSymbol);
 
 /**
  * Mark a test or suite as the only one to execute.
  *  - Used as `@suite @only class` is `describe.only("name", ...)`.
  *  - Used as `@test @only method` is `it.only("name", ...)`.
  */
-export function only<TFunction extends Function>(target: Object, propertyKey?: string | symbol): void {
-    if (arguments.length === 1) {
-        target[onlySymbol] = true;
-    } else {
-        target[propertyKey][onlySymbol] = true;
-    }
-}
+export const only = createExecutionModifier(onlySymbol);
 
 /**
  * Mark a test or suite to skip.
  *  - Used as `@suite @skip class` is `describe.skip("name", ...);`.
  *  - Used as `@test @skip method` is `it.skip("name")`.
  */
-export function skip<TFunction extends Function>(target: Object | TFunction, propertyKey?: string | symbol): void {
-    if (arguments.length === 1) {
-        target[onlySymbol] = true;
-    } else {
-        target[propertyKey][skipSymbol] = true;
-    }
-}
+export const skip = createExecutionModifier(skipSymbol);
 
 /**
  * Mark a method as test. Use the method name as test name.

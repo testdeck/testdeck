@@ -29,7 +29,7 @@
 
   FailingAsyncLifeCycle
     ✓ one
-    4) "after each" hook for "one"
+    4) "after each" hook: after for "one"
     5) "after all" hook
 
   PassingAsyncLifeCycle
@@ -70,11 +70,11 @@
     ✓ third fast
 
   SlowBefore
-    8) "before each" hook for "will fail for slow before"
+    8) "before each" hook: before for "will fail for slow before"
 
   SlowAfter
     ✓ will fail for slow after
-    9) "after each" hook for "will fail for slow after"
+    9) "after each" hook: after for "will fail for slow after"
 
   outer suite
     TestClass
@@ -98,7 +98,7 @@
      Error: Ooopsss...
 
   4) FailingAsyncLifeCycle
-       "after each" hook for "one":
+       "after each" hook: after for "one":
      Error: Timeout of 2000ms exceeded. For async tests and hooks, ensure "done()" is called; if returning a Promise, ensure it resolves.
 
   5) FailingAsyncLifeCycle
@@ -114,10 +114,10 @@
      Error: Timeout of 10ms exceeded. For async tests and hooks, ensure "done()" is called; if returning a Promise, ensure it resolves.
 
   8) SlowBefore
-       "before each" hook for "will fail for slow before":
+       "before each" hook: before for "will fail for slow before":
      Error: Timeout of 10ms exceeded. For async tests and hooks, ensure "done()" is called; if returning a Promise, ensure it resolves.
 
   9) SlowAfter
-       "after each" hook for "will fail for slow after":
+       "after each" hook: after for "will fail for slow after":
      Error: Timeout of 10ms exceeded. For async tests and hooks, ensure "done()" is called; if returning a Promise, ensure it resolves.
 

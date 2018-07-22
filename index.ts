@@ -188,16 +188,15 @@ function suiteClassCallback(target: SuiteCtor, context: TestFunctions) {
         context.afterEach(afterEachFunction);
 
         function runTest(prototype: any, method: Function) {
-            const testName = method[testNameSymbol] || (method as any).name;
+            const testName = method[testNameSymbol];
             const shouldSkip = method[skipSymbol];
             const shouldOnly = method[onlySymbol];
             const shouldPending = method[pendingSymbol];
             const parameters = method[parametersSymbol] as TestParams[];
 
-            if (testName || shouldOnly || shouldPending || shouldSkip) {
-                if (shouldPending && !shouldSkip && !shouldOnly) {
-                    context.it.skip(testName);
-                } else if (parameters) {
+            /* istanbul ignore else */
+            if (testName) {
+                if (parameters) {
                     const nameForParameters = method[nameForParametersSymbol];
                     parameters.forEach((parameterOptions, i) => {
                         const { mark, name, params } = parameterOptions;
@@ -213,18 +212,14 @@ function suiteClassCallback(target: SuiteCtor, context: TestFunctions) {
                         const shouldOnlyParam = shouldOnly || (mark === Mark.only);
                         const shouldPendingParam = shouldPending || (mark === Mark.pending);
 
-                        if (shouldPendingParam && !shouldSkipParam && !shouldOnlyParam) {
-                            context.it.skip(testName);
-                        } else {
-                            const testFunc = (shouldSkipParam && context.it.skip)
+                        const testFunc = ((shouldPendingParam || shouldSkipParam) && context.it.skip)
                                 || (shouldOnlyParam && context.it.only)
                                 || context.it;
 
-                            applyTestFunc(testFunc, parametersTestName, method, [params]);
-                        }
+                        applyTestFunc(testFunc, parametersTestName, method, [params]);
                     });
                 } else {
-                    const testFunc = (shouldSkip && context.it.skip)
+                    const testFunc = ((shouldPending || shouldSkip) && context.it.skip)
                         || (shouldOnly && context.it.only)
                         || context.it;
 
@@ -339,9 +334,8 @@ function suiteFuncCheckingDecorators(context: TestFunctions) {
             const shouldSkip = ctor[skipSymbol];
             const shouldOnly = ctor[onlySymbol];
             const shouldPending = ctor[pendingSymbol];
-            return (shouldSkip && context.describe.skip)
-                || (shouldOnly && context.describe.only)
-                || (shouldPending && context.describe.skip)
+            return (shouldOnly && context.describe.only)
+                || ((shouldSkip || shouldPending) && context.describe.skip)
                 || context.describe;
         } else {
             return context.describe;
@@ -369,7 +363,7 @@ interface TestParams {
 function makeParamsFunction(mark: Mark) {
     return (params: any, name?: string) => {
         return (target: Object, propertyKey: string) => {
-            target[propertyKey][testNameSymbol] = propertyKey ? propertyKey.toString() : "";
+            target[propertyKey][testNameSymbol] = propertyKey;
             target[propertyKey][parametersSymbol] = target[propertyKey][parametersSymbol] || [];
             target[propertyKey][parametersSymbol].push({ mark, name, params } as TestParams);
         };
@@ -419,14 +413,14 @@ function makeTestFunction(testFunc: () => Function, mark: null | string | symbol
             testFunc()(name, fn);
         },
         testProperty(target: Object, propertyKey: string | symbol, descriptor?: PropertyDescriptor): void {
-            target[propertyKey][testNameSymbol] = propertyKey ? propertyKey.toString() : "";
+            target[propertyKey][testNameSymbol] = propertyKey;
             if (mark) {
                 target[propertyKey][mark] = true;
             }
         },
         testDecorator(...traits: TestTrait[]): PropertyDecorator & MethodDecorator {
             return function(target: Object, propertyKey: string | symbol, descriptor?: PropertyDescriptor): void {
-                target[propertyKey][testNameSymbol] = propertyKey ? propertyKey.toString() : "";
+                target[propertyKey][testNameSymbol] = propertyKey;
                 target[propertyKey][traitsSymbol] = traits;
                 if (mark) {
                     target[propertyKey][mark] = true;
@@ -464,7 +458,7 @@ function createNumericBuiltinTrait(traitSymbol: any, fn: (ctx: Mocha.ISuiteCallb
             if (arguments.length === 1) {
                 const target = arguments[0];
                 target[traitSymbol] = value;
-            } else if (arguments.length === 2 && typeof arguments[1] === "string" || typeof arguments[1] === "symbol") {
+            } else if (arguments.length === 2 && typeof arguments[1] === "string") {
                 const target = arguments[0];
                 const property = arguments[1];
                 target[property][traitSymbol] = value;
@@ -478,7 +472,7 @@ function createNumericBuiltinTrait(traitSymbol: any, fn: (ctx: Mocha.ISuiteCallb
                     const instance = arguments[1];
                     const method = arguments[2];
                     fn(context, value);
-                } else if (typeof arguments[1] === "string" || typeof arguments[1] === "symbol") {
+                } else if (typeof arguments[1] === "string") {
                     const proto: Mocha.ITestCallbackContext = arguments[0];
                     const prop = arguments[1];
                     const descriptor = arguments[2];

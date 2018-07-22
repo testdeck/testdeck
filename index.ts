@@ -651,9 +651,10 @@ function getInstance<T>(testClass: TestClass<T>) {
  */
 export function registerDI(instantiator: DependencyInjectionSystem) {
     // Maybe check if it is not already added?
-    if (dependencyInjectionSystems.some((di) => di === instantiator)) { return false; }
-    dependencyInjectionSystems.unshift(instantiator);
-    return true;
+    /* istanbul ignore else */
+    if (!dependencyInjectionSystems.some((di) => di === instantiator)) {
+        dependencyInjectionSystems.unshift(instantiator);
+    }
 }
 
 module.exports = Object.assign(tsdd, exports);

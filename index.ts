@@ -461,17 +461,21 @@ function createNumericBuiltinTrait(traitSymbol: any, fn: (ctx: Mocha.ISuiteCallb
                 const context: Mocha.ISuiteCallbackContext = arguments[0];
                 const ctor = arguments[1];
                 fn(context, value);
-            } else if (arguments.length === 3) {
-                if (typeof arguments[2] === "function") {
-                    const context: Mocha.ITestCallbackContext = arguments[0];
-                    const instance = arguments[1];
-                    const method = arguments[2];
-                    fn(context, value);
-                } else if (typeof arguments[1] === "string") {
-                    const proto: Mocha.ITestCallbackContext = arguments[0];
-                    const prop = arguments[1];
-                    const descriptor = arguments[2];
-                    proto[prop][traitSymbol] = value;
+            } else {
+                /* istanbul ignore else */
+                if (arguments.length === 3) {
+                    /* istanbul ignore else */
+                    if (typeof arguments[2] === "function") {
+                        const context: Mocha.ITestCallbackContext = arguments[0];
+                        const instance = arguments[1];
+                        const method = arguments[2];
+                        fn(context, value);
+                    } else if (typeof arguments[1] === "string") {
+                        const proto: Mocha.ITestCallbackContext = arguments[0];
+                        const prop = arguments[1];
+                        const descriptor = arguments[2];
+                        proto[prop][traitSymbol] = value;
+                    }
                 }
             }
         });

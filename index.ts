@@ -256,15 +256,10 @@ function suiteClassCallback(target: SuiteCtor, context: TestFunctions) {
         const collectedTests: { [key: string]: any[] } = {};
         let currentPrototype = prototype;
         while (currentPrototype !== Object.prototype) {
-
             Object.getOwnPropertyNames(currentPrototype).forEach((key) => {
-
                 if (typeof prototype[key] === "function") {
-
                     const method = prototype[key];
-
                     if (method[testNameSymbol] && !collectedTests[key]) {
-
                         collectedTests[key] = [prototype, method];
                     }
                 }
@@ -363,7 +358,7 @@ interface TestParams {
 function makeParamsFunction(mark: Mark) {
     return (params: any, name?: string) => {
         return (target: Object, propertyKey: string) => {
-            target[propertyKey][testNameSymbol] = propertyKey;
+            target[propertyKey][testNameSymbol] = propertyKey.toString();
             target[propertyKey][parametersSymbol] = target[propertyKey][parametersSymbol] || [];
             target[propertyKey][parametersSymbol].push({ mark, name, params } as TestParams);
         };
@@ -413,14 +408,14 @@ function makeTestFunction(testFunc: () => Function, mark: null | string | symbol
             testFunc()(name, fn);
         },
         testProperty(target: Object, propertyKey: string | symbol, descriptor?: PropertyDescriptor): void {
-            target[propertyKey][testNameSymbol] = propertyKey;
+            target[propertyKey][testNameSymbol] = propertyKey.toString();
             if (mark) {
                 target[propertyKey][mark] = true;
             }
         },
         testDecorator(...traits: TestTrait[]): PropertyDecorator & MethodDecorator {
             return function(target: Object, propertyKey: string | symbol, descriptor?: PropertyDescriptor): void {
-                target[propertyKey][testNameSymbol] = propertyKey;
+                target[propertyKey][testNameSymbol] = propertyKey.toString();
                 target[propertyKey][traitsSymbol] = traits;
                 if (mark) {
                     target[propertyKey][mark] = true;

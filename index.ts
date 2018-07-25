@@ -194,37 +194,35 @@ function suiteClassCallback(target: SuiteCtor, context: TestFunctions) {
             const shouldPending = method[pendingSymbol];
             const parameters = method[parametersSymbol] as TestParams[];
 
-            /* istanbul ignore else */
-            if (testName) {
-                if (parameters) {
-                    const nameForParameters = method[nameForParametersSymbol];
-                    parameters.forEach((parameterOptions, i) => {
-                        const { mark, name, params } = parameterOptions;
+            // assert testName is truthy
+            if (parameters) {
+                const nameForParameters = method[nameForParametersSymbol];
+                parameters.forEach((parameterOptions, i) => {
+                    const { mark, name, params } = parameterOptions;
 
-                        let parametersTestName = `${testName}_${i}`;
-                        if (name) {
-                            parametersTestName = name;
-                        } else if (nameForParameters) {
-                            parametersTestName = nameForParameters(params);
-                        }
+                    let parametersTestName = `${testName}_${i}`;
+                    if (name) {
+                        parametersTestName = name;
+                    } else if (nameForParameters) {
+                        parametersTestName = nameForParameters(params);
+                    }
 
-                        const shouldSkipParam = shouldSkip || (mark === Mark.skip);
-                        const shouldOnlyParam = shouldOnly || (mark === Mark.only);
-                        const shouldPendingParam = shouldPending || (mark === Mark.pending);
+                    const shouldSkipParam = shouldSkip || (mark === Mark.skip);
+                    const shouldOnlyParam = shouldOnly || (mark === Mark.only);
+                    const shouldPendingParam = shouldPending || (mark === Mark.pending);
 
-                        const testFunc = ((shouldPendingParam || shouldSkipParam) && context.it.skip)
-                                || (shouldOnlyParam && context.it.only)
-                                || context.it;
+                    const testFunc = ((shouldPendingParam || shouldSkipParam) && context.it.skip)
+                            || (shouldOnlyParam && context.it.only)
+                            || context.it;
 
-                        applyTestFunc(testFunc, parametersTestName, method, [params]);
-                    });
-                } else {
-                    const testFunc = ((shouldPending || shouldSkip) && context.it.skip)
-                        || (shouldOnly && context.it.only)
-                        || context.it;
+                    applyTestFunc(testFunc, parametersTestName, method, [params]);
+                });
+            } else {
+                const testFunc = ((shouldPending || shouldSkip) && context.it.skip)
+                    || (shouldOnly && context.it.only)
+                    || context.it;
 
-                    applyTestFunc(testFunc, testName, method, []);
-                }
+                applyTestFunc(testFunc, testName, method, []);
             }
         }
 
@@ -287,13 +285,17 @@ function suiteOverload(overloads: {
     return function() {
         if (arguments.length === 2 && typeof arguments[0] === "string" && typeof arguments[1] === "function" && !arguments[1][isTraitSymbol]) {
             return overloads.suite.apply(this, arguments);
-        } else if (arguments.length === 1 && typeof arguments[0] === "function" && !arguments[0][isTraitSymbol]) {
-            overloads.suiteCtor.apply(this, arguments);
-        } else if (arguments.length >= 1 && typeof arguments[0] === "string") {
-            return overloads.suiteDecoratorNamed.apply(this, arguments);
-        } else {
-            return overloads.suiteDecorator.apply(this, arguments);
         }
+
+        if (arguments.length === 1 && typeof arguments[0] === "function" && !arguments[0][isTraitSymbol]) {
+            return overloads.suiteCtor.apply(this, arguments);
+        }
+
+        if (arguments.length >= 1 && typeof arguments[0] === "string") {
+            return overloads.suiteDecoratorNamed.apply(this, arguments);
+        }
+
+        return overloads.suiteDecorator.apply(this, arguments);
     };
 }
 
@@ -393,7 +395,7 @@ function testOverload(overloads: {
         if (arguments.length === 2 && typeof arguments[0] === "string" && typeof arguments[1] === "function" && !arguments[1][isTraitSymbol]) {
             return overloads.test.apply(this, arguments);
         } else if (arguments.length >= 2 && typeof arguments[0] !== "string" && typeof arguments[0] !== "function") {
-            overloads.testProperty.apply(this, arguments);
+            return overloads.testProperty.apply(this, arguments);
         } else if (arguments.length >= 1 && typeof arguments[0] === "string") {
             return overloads.testDecoratorNamed.apply(this, arguments);
         } else {
@@ -450,34 +452,52 @@ export function trait<T extends SuiteTrait | TestTrait>(arg: T): T {
 function createNumericBuiltinTrait(traitSymbol: any, fn: (ctx: Mocha.ISuiteCallbackContext, value: number) => void) {
     return function(value: number): MethodDecorator & PropertyDecorator & ClassDecorator & SuiteTrait & TestTrait {
         return trait(function() {
+            // TODO: Implement an overload selector similar to the testOverload function
+
             if (arguments.length === 1) {
+                // Class decorator
                 const target = arguments[0];
                 target[traitSymbol] = value;
-            } else if (arguments.length === 2 && typeof arguments[1] === "string") {
+                return;
+            }
+
+            /* istanbul ignore if  */
+            if (arguments.length === 2 && typeof arguments[1] === "string") {
+                // PropertyDecorator, some TSC versions generated property decorators when decorating method
                 const target = arguments[0];
                 const property = arguments[1];
                 target[property][traitSymbol] = value;
-            } else if (arguments.length === 2) {
+                return;
+            }
+
+            if (arguments.length === 2) {
+                // Class trait as retries in `@suite(repeat(2)) class X {}`
                 const context: Mocha.ISuiteCallbackContext = arguments[0];
                 const ctor = arguments[1];
                 fn(context, value);
-            } else {
-                /* istanbul ignore else */
-                if (arguments.length === 3) {
-                    /* istanbul ignore else */
-                    if (typeof arguments[2] === "function") {
-                        const context: Mocha.ITestCallbackContext = arguments[0];
-                        const instance = arguments[1];
-                        const method = arguments[2];
-                        fn(context, value);
-                    } else if (typeof arguments[1] === "string") {
-                        const proto: Mocha.ITestCallbackContext = arguments[0];
-                        const prop = arguments[1];
-                        const descriptor = arguments[2];
-                        proto[prop][traitSymbol] = value;
-                    }
-                }
+                return;
             }
+
+            if (arguments.length === 3 && typeof arguments[2] === "function") {
+                // Metod trait as retries in `@suite class { @test(retries(4)) method() {} }`
+                const context: Mocha.ITestCallbackContext = arguments[0];
+                const instance = arguments[1];
+                const method = arguments[2];
+                fn(context, value);
+                return;
+            }
+
+            /* istanbul ignore else */
+            if (arguments.length === 3 && typeof arguments[1] === "string") {
+                // MethodDecorator
+                const proto: Mocha.ITestCallbackContext = arguments[0];
+                const prop = arguments[1];
+                const descriptor = arguments[2];
+                proto[prop][traitSymbol] = value;
+                return;
+            }
+
+            // assert unreachable.
         });
     };
 }
@@ -565,6 +585,8 @@ function tsdd(suite) {
         context.after = common.after;
         context.beforeEach = common.beforeEach;
         context.afterEach = common.afterEach;
+
+        /* istanbul ignore next */
         context.run = mocha.options.delay && common.runWithSuite(suite);
 
         // Copy of bdd
@@ -605,6 +627,8 @@ function tsdd(suite) {
         context.xit = context.xspecify = context.it.skip = function(title) {
             context.it(title);
         };
+
+        /* istanbul ignore next */
         context.it.retries = function(n) {
             context.retries(n);
         };

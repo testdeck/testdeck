@@ -46,6 +46,9 @@ class Basic {
             setTimeout(() => reject(new Error("Ooopsss...")), 1);
         });
     }
+
+    public classesMayHaveNonTestMethods() {
+    }
 }
 
 //   mocha typescript

@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import { only, pending, retries, skip, slow, suite, test, timeout } from "../../../index";
+import { retries, suite, test } from "../../../index";
 
 @suite class FlakyMethodDecorator {
     private static runCount1 = 0;
@@ -40,5 +40,47 @@ import { only, pending, retries, skip, slow, suite, test, timeout } from "../../
     @test @retries(4) public overrideSuiteRetries() {
         FlakySuiteDecorator.runCount3++;
         assert.isAbove(FlakySuiteDecorator.runCount3, 4);
+    }
+}
+
+@suite class FlakyMethodTrait {
+    private static runCount1 = 0;
+    private static runCount2 = 0;
+    private static runCount3 = 0;
+
+    @test(retries(1)) public tryOnce() {
+        FlakyMethodTrait.runCount1++;
+        assert.isAbove(FlakyMethodTrait.runCount1, 2);
+    }
+
+    @test(retries(2)) public tryTwice() {
+        FlakyMethodTrait.runCount2++;
+        assert.isAbove(FlakyMethodTrait.runCount2, 2);
+    }
+
+    @test(retries(3)) public tryTrice() {
+        FlakyMethodTrait.runCount3++;
+        assert.isAbove(FlakyMethodTrait.runCount3, 2);
+    }
+}
+
+@suite(retries(3)) class FlakySuiteTrait {
+    private static runCount1 = 0;
+    private static runCount2 = 0;
+    private static runCount3 = 0;
+
+    @test public tryToGetPass2() {
+        FlakySuiteTrait.runCount1++;
+        assert.isAbove(FlakySuiteTrait.runCount1, 2);
+    }
+
+    @test public tryToGetPass4() {
+        FlakySuiteTrait.runCount2++;
+        assert.isAbove(FlakySuiteTrait.runCount2, 4);
+    }
+
+    @test(retries(4)) public overrideSuiteRetries() {
+        FlakySuiteTrait.runCount3++;
+        assert.isAbove(FlakySuiteTrait.runCount3, 4);
     }
 }

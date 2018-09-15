@@ -1,0 +1,8 @@
+
+  vanila tdd suite
+    ✓ only
+
+  vanila bdd suite
+    ✓ only
+
+  2 passing

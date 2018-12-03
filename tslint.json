@@ -15,7 +15,8 @@
         "ban-types": false,
         "no-shadowed-variable": false,
         "forin": false,
-        "member-ordering": false
+        "member-ordering": false,
+        "deprecation": true
     },
     "rulesDirectory": []
 }

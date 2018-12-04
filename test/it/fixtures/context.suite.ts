@@ -21,7 +21,7 @@ import { context, only, pending, skip, slow, suite, test, timeout } from "../../
         @context public static mocha: mocha.Context;
 
         @test public async "Request token"() {
-            // return (await request(url)).responce.headers.token;
+            // return (await request(url)).response.headers.token;
             return Promise.resolve();
         }
         @test public async "Exchange token for oauth session"() {

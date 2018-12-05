@@ -5,7 +5,8 @@
 [![Dependencies](https://img.shields.io/librariesio/github/pana-cc/mocha-typescript.svg)](https://libraries.io/npm/mocha-typescript)
 [![Issues](https://img.shields.io/github/issues/pana-cc/mocha-typescript.svg)](https://github.com/pana-cc/mocha-typescript/issues)
 [![Pull Requests](https://img.shields.io/github/issues-pr/pana-cc/mocha-typescript.svg)](https://github.com/pana-cc/mocha-typescript/pulls)
-[![Build Status](https://img.shields.io/travis/pana-cc/mocha-typescript/master.svg)](https://travis-ci.org/pana-cc/mocha-typescript)
+[![Travis Build Status](https://img.shields.io/travis/pana-cc/mocha-typescript/master.svg)](https://travis-ci.org/pana-cc/mocha-typescript)
+[![Appveyor Build Status](https://img.shields.io/appveyor/ci/silkentrance/mocha-typescript.svg)](https://ci.appveyor.com/project/silkentrance/mocha-typescript)
 ![Apache 2.0 License](https://img.shields.io/npm/l/mocha-typescript.svg)
 
 Mocha testing with style - the OOP way
@@ -25,13 +26,20 @@ class Hello {
 }
 ```
 
+## Documentation Licensing
+
+All documentation is licenced under the [CC BY-NC 4.0 license](https://creativecommons.org/licenses/by-nc/4.0/).
+
+You need legal consent by all direct maintainers of the project in order to use (parts of) the documentation for any 
+commercial purposes.
+
 ## Features
 
-- declarative/object oriented TDD/BDD interface
-- parameterised tests
-- dependency injection support
-- watcher
-- IDE integration
+- Declarative/Object Oriented BDD/TDD Interface
+- Parameterised Tests
+- Dependency Injection Support
+- Watcher
+- IDE Integration
 
 ## Installation
 
@@ -44,7 +52,7 @@ npm install --save-dev @types/mocha
 
 and you are ready to go.
 
-You might also want to consider using the very good [Chai](https://github.com/chaijs/chai) bdd/tdd assertion framework.
+You might also want to consider using the very good [Chai](https://github.com/chaijs/chai) BDD/TDD assertion framework.
 
 ```bash
 npm install --save-dev chai
@@ -60,13 +68,13 @@ npm install --save-dev @types/node
 ## Usage
 
 Classes can be annotated with ``@suite`` to make them test suites, similarly so, individual methods of test suites can
-be annotated class using ``@test``. And, by using inheritance, one can build complex test suites and reuse existing 
+be annotated using ``@test``. And, by using inheritance, one can build complex test suites and reuse existing 
 code.
 
-The test interface also supports mocha's built-in TDD and BDD interfaces such as ``describe`` and ``it``. 
+The test interface also supports mocha's built-in BDD and TDD interfaces such as ``describe`` and ``it``. 
 
 And you can mix both the OOP style and the declarative style, and you can even create nested suites by using a mixture
-of both styles. Also, you can inherit from abstract base classes.
+of both styles.
 
 ```TypeScript
 import { assert } from "chai";

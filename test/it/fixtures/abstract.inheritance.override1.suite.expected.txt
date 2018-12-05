@@ -5,4 +5,4 @@
   1 failing
   1) ConcreteTest
        inherited test from AbstractTestBase:
-     AssertionError: assert.fail()
+     AssertionError: derived suites must implement this

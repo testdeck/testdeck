@@ -15,10 +15,10 @@ import { context, only, pending, skip, slow, suite, test, timeout } from "../../
     @suite(`OAuth ${title}`) class OAuthTest {
 
         // Get the mocha context in for instance before and after (before/after each) and test methods.
-        @context public mocha: mocha.IBeforeAndAfterContext & mocha.IHookCallbackContext;
+        @context public mocha: mocha.Context;
 
         // Get the mocha context for static before and after.
-        @context public static mocha: mocha.IBeforeAndAfterContext & mocha.IHookCallbackContext;
+        @context public static mocha: mocha.Context;
 
         @test public async "Request token"() {
             // return (await request(url)).responce.headers.token;

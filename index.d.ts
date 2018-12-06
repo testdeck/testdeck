@@ -64,10 +64,10 @@ declare namespace MochaTypeScript {
         new(): any;
     }
     export interface SuiteTrait {
-        (this: Mocha.ISuiteCallbackContext, ctx: Mocha.ISuiteCallbackContext, ctor: Function): void;
+        (this: Mocha.Suite, ctx: Mocha.Suite, ctor: Function): void;
     }
     export interface TestTrait {
-        (this: Mocha.ITestCallbackContext, ctx: Mocha.ITestCallbackContext, instance: Object, method: Function): void;
+        (this: Mocha.Context, ctx: Mocha.Context, instance: Object, method: Function): void;
     }
 
     export interface IContextDefinition {
@@ -123,11 +123,11 @@ declare namespace MochaTypeScript {
 }
 
 declare module "mocha-typescript" {
-    export const suite: Mocha.IContextDefinition & MochaTypeScript.IContextDefinition;
-    export const test: Mocha.ITestDefinition & MochaTypeScript.ITestDefinition;
+    export const suite: Mocha.SuiteFunction & MochaTypeScript.IContextDefinition;
+    export const test: Mocha.TestFunction & MochaTypeScript.ITestDefinition;
 
-    export const describe: Mocha.IContextDefinition & MochaTypeScript.IContextDefinition;
-    export const it: Mocha.ITestDefinition & MochaTypeScript.ITestDefinition;
+    export const describe: Mocha.SuiteFunction & MochaTypeScript.IContextDefinition;
+    export const it: Mocha.TestFunction & MochaTypeScript.ITestDefinition;
 
     export function slow(time: number): PropertyDecorator & ClassDecorator & MochaTypeScript.SuiteTrait & MochaTypeScript.TestTrait;
     export function timeout(time: number): PropertyDecorator & ClassDecorator & MochaTypeScript.SuiteTrait & MochaTypeScript.TestTrait;

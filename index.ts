@@ -61,8 +61,8 @@ interface SuiteProto {
     [key: string]: any;
 }
 
-export type SuiteTrait = (this: Mocha.ISuiteCallbackContext, ctx: Mocha.ISuiteCallbackContext, ctor: SuiteCtor) => void;
-export type TestTrait = (this: Mocha.ITestCallbackContext, ctx: Mocha.ITestCallbackContext, instance: SuiteProto, method: Function) => void;
+export type SuiteTrait = (this: Mocha.Suite, ctx: Mocha.Suite, ctor: SuiteCtor) => void;
+export type TestTrait = (this: Mocha.Context, ctx: Mocha.Context, instance: SuiteProto, method: Function) => void;
 
 const wrapNameAndToString = (cb: (done?: Function) => any, innerFunction: Function): () => any => {
     cb.toString = () => innerFunction.toString();
@@ -70,7 +70,7 @@ const wrapNameAndToString = (cb: (done?: Function) => any, innerFunction: Functi
     return cb;
 };
 
-function applyDecorators(mocha: Mocha.IHookCallbackContext, ctorOrProto, method, instance) {
+function applyDecorators(mocha: Mocha.Context, ctorOrProto, method, instance) {
     const timeoutValue = method[timeoutSymbol];
     if (typeof timeoutValue === "number") {
         mocha.timeout(timeoutValue);
@@ -88,7 +88,7 @@ function applyDecorators(mocha: Mocha.IHookCallbackContext, ctorOrProto, method,
         instance[contextProperty] = mocha;
     }
 }
-function applyTestTraits(context: Mocha.ITestCallbackContext, instance: SuiteProto, method: Function) {
+function applyTestTraits(context: Mocha.Context, instance: SuiteProto, method: Function) {
     const traits: TestTrait[] = method[traitsSymbol];
     if (traits) {
         traits.forEach((trait) => {
@@ -96,7 +96,7 @@ function applyTestTraits(context: Mocha.ITestCallbackContext, instance: SuitePro
         });
     }
 }
-function applySuiteTraits(context: Mocha.ISuiteCallbackContext, target: SuiteCtor) {
+function applySuiteTraits(context: Mocha.Suite, target: SuiteCtor) {
     const traits: SuiteTrait[] = target[traitsSymbol];
     if (traits) {
         traits.forEach((trait) => {
@@ -140,20 +140,20 @@ function suiteClassCallback(target: SuiteCtor, context: TestFunctions) {
         let beforeEachFunction: (() => any) | ((done: Function) => any);
         if (prototype.before) {
             if (isAsync(prototype.before)) {
-                beforeEachFunction = wrapNameAndToString(function(this: Mocha.IHookCallbackContext, done: Function) {
+                beforeEachFunction = wrapNameAndToString(function(this: Mocha.Context, done: Function) {
                     instance = getInstance(target);
                     applyDecorators(this, prototype, prototype.before, instance);
                     return prototype.before.call(instance, done);
                 }, prototype.before);
             } else {
-                beforeEachFunction = wrapNameAndToString(function(this: Mocha.IHookCallbackContext) {
+                beforeEachFunction = wrapNameAndToString(function(this: Mocha.Context) {
                     instance = getInstance(target);
                     applyDecorators(this, prototype, prototype.before, instance);
                     return prototype.before.call(instance);
                 }, prototype.before);
             }
         } else {
-            beforeEachFunction = function(this: Mocha.IHookCallbackContext) {
+            beforeEachFunction = function(this: Mocha.Context) {
                 instance = getInstance(target);
             };
         }
@@ -162,7 +162,7 @@ function suiteClassCallback(target: SuiteCtor, context: TestFunctions) {
         let afterEachFunction: (() => any) | ((done: Function) => any);
         if (prototype.after) {
             if (isAsync(prototype.after)) {
-                afterEachFunction = wrapNameAndToString(function(this: Mocha.IHookCallbackContext, done) {
+                afterEachFunction = wrapNameAndToString(function(this: Mocha.Context, done) {
                     try {
                         applyDecorators(this, prototype, prototype.after, instance);
                         return prototype.after.call(instance, done);
@@ -171,7 +171,7 @@ function suiteClassCallback(target: SuiteCtor, context: TestFunctions) {
                     }
                 }, prototype.after);
             } else {
-                afterEachFunction = wrapNameAndToString(function(this: Mocha.IHookCallbackContext) {
+                afterEachFunction = wrapNameAndToString(function(this: Mocha.Context) {
                     try {
                         applyDecorators(this, prototype, prototype.after, instance);
                         return prototype.after.call(instance);
@@ -181,7 +181,7 @@ function suiteClassCallback(target: SuiteCtor, context: TestFunctions) {
                 }, prototype.after);
             }
         } else {
-            afterEachFunction = function(this: Mocha.IHookCallbackContext) {
+            afterEachFunction = function(this: Mocha.Context) {
                 instance = undefined;
             };
         }
@@ -236,13 +236,13 @@ function suiteClassCallback(target: SuiteCtor, context: TestFunctions) {
         function applyTestFunc(testFunc: Function, testName: string,
                                method: Function, callArgs: any[]) {
             if (isAsync(method)) {
-                testFunc(testName, wrapNameAndToString(function(this: Mocha.ITestCallbackContext, done) {
+                testFunc(testName, wrapNameAndToString(function(this: Mocha.Context, done) {
                   applyDecorators(this, prototype, method, instance);
                   applyTestTraits(this, instance, method);
                   return method.call(instance, done, ...callArgs);
                 }, method));
             } else {
-                testFunc(testName, wrapNameAndToString(function(this: Mocha.ITestCallbackContext) {
+                testFunc(testName, wrapNameAndToString(function(this: Mocha.Context) {
                   applyDecorators(this, prototype, method, instance);
                   applyTestTraits(this, instance, method);
                   return method.call(instance, ...callArgs);
@@ -449,7 +449,7 @@ export function trait<T extends SuiteTrait | TestTrait>(arg: T): T {
     return arg;
 }
 
-function createNumericBuiltinTrait(traitSymbol: any, fn: (ctx: Mocha.ISuiteCallbackContext, value: number) => void) {
+function createNumericBuiltinTrait(traitSymbol: any, fn: (ctx: Mocha.Suite | Mocha.Context, value: number) => void) {
     return function(value: number): MethodDecorator & PropertyDecorator & ClassDecorator & SuiteTrait & TestTrait {
         return trait(function() {
             // TODO: Implement an overload selector similar to the testOverload function
@@ -472,7 +472,7 @@ function createNumericBuiltinTrait(traitSymbol: any, fn: (ctx: Mocha.ISuiteCallb
 
             if (arguments.length === 2) {
                 // Class trait as retries in `@suite(repeat(2)) class X {}`
-                const context: Mocha.ISuiteCallbackContext = arguments[0];
+                const context: Mocha.Suite = arguments[0];
                 const ctor = arguments[1];
                 fn(context, value);
                 return;
@@ -480,7 +480,7 @@ function createNumericBuiltinTrait(traitSymbol: any, fn: (ctx: Mocha.ISuiteCallb
 
             if (arguments.length === 3 && typeof arguments[2] === "function") {
                 // Metod trait as retries in `@suite class { @test(retries(4)) method() {} }`
-                const context: Mocha.ITestCallbackContext = arguments[0];
+                const context: Mocha.Context = arguments[0];
                 const instance = arguments[1];
                 const method = arguments[2];
                 fn(context, value);
@@ -490,7 +490,7 @@ function createNumericBuiltinTrait(traitSymbol: any, fn: (ctx: Mocha.ISuiteCallb
             /* istanbul ignore else */
             if (arguments.length === 3 && typeof arguments[1] === "string") {
                 // MethodDecorator
-                const proto: Mocha.ITestCallbackContext = arguments[0];
+                const proto: Mocha.Context = arguments[0];
                 const prop = arguments[1];
                 const descriptor = arguments[2];
                 proto[prop][traitSymbol] = value;
@@ -518,7 +518,7 @@ export const timeout = createNumericBuiltinTrait(timeoutSymbol, (context, value)
  * Set a test method or site retries count.
  * @param value The number of retries to attempt when running the test.
  */
-export const retries = createNumericBuiltinTrait(retriesSymbol, (context, value) => context.retries(value));
+export const retries = createNumericBuiltinTrait(retriesSymbol, (context: Mocha.Context, value) => context.retries(value));
 
 export const skipOnError: SuiteTrait = trait(function(ctx, ctor) {
     ctx.beforeEach(function() {

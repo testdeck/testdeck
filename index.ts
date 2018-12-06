@@ -571,81 +571,6 @@ export function context(target: Object, propertyKey: string | symbol): void {
     target[contextSymbol] = propertyKey;
 }
 
-/**
- * Rip-off the TDD and BDD at: mocha/lib/interfaces/tdd.js and mocha/lib/interfaces/bdd.js
- * Augmented the suite and test for the mocha-typescript decorators.
- */
-function tsdd(suite) {
-    const suites = [suite];
-
-    suite.on("pre-require", function(context, file, mocha) {
-        const common = Common(suites, context, mocha);
-
-        context.before = common.before;
-        context.after = common.after;
-        context.beforeEach = common.beforeEach;
-        context.afterEach = common.afterEach;
-
-        /* istanbul ignore next */
-        context.run = mocha.options.delay && common.runWithSuite(suite);
-
-        // Copy of bdd
-        context.describe = context.context = function(title, fn) {
-            return common.suite.create({
-                title,
-                file,
-                fn,
-            });
-        };
-        context.xdescribe = context.xcontext = context.describe.skip = function(title, fn) {
-            return common.suite.skip({
-                title,
-                file,
-                fn,
-            });
-        };
-        context.describe.only = function(title, fn) {
-            return common.suite.only({
-                title,
-                file,
-                fn,
-            });
-        };
-        context.it = context.specify = function(title, fn) {
-            const suite = suites[0];
-            if (suite.isPending()) {
-                fn = null;
-            }
-            const test = new Test(title, fn);
-            test.file = file;
-            suite.addTest(test);
-            return test;
-        };
-        context.it.only = function(title, fn) {
-            return common.test.only(mocha, context.it(title, fn));
-        };
-        context.xit = context.xspecify = context.it.skip = function(title) {
-            context.it(title);
-        };
-
-        /* istanbul ignore next */
-        context.it.retries = function(n) {
-            context.retries(n);
-        };
-
-        context.suite = makeSuiteObject(context);
-        context.params = makeParamsObject(context);
-        context.test = makeTestObject(context);
-
-        context.test.retries = common.test.retries;
-
-        context.timeout = timeout;
-        context.slow = slow;
-        context.retries = retries;
-        context.skipOnError = skipOnError;
-    });
-}
-
 interface TestClass<T> {
     new(...args: any[]): T;
     prototype: T;
@@ -681,5 +606,13 @@ export function registerDI(instantiator: DependencyInjectionSystem) {
     }
 }
 
-module.exports = Object.assign(tsdd, exports);
-(Mocha as any).interfaces["mocha-typescript"] = tsdd;
+/**
+ * Dummy Mocha Custom Test UI.
+ */
+function mochatypescriptui() {
+
+}
+
+// for Mocha we need to make the root export a function so that it will recognise it as a custom test ui
+module.exports = Object.assign(mochatypescriptui, exports);
+Mocha.interfaces["mocha-typescript"] = mochatypescriptui;

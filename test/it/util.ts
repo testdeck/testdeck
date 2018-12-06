@@ -6,7 +6,6 @@ function assertContent(actualStr: string, expectedStr: string) {
   const actual: string[] = actualStr.split("\n");
   const expected: string[] = expectedStr.split("\n");
 
-  assert.equal(actual.length, expected.length, "actual and expected differ in length");
   for (let i = 0; i < expected.length; i++) {
     const expectedLine = expected[i].trim();
     const actualLine = actual[i].trim();
@@ -14,6 +13,7 @@ function assertContent(actualStr: string, expectedStr: string) {
       "Unexpected output on line '" + i + "'. Expected: '" +
       expectedLine + "' to be contained in '" + actualLine + "'");
   }
+  assert.equal(actual.length, expected.length, "actual and expected differ in length");
 }
 
 export function assertOutput(actual: string, filePath: string) {
@@ -61,6 +61,8 @@ export function cleanup(str: string, eliminateAllEmptyLines = false): string {
   // somehow nyc seems to inject these into the output, at least they only occur in that context
   // we might want to further investigate this in the future
   result = result.replace(/^import.*$/mg, ELIMINATE_LINE);
+  // this is a new one: const globalTestFunctions: TestFunctions = {
+  result = result.replace(/^const globalTestFunctions: TestFunctions = .*$/mg, ELIMINATE_LINE);
 
   return trimEmptyLines(result, eliminateAllEmptyLines);
 }

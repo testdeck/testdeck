@@ -14,11 +14,11 @@ export abstract class AbstractSuiteITBase {
 
     protected runTest({ target, fixture, expectError = false }: SuiteTestParams) {
 
-        const fixtures = path.join("test", "it", "fixtures");
-        const packagePath = "."; // path.join("index.ts");
-        const mochaPath = path.join("node_modules", ".bin", "_mocha");
-        const mochaArgs = ["--require ts-node/register", `--require ${packagePath}`,
-                           "--ui mocha-typescript", "-C", path.join(fixtures, `${fixture}.ts`)];
+        const fixtures = path.resolve(__dirname, "fixtures", `${fixture}.ts`);
+        const packagePath = path.resolve("index.ts");
+        const mochaPath = path.resolve("node_modules", ".bin", "_mocha");
+        const mochaArgs = ["--require", "ts-node/register", "--require", packagePath,
+                           "--ui mocha-typescript", "-C", fixtures];
 
         // we need to run this from inside a different shell process, as it will fail otherwise
         const mocha = spawnSync("node", [mochaPath].concat(mochaArgs), { shell: true });

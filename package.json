@@ -9,7 +9,7 @@
     "url": "https://github.com/PanayotCankov/mocha-typescript"
   },
   "bin": {
-    "mocha-typescript-watch": "./bin/watch.js"
+    "mocha-typescript-watch": "./bin/watch"
   },
   "scripts": {
     "clean": "rm -Rf coverage *.tgz *.js.map *.js bin/*.js* di/*.js* test/it/*.js* test/it/fixtures/*.js* test/it/fixtures/packages/*/node_modules",
@@ -60,6 +60,7 @@
     "index.js.map",
     "index.ts",
     "globals.d.ts",
+    "bin/watch",
     "bin/watch.js",
     "di/typedi.js"
   ],

@@ -100,11 +100,11 @@
 
   3) Timeouts
        pass2:
-     Error: Timeout of 10ms exceeded. For async tests and hooks, ensure "done()" is called; if returning a Promise, ensure it resolves.
+     Error: Timeout of 20ms exceeded. For async tests and hooks, ensure "done()" is called; if returning a Promise, ensure it resolves.
 
   4) InlineTrait
        timeout:
-     Error: Timeout of 10ms exceeded. For async tests and hooks, ensure "done()" is called; if returning a Promise, ensure it resolves.
+     Error: Timeout of 20ms exceeded. For async tests and hooks, ensure "done()" is called; if returning a Promise, ensure it resolves.
 
   5) StockSequence
        step2:

@@ -107,17 +107,17 @@
 
   6) Times
        when slower than timeout fails:
-     Error: Timeout of 10ms exceeded. For async tests and hooks, ensure "done()" is called; if returning a Promise, ensure it resolves.
+     Error: Timeout of 20ms exceeded. For async tests and hooks, ensure "done()" is called; if returning a Promise, ensure it resolves.
 
   7) OverallSlow
        second slow:
-     Error: Timeout of 10ms exceeded. For async tests and hooks, ensure "done()" is called; if returning a Promise, ensure it resolves.
+     Error: Timeout of 20ms exceeded. For async tests and hooks, ensure "done()" is called; if returning a Promise, ensure it resolves.
 
   8) SlowBefore
        "before each" hook: before for "will fail for slow before":
-     Error: Timeout of 10ms exceeded. For async tests and hooks, ensure "done()" is called; if returning a Promise, ensure it resolves.
+     Error: Timeout of 20ms exceeded. For async tests and hooks, ensure "done()" is called; if returning a Promise, ensure it resolves.
 
   9) SlowAfter
        "after each" hook: after for "will fail for slow after":
-     Error: Timeout of 10ms exceeded. For async tests and hooks, ensure "done()" is called; if returning a Promise, ensure it resolves.
+     Error: Timeout of 20ms exceeded. For async tests and hooks, ensure "done()" is called; if returning a Promise, ensure it resolves.
 

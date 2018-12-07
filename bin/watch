@@ -2,11 +2,10 @@
 
 // Run "tsc" with watch, upon successful compilation run mocha tests.
 
-import chalk from "chalk";
-import * as child_process from "child_process";
-import * as spawn from "cross-spawn";
-import * as readline from "readline";
-import * as yargs from "yargs";
+const chalk = require("chalk");
+const spawn = require("cross-spawn");
+const readline = require("readline");
+const yargs = require("yargs");
 
 const argv = yargs
     .options({
@@ -63,7 +62,7 @@ stdl.on("line", (line) => {
     // Ctrl + R may restart mocha test run?
 });
 
-let mochap: child_process.ChildProcess = null;
+let mochap = null;
 let errors = 0;
 
 function compilationStarted() {

@@ -29,7 +29,7 @@ import { retries, skipOnError, suite, test, timeout} from 'mocha-typescript';
     @test two() {}
 }
 
-@suite(timeout(10))
+@suite(timeout(20))
 class TimoutSuite {
     @test fast(done: MochaDone) {
         setTimeout(done, 5);

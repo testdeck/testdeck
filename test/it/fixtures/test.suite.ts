@@ -27,7 +27,7 @@ class Basic {
     }
 
     @test("should fail async when callback not called")
-    @timeout(10)
+    @timeout(20)
     @skip
     public assert_fail_async_no_callback(done) {
         // Never called... t/o intentional.
@@ -194,7 +194,7 @@ class Basic {
 //     √ two
 //
 @suite class Times {
-    @test @slow(10) public "when fast is normal"(done) {
+    @test @slow(20) public "when fast is normal"(done) {
         setTimeout(done, 0);
     }
     @test @slow(15) public "when average is yellow-ish"(done) {
@@ -203,11 +203,11 @@ class Basic {
     @test @slow(15) public "when slow is red-ish"(done) {
         setTimeout(done, 20);
     }
-    @test @timeout(10) public "when faster than timeout passes"(done) {
+    @test @timeout(20) public "when faster than timeout passes"(done) {
         setTimeout(done, 0);
     }
-    @test @timeout(10) public "when slower than timeout fails"(done) {
-        setTimeout(done, 20);
+    @test @timeout(20) public "when slower than timeout fails"(done) {
+        setTimeout(done, 30);
     }
 }
 //
@@ -283,7 +283,7 @@ class ServerTests {
 //     √ web can disconnect
 //   tear down server.
 //
-@suite @timeout(10) class OverallSlow {
+@suite @timeout(20) class OverallSlow {
     @test public "first fast"(done) {
         setTimeout(done, 1);
     }
@@ -301,7 +301,7 @@ class ServerTests {
 //     ✓ third fast
 //
 @suite class SlowBefore {
-    @timeout(10) public before(done) {
+    @timeout(20) public before(done) {
         setTimeout(done, 20);
     }
     @test public "will fail for slow before"() {}
@@ -315,7 +315,7 @@ class ServerTests {
         setTimeout(done, 1);
     }
     @test public "will fail for slow after"() {}
-    @timeout(10) public after(done) {
+    @timeout(20) public after(done) {
         setTimeout(done, 20);
     }
 }

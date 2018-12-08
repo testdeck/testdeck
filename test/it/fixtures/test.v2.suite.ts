@@ -25,7 +25,7 @@ describe("vanila bdd suite", () => {
     @test public test() {}
 }
 
-@suite(timeout(10))
+@suite(timeout(20))
 class Timeouts {
     @test public pass1(done) {
         setTimeout(done, 1);
@@ -38,7 +38,7 @@ class Timeouts {
     }
 }
 
-@suite(trait((ctx) => ctx.timeout(10)))
+@suite(trait((ctx) => ctx.timeout(20)))
 class InlineTrait {
     @test public timeout(done) {}
 }

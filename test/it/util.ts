@@ -64,6 +64,9 @@ export function cleanup(str: string, eliminateAllEmptyLines = false): string {
   // this is a new one: const globalTestFunctions: TestFunctions = {
   result = result.replace(/^const globalTestFunctions: TestFunctions = .*$/mg, ELIMINATE_LINE);
 
+  // and some more win32 specialities
+  result = result.replace(/^C:.*$/mg, ELIMINATE_LINE);
+
   return trimEmptyLines(result, eliminateAllEmptyLines);
 }
 
@@ -90,4 +93,9 @@ function trimEmptyLines(str: string, eliminateAll = false): string {
 export function quotedString(str: string): string {
 
   return `"${str}"`;
+}
+
+export function win32fixes(str: string): string {
+
+  return str.replace(/√/mg, "✓");
 }

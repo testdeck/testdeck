@@ -1,4 +1,4 @@
-import { params, suite } from "../../index";
+import { params, suite, timeout } from "../../index";
 import { AbstractSuiteITBase, SuiteTestParams } from "./AbstractSuiteITBase";
 
 @suite(timeout(10000))

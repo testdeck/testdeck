@@ -1,5 +1,5 @@
-/// <reference path="../node_modules/mocha-typescript/globals.d.ts" />
 import { assert } from "chai";
+import { retries, skipOnError, suite, test, timeout} from 'mocha-typescript';
 
 @suite class Suite1 {
     @test "one"() {
@@ -20,7 +20,7 @@ import { assert } from "chai";
         });
     }
     @test.skip "five"() {
-        
+
     }
 }
 

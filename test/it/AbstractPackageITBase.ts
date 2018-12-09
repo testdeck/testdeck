@@ -6,7 +6,6 @@ import { timeout } from "../../index";
 import { assertOutput, cleanup, win32fixes } from "./util";
 
 export interface PackageTestParams {
-
   fixture: string;
   installTypesMocha?: boolean;
 }

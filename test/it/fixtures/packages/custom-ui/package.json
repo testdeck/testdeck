@@ -1,18 +1,18 @@
 {
-  "name": "setting-up",
+  "name": "custom-ui",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "pretest": "tsc",
-    "test": "mocha",
-    "watch": "mocha-typescript-watch"
+    "test": "mocha test/test.ts"
   },
   "author": "",
   "license": "Apache-2.0",
   "devDependencies": {
+    "chai": "*",
     "mocha": "*",
-    "source-map-support": "^0.4.14",
-    "typescript": "^2.4.0"
+    "source-map-support": "*",
+    "typescript": "*"
   }
 }

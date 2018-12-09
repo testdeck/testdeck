@@ -1,0 +1,5 @@
+--require ts-node/register
+--require source-map-support/register
+--ui mocha-typescript
+-C
+test/*.ts

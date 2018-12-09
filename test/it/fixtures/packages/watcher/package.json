@@ -1,5 +1,5 @@
 {
-  "name": "setting-up",
+  "name": "module-usage",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -12,7 +12,6 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "mocha": "*",
-    "source-map-support": "^0.4.14",
     "typescript": "^2.4.0"
   }
 }

@@ -1,3 +1,6 @@
+---
+permalink: /index.html
+---
 # mocha-typescript
 
 [![Get it on NPM](https://img.shields.io/npm/v/mocha-typescript.svg)](https://www.npmjs.com/package/mocha-typescript)

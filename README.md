@@ -1,576 +1,172 @@
-Writing mocha tests with style - OOP style:
-``` TypeScript
-import { suite, test, slow, timeout } from "mocha-typescript";
-@suite class Hello {
-    @test world() {
+# mocha-typescript
+
+[![Get it on NPM](https://img.shields.io/npm/v/mocha-typescript.svg)](https://www.npmjs.com/package/mocha-typescript)
+[![Downloads per Week](https://img.shields.io/npm/dw/mocha-typescript.svg)](https://www.npmjs.com/package/mocha-typescript)
+[![Dependencies](https://img.shields.io/librariesio/github/pana-cc/mocha-typescript.svg)](https://libraries.io/npm/mocha-typescript)
+[![Issues](https://img.shields.io/github/issues/pana-cc/mocha-typescript.svg)](https://github.com/pana-cc/mocha-typescript/issues)
+[![Pull Requests](https://img.shields.io/github/issues-pr/pana-cc/mocha-typescript.svg)](https://github.com/pana-cc/mocha-typescript/pulls)
+[![Travis Build Status](https://img.shields.io/travis/pana-cc/mocha-typescript/master.svg)](https://travis-ci.org/pana-cc/mocha-typescript)
+[![Appveyor Build Status](https://img.shields.io/appveyor/ci/silkentrance/mocha-typescript.svg)](https://ci.appveyor.com/project/silkentrance/mocha-typescript)
+![Apache 2.0 License](https://img.shields.io/npm/l/mocha-typescript.svg)
+
+Mocha testing with style - the OOP way
+
+```TypeScript
+import { assert } from "chai";
+import { suite, test } from "mocha-typescript";
+
+@suite
+class Hello {
+  
+    @test
+    world() {
+      
         assert.equal(1, 2, "Expected one to equal two.");
     }
 }
 ```
-The test UI will register a suite with tests for the `@suite` and `@test` decorators.
-When the tests run, the class will be instantiated once for each `@test` method and the method will be called.
 
-[![Build Status](https://travis-ci.org/pana-cc/mocha-typescript.svg?branch=master)](https://travis-ci.org/pana-cc/mocha-typescript)
+## Documentation Licensing
 
- - [Summary](#summary)
-    - [Test UI](#test-ui)
-    - [Watcher](#watcher)
-    - [Thanks To](#thanks-to)
- - [Setting Up](#setting-up)
-    - [Adding Mocha-TypeScript to Existing Project](#adding-mocha-typescript-to-existing-project)
-    - [Setting up New Project With Custom UI](#setting-up-new-project-with-custom-ui)
-       - [mocha-typescript-seed](#mocha-typescript-seed)
-       - [Manual Steps](#manual-steps)
-    - [Setting Up Dev Test Watcher](#setting-up-dev-test-watcher)
- - [IDEs](#ides)
-    - [WebStorm](#webstorm)
- - [Test UI API](#test-ui-api)
-    - [Declarative Suites and Tests](#declarative-suites-and-tests)
-    - [Test Inheritance](#test-inheritance)
-       - [Overriding Tests](#overriding-tests)
-       - [Inheritance and Both Synchronous and Asynchronous Before and After Actions](#inheritance-and-both-synchronous-and-asynchronous-before-and-after-actions)
-    - [Generated Suites and Tests](#generated-suites-and-tests)
-    - [Before and After Actions](#before-and-after-actions)
-    - [Async Tests, Before and After Actions](#async-tests-before-and-after-actions)
-    - [Skipped and Only Suite and Tests](#skipped-and-only-suite-and-tests)
-    - [Timing - Timeout, Slow](#timing---timeout-slow)
-    - [Retries](#retries)
- - [Extending Test Behavior](#extending-test-behavior)
-    - [Accessing the Mocha Context Within Class Methods](#accessing-the-mocha-context-within-class-methods)
-    - [Skipping Tests In Suite After First Failure - skipOnError](#skipping-tests-in-suite-after-first-failure---skiponerror)
- - [Dependency Injection](#dependency-injection)
-    - [typedi](#typedi)
+All documentation is licenced under the [CC BY-NC 4.0 license](https://creativecommons.org/licenses/by-nc/4.0/).
 
-# Summary
-## Test UI
-The test interface provides support for mocha's built-in tdd, bdd: describe/suite, it/test, timeout, slow, it.only and it.skip;
-as well as TypeScript decorators based test UI for classes. You can mix and match:
-``` TypeScript
-import { suite, test, slow, timeout } from "mocha-typescript";
+You need legal consent by all direct maintainers of the project in order to use (parts of) the documentation for any 
+commercial purposes.
+
+## Features
+
+- Declarative/Object Oriented BDD/TDD Interface
+- Parameterised Tests
+- Dependency Injection Support
+- Watcher
+- IDE Integration
+
+## Installation
+
+Just run
+
+```bash
+npm install --save-dev mocha-typescript
+npm install --save-dev @types/mocha
+```
+
+and you are ready to go.
+
+You might also want to consider using the very good [Chai](https://github.com/chaijs/chai) BDD/TDD assertion framework.
+
+```bash
+npm install --save-dev chai
+npm install --save-dev @types/chai
+```
+
+And, depending on your project, you will also have to install the type declarations for node.
+
+```bash
+npm install --save-dev @types/node
+```
+
+## Usage
+
+Classes can be annotated with ``@suite`` to make them test suites, similarly so, individual methods of test suites can
+be annotated using ``@test``. And, by using inheritance, one can build complex test suites and reuse existing 
+code.
+
+The test interface also supports mocha's built-in BDD and TDD interfaces such as ``describe`` and ``it``. 
+
+And you can mix both the OOP style and the declarative style, and you can even create nested suites by using a mixture
+of both styles.
+
+```TypeScript
+import { assert } from "chai";
+import { suite, test, describe, it } from "mocha-typescript";
+
+// suite is an alias for describe
 suite("one", () => {
+
+    // test is an alias for it
     test("test", () => {});
 });
-@suite class Two {
-    @test method() {}
-}
-```
-Similarly you can use describe/it:
-``` TypeScript
-import { suite, test, slow, timeout } from "mocha-typescript";
-describe("one", () => {
+
+describe("two", () => {
     it("test", () => {});
 });
-@suite class Two {
-    @test method() {}
+
+@suite
+class Three {
+  
+    @test
+    method() {}
 }
-```
-Or even mix the two approaches to get nested suites:
-``` TypeScript
-import { suite, test, slow, timeout } from "mocha-typescript";
-describe("suite one", () => {
+
+describe("suite four", () => {
     it("test one", () => {});
-    @suite class TestTwo {
-        @test method() {}
+    
+    @suite
+    class SuiteFourOne {
+      
+        @test
+        method() {}
     }
 });
+
+abstract class TestBase {
+  
+  @test
+  commonTest() {
+    
+    assert.equal(...);
+  }
+}
+
+@suite
+class ConcreteTest extends TestBase {
+  
+  @test
+  specificTest() {
+    
+    assert.equal(...);
+  }
+}
 ```
+
+Please keep in mind, that when the tests are run, a new instance of the test suite will be instantiated before each test
+method is executed.
+
 ## Watcher
-The `mocha-typescript` comes with a watcher script that runs the TypeScript compiler in watch mode,
-and upon successful compilations runs the mocha tests, concatenating the output of both. This in combination with the support for "only":
-``` TypeScript
-@suite class One {
-    @test.only method1() {}
-    @test method2() {}
-}
-```
-Allows for rapid development of both new functionality and unit tests.
 
-Please note, the built in mocha watcher should work with mocha-typescript UI and the awesome-typescript-loader.
-
-## Thanks to
- - [Haringat](https://github.com/PanayotCankov/mocha-typescript/pull/6) for the async support in before and after methods.
- - [godart](https://github.com/PanayotCankov/mocha-typescript/pull/16) for taking the extra step to support non-default test file paths.
-
-# Setting Up
-## Adding Mocha-TypeScript to Existing Project
-If you already have an npm package with mocha testing integrated just install `mocha-typescript`:
-``` bash
-npm i mocha-typescript --save-dev
-```
-Then require the mocha-typescript in your test files and you will be good to go:
-``` TypeScript
-import { suite, test, slow, timeout } from "mocha-typescript";
-@suite class Two {
-    @test method() {}
-}
-```
-
-## Setting up New Project With Custom UI
-### mocha-typescript-seed
-[Fork the mocha-typescript-seed repo](https://github.com/pana-cc/mocha-typescript-seed), or clone it:
-```
-git clone https://github.com/pana-cc/mocha-typescript-seed.git
-```
-
-Don't forget to edit the package.json, and check the license.
-
-From that point on, you could:
-```
-npm i
-npm test
-npm run watch
-```
-
-### Manual Steps
-Create a folder, `cd` in the folder, npm init, npm install:
-```
-npm init
-npm install mocha typescript mocha-typescript @types/mocha chai @types/chai source-map-support nyc --save-dev
-```
-Edit the package.json and set the `scripts` section to:
-```
-  "scripts": {
-    "pretest": "tsc",
-    "test": "nyc mocha",
-    "watch": "mocha-typescript-watch",
-    "prepare": "tsc"
-  },
-```
-You may omit the `nyc` tool and have `"test": "mocha"` instead,
-`nyc` is the instanbul code coverage reporting tool.
-
-Add a `tsconfig.json` file with settings similar to:
-```
-{
-    "compilerOptions": {
-        "target": "es6",
-        "module": "commonjs",
-        "sourceMap": true,
-        "experimentalDecorators": true,
-        "lib": [ "es6" ]
-    }
-}
-```
-Create `test` folder and add `test/mocha.opts` file.
-```
---ui mocha-typescript
---require source-map-support/register
-test/test.js
-```
- - Sets the mocha-typescript as custom ui
- - Optionally require the source-map-support/register to have typescript stack traces for Errors
- - Optionally provide test files list, point to specific dist fodler, or skip this to use mocha's defaults
-Add your first test file `test/test.ts`:
-```
-// Reference mocha-typescript's global definitions:
-/// <reference path="../node_modules/mocha-typescript/globals.d.ts" />
-
-@suite(timeout(3000), slow(1000))
-class Hello {
-    @test world() {
-    }
-}
-```
-From that point on, you could either:
-```
-npm test
-npm run watch
-```
-To run the tests once manually or run all tests.
-[Keep in mind you can use add `.only` to run a single test](#skipped-and-only-suite-and-tests).
-
-## Setting Up Dev Test Watcher
-There is a watcher script in the package, that runs `tsc -w` process and watches its output for successful compilation, upon compilation runs a `mocha` process.
-
-You will need a `tsconfig.json`, and at least `test.ts` mocha entrypoint.
-
-Install `mocha`, `typescript` and `mocha-typescript` as dev dependencies (required):
-```
-npm install mocha typescript mocha-typescript --save-dev
-```
-
-Add the following npm script to `package.json`:
-```json
-  "scripts": {
-    "dev-test-watch": "mocha-typescript-watch"
-  },
-```
-
-And run the typescript mocha watcher from the terminal using `npm run dev-test-watch`.
-
-You can use the watcher with plain `describe`, `it` functions. The decorator based interface is not required for use with the watcher.
-
-The `mocha-typescript-watch` script is designed as a command line tool.
-You can provide the arguments in the package.json's script.
-In case you are not using the default `test.js` file as entrypoint for mocha,
-you can list the test suite files as arguments to mocha-typescript-watch and they will be passed to mocha.
-For example:
-```json
-  "scripts": {
-    "dev-test-watch": "mocha-typescript-watch -p tsconfig.test.json -o mocha.opts dist/test1.js dist/test2.js"
-  },
-```
-
-For complete list with check `./node_modules/.bin/mocha-typescript-watch --help`:
-```
-Options:
-  -p, --project  Path to tsconfig file or directory containing tsconfig, passed
-                 to `tsc -p <value>`.                    [string] [default: "."]
-  -t, --tsc      Path to executable tsc, by default points to typescript
-                 installed as dev dependency. Set to 'tsc' for global tsc
-                 installation.
-                         [string] [default: "./node_modules/typescript/bin/tsc"]
-  -o, --opts     Path to mocha.opts file containing additional mocha
-                 configuration.          [string] [default: "./test/mocha.opts"]
-  -m, --mocha    Path to executable mocha, by default points to mocha installed
-                 as dev dependency.
-                           [string] [default: "./node_modules/mocha/bin/_mocha"]
-  -g, --grep     Passed down to mocha: only run tests matching <pattern>[string]
-  -f, --fgrep    Passed down to mocha: only run tests containing <string>
-                                                                        [string]
-  -h, --help     Show help                                             [boolean]
-```
-# IDEs
-## WebStorm
-![WebStorm](docs/assets/WebStorm.png)
-
-JetBrain's stellar WebStorm now (since [WebStorm 2017.3 EAP](https://confluence.jetbrains.com/display/WI/WebStorm+EAP)) supports the mocha-typescript mocha UI. Featuring:
- - Test Explorer - Detects tests in the TypeScript using static analysis.
- - Test Runner - WebStorm has a Mocha test runner that can be configured to also do a TypeScript compilation before test run.
- - Code Editor Integration - In the TypeScript code editor, tests are prefixed with an icon, that lets you:
-    - Run a specific test or suite
-    - Debug a specific test or suite
-
-The [mocha-typescript-seed](https://github.com/pana-cc/mocha-typescript-seed) has been preconfigured (see the .idea folder in the repo) with `UnitTests` task that will run all mocha tests with the mocha-typescript UI. The UnitTests is configured to run mocha, with TypeScript compilation before launch, use the mocha-typescript mocha UI, as well as include tests in the test folder recursively.
-
-### Tricky
-The WebStorm has its own way to define tasks so the configuration for the project is duplicated at few places. Here are some side-effects it would be good for you to be aware of.
-
-Should running/debugging a single test/unit from the TypeScript code editor fail due missing ts-node, consider installing `npm i ts-node --save-dev` to your repo. WebStorm is using ts-node to transpile the file you are testing. This may omit proper type checking or using settings in your tsconfg, but that would rarely be an issue.
-
-Should running/debugging a single test/unit run the test twice, that's because WebStorm provides the file you are editing to mocha as .ts file, but mocha also reads the test/mocha.opts where additional files may be specified. You can either:
- - Nevermind running the test twice
- - Edit the automatically generated single test config from the top tasks menu in WebStorm and change the file extension it points to from .ts to .js, this will use the JavaScript files produced by the TypeScript compilation of your project. But you will have to change the extension by hand each time you debug or run a single test.
- - Change the test/mocha.opts file so it won't reference any files (e.g. delete the `--recursive test` from it). In that case you may need to fix the package.json build scripts.
-
-At few occasions when misxing BDD and the mocha-typescript decorators based UI, trying to run a single BDD test would cause WebStorm to generate a mocha task that would run using BDD ui, instead of mocha-typescript. In these cases the tests may fail as there is no `suite` or `test` functions defined in the BDD UI. To fix this you may edit the default Mocha task, and configure it to use mocha-typescript UI explicitly. From that point on, when you try to run a single test, event BDD one, WebStorm will create Mocha tasks that will use the mocha-typescript UI.
-
-# Test UI API
-Please note that the methods and decorators used below are introduced through importing from the `mocha-typescript` module:
-``` TypeScript
-import { suite, test, slow, timeout } from "mocha-typescript";
-```
-Or by installing `mocha-typescript` as custom mocha test UI.
-
-## Declarative Suites and Tests
-Declaring suites is done using the `@suite` decorator and tests within the suite using the `@test` decorator:
-``` TypeScript
-@suite class Suite {
-    @test test1() {}
-}
-```
-When used without parameters, the names are infered from the class and method name.
-Complex names can be provided as arguments to the `@suite` or `@test` decorator:
-``` TypeScript
-@suite("A suite")
-class Suite {
-    @test("can have tests") {}
-    @test "typescript also supports this syntax for method naming"() {}
-}
-```
-
-## Test Inheritance
-One can declare abstract classes as bases for derived test classes. Tests methods declared in these base classes will be run in the context of
-the concrete test class, namely the one that has been decorated with the `@suite` decorator:
-``` TypeScript
-export abstract class AbstractTestBase {
-
-  public static before() {
-    // ...
-  }
-
-  public before() {
-    // ...
-  }
-
-  @test aTestFromBase() {
-    // ...
-  }
-
-  @test "another test from base"() {
-    // ...
-  }
-
-  public after () {
-    // ...
-  }
-
-  public static after () {
-    // ...
-  }
-}
-
-@suite class ConcreteTest extends AbstractTestBase {
-
-  public static before() {
-    // AbstractTestBase.before();
-    // ...
-  }
-
-  public before() {
-    // super.before();
-    // ...
-  }
-
-  @test aTestFromConcrete() {
-    // ...
-  }
-
-  public after() {
-    // ...
-    // super.after();
-  }
-
-  public static after() {
-    // ...
-    // AbstractTestBase.after();
-  }
-}
-```
-
-Note: You can override test methods inherited from a base class and then call `super()` in order to run the assertions implemented by the super class.
-
-Best practice: You must not inherit from other classes that have been decorated with the ``suite`` decorator. Doing so will result in an exception. Use abstract base classes instead.
-
-### Overriding Tests
-Sometimes you might want to override tests inherited from a given base class. You can do this by redeclaring the same test method in your sub class, e.g.
-``` TypeScript
-export abstract class AbstractTestBase {
-
-  @test 'test that will be overridden by sub classes'() {
-
-    chai.assert.fail('sub classes must override this');
-  }
-}
-
-export class ConcreteTest extends AbstractTestBase {
-
-  @test 'test that will be overridden by sub classes'() {
-
-     chai.assertTrue(somethingTruthy);
-  }
-}
-```
-
-You may now either implement the test or simply just skip it.
-
-Given that ``skip`` actually marks the test as pending, this might not be what you want for your test reports. In that case, you could just override the test with an empty body.
-Which, of course, is considered to be a bad practice, yet sometimes it will become a necessity when testing class hierarchies. So the best practice is to actually
-provide an assertion for that test.
-
-### Inheritance and Both Synchronous and Asynchronous Before and After Actions
-As for both static and instance `before()` and `after()` actions, one must make sure that the hooks from the parent class are called, see the
-above example on how.
-
-When using asynchronous actions, additional care must be taken, since one cannot simply pass the `done` callback to the parent
-classes' hooks and you will have to use something along the line of this in order to make it happen:
-``` TypeScript
-export abstract class AbstractTestBase {
-
-  public static before(done) {
-    // ...
-    // done([err]);
-  }
-
-  public before(done) {
-    // ...
-    // done([err]);
-  }
-}
-
-@suite class ConcreteTest extends AbstractTestBase {
-
-  public static before(done) {
-    AbstractTestBase.before((err) => {
-      if (err) {
-        done(err);
-        return;
-      }
-      // ...
-      // done([err]);
-    });
-  }
-
-  public before(done) {
-    super.before((err) => {
-      if (err) {
-        done(err);
-        return;
-      }
-      // ...
-      // done([err]);
-    });
-  }
-}
-```
-
-With `after()` actions the patterns are similar yet a bit more involved. Note that similar patterns apply when using `Promise`s or `async` and `await`.
-
-Important: One must not mix chained calls to both asynchronous and synchronous before and after actions. If a base class defines either action to be asynchronous then
-you will have to make your action asynchronous as well.
-
-See [Before and After Actions](#before-and-after-actions) and [Async Tests, Before and After Actions](#async-tests-before-and-after-actions) for more information.
-
-## Generated Suites and Tests
-Mocha's simple interface is very flexible when tests have to be dynamically generated.
-If tests for classes have to be generated dynamically here is an example:
-``` TypeScript
-[{ title: 'google', url: 'www.google.com' },
- { title: 'github', url: 'www.github.com' }
-].forEach(({title, url}) => {
-    @suite(`Http ${title}`) class GeneratedTestClass {
-        @test login() {}
-        @test logout() {}
-    }
-});
-```
-
-## Before and After Actions
-By default, before and after test actions are implemented with instance and static before and after methods.
-The static before and after methods are invoked before the suite and after the suite,
-the instance before and after methods are invoked before and after each test method.
-``` TypeScript
-@suite class Suite {
-    static before() { /* 1 */ }
-    before() { /* 2, 5 */ }
-    @test one() { /* 3 */ }
-    @test one() { /* 6 */ }
-    after() { /* 4, 7 */ }
-    static after() { /* 8 */ }
-}
-```
-
-## Async Tests, Before and After Actions
-The methods that accept a `done` callback or return a `Promise` are considered async similar and their execution is similar to the one in mocha.
- - For `done`, calling it without params marks the test as passed, calling it with arguments fails the test.
- - For returned `Promise`, the test passes is the promise is resolved, the test fails if the promise is rejected.
-``` TypeScript
-@suite class Suite {
-    @test async1(done) {
-        setTimeout(done, 1000);
-    }
-    @test async2() {
-        return new Promise((resolve, reject) => setTimeout(resolve, 1000));
-    }
-    @test async async3() {
-        // async/await FTW!
-        await something();
-    }
-}
-```
-
-## Skipped and Only Suite and Tests
-Marking a test as pending or marking it as the only one to execute declaratively is done using `@suite.skip`, `@suite.only`, `@test.skip` or `@test.only` similar to the mocha interfaces:
-``` TypeScript
-@suite.only class SuiteOne {
-    @test thisWillRun() {}
-    @test.skip thisWillNotRun() {}
-}
-@suite class SuiteTwo {
-    @test thisWillNotRun() {}
-}
-```
-The signatures for the skip and only are the same as the suite and test counterpart so you can switch between `@suite.only(args)` and `@suite(args)` with ease.
-
-If running in watch mode it may be common to focus a particular test file in your favourite IDE (VSCode, vim, whatever),
-and mark the suite or the tests you are currently developing with `only` so that the mocha-typescript watcher would trigger just the tests you are focused on.
-When you are ready, remove the `only` to have the watcher execute all tests again.
-
-## Timing - Timeout, Slow
-Controlling the time limits, similar to the `it("test", function() { this.slow(ms); /* ... */ });` is done using suite or test traits,
-these are modifiers passed as arguments to the `@suite()` and `@test()` decorators:
-``` TypeScript
-@suite(slow(1000), timeout(2000))
-class Suite {
-    @test first() {}
-    @test(slow(2000), timeout(4000)) second() {}
-}
-```
-The `slow` and `timeout` traits were initially working as decorators (e.g. `@suite @timeout(200) class Test {}`),
-but this behavior may be dropped in future major versions as it generates too much decorators that clutter the syntax.
-They are still useful though for setting timeouts on before and after methods (e.g. `@suite class Test { @timeout(100) before() { /* ... */ }}`).
-
-## Retries
-I would not recommend retrying failed tests multiple times to ensure green light but I also wouldn't judge, here it goes mocha-typescript retries:
-``` TypeScript
-@suite(retries(2))
-class Suite {
-    static tries1 = 0;
-    static tries2 = 0;
-    @test first() {
-        assert.isAbove(Suite.tries1++, 2);
-    }
-    @test(retries(5)) second() {
-        assert.isAbove(Suite.tries1++, 3);
-    }
-}
-```
-The retries can also be used as a decorator similar to `timeout` and `slow` - `@test @retries(3) testMethod() {}`.
-
-# Extending Test Behavior
-## Accessing the Mocha Context Within Class Methods
-There are various aspects of the suites and tests that can be altered via the mocha context.
-Within the default mocha 'BDD' style this is done through the callback's `this` object.
-That object is exposed to the TypeScript decorators based UI through a field decorated with the `@context` decorator:
-``` TypeScript
-@suite class MyClass {
-  @context mocha; // Set for instenace methods such as tests and before/after
-  static @context mocha; // Set for static methods such as static before/after (mocha bdd beforeEach/afterEach)
-  after() {
-    this.mocha.currentTest.state;
-  }
-}
-```
-
-## Skipping Tests In Suite After First Failure - skipOnError
-In functional testing it is sometimes fine to skip the rest of the suite when one of the tests fail.
-Consider the case of a web site tests where the login test fail and subsequent tests that depend on the login will hardly pass.
-This can be done with the `skipOnError` suite trait:
-``` TypeScript
-@suite(skipOnError)
-class StockSequence {
-    @test step1() {}
-    @test step2() { throw new Error("Failed"); }
-    @test step3() { /* will be skipped */ }
-    @test step4() { /* will be skipped */ }
-}
-```
-# Dependency Injection
-Custom dependency injection systems can be provided using `registerDI`.
-
-## typedi
-To use the built-in support:
- - Set your `tsconfig.json` to `emitDecoratorMetadata`.
- - Import `mocha-typescript/di/typedi`.
-This will let test instances to be instantiated using typedi, for example:
-``` TypeScript
-import { assert } from "chai";
-import { Service } from "typedi";
-import "../../di/typedi";
-import { register, suite, test } from "../../index";
-
-@Service()
-class Add {
-  public do(a: number, b: number) {
-    return a + b;
-  }
-}
-
-@suite class TypeDITest {
-  // typedi will resolve `add` here to an instance of the `Add` service.
-  constructor(public add: Add) { }
-  @test public "test linear function"() {
-    assert.equal(this.add.do(1, 2), 3);
-  }
-}
-```
+mocha-typescript comes with a watcher script that runs the TypeScript compiler in watch mode. So whenever your code 
+changes and compiles, your tests will be run, too.
+
+## Further Reading
+
+ - [API](https://github.com/pana-cc/mocha-typescript/blob/gh-115/docs/api.md)
+ - [Parameterised Tests](https://github.com/pana-cc/mocha-typescript/blob/gh-115/docs/api.md#parameterised-tests)
+ - [Object Oriented Testing](https://github.com/pana-cc/mocha-typescript/blob/gh-115/docs/oop.md)
+ - [Extending Test Behaviour](https://github.com/pana-cc/mocha-typescript/blob/gh-115/docs/extendbehave.md)
+ - [Using Dependency Injection](https://github.com/pana-cc/mocha-typescript/blob/gh-115/docs/di.md)
+ - [Using the Watcher](https://github.com/pana-cc/mocha-typescript/blob/gh-115/docs/watcher.md)
+ - [Set up mocha-typescript](https://github.com/pana-cc/mocha-typescript/blob/gh-115/docs/setup.md)
+ - [IDE Integration](https://github.com/pana-cc/mocha-typescript/blob/gh-115/docs/ide.md)
+
+### Contributors
+
+[//]: contributor-faces
+<a href="https://github.com/PanayotCankov"><img src="https://avatars2.githubusercontent.com/u/5919275?v=4" title="PanayotCankov" width="80" height="80"></a>
+<a href="https://github.com/silkentrance"><img src="https://avatars3.githubusercontent.com/u/6068824?v=4" title="silkentrance" width="80" height="80"></a>
+<a href="https://github.com/pana-cc"><img src="https://avatars2.githubusercontent.com/u/24751471?v=4" title="pana-cc" width="80" height="80"></a>
+<a href="https://github.com/FireSt-dead"><img src="https://avatars0.githubusercontent.com/u/5892488?v=4" title="FireSt-dead" width="80" height="80"></a>
+<a href="https://github.com/dimastark"><img src="https://avatars3.githubusercontent.com/u/11780431?v=4" title="dimastark" width="80" height="80"></a>
+<a href="https://github.com/Haringat"><img src="https://avatars1.githubusercontent.com/u/3000678?v=4" title="Haringat" width="80" height="80"></a>
+<a href="https://github.com/godart"><img src="https://avatars2.githubusercontent.com/u/5794761?v=4" title="godart" width="80" height="80"></a>
+<a href="https://github.com/Eronana"><img src="https://avatars3.githubusercontent.com/u/9164153?v=4" title="Eronana" width="80" height="80"></a>
+<a href="https://github.com/FabianLauer"><img src="https://avatars0.githubusercontent.com/u/2205595?v=4" title="FabianLauer" width="80" height="80"></a>
+<a href="https://github.com/JoshuaKGoldberg"><img src="https://avatars1.githubusercontent.com/u/3335181?v=4" title="JoshuaKGoldberg" width="80" height="80"></a>
+<a href="https://github.com/gallayl"><img src="https://avatars0.githubusercontent.com/u/16716099?v=4" title="gallayl" width="80" height="80"></a>
+<a href="https://github.com/richardspence"><img src="https://avatars2.githubusercontent.com/u/9914123?v=4" title="richardspence" width="80" height="80"></a>
+<a href="https://github.com/sergebat"><img src="https://avatars1.githubusercontent.com/u/5421460?v=4" title="sergebat" width="80" height="80"></a>
+<a href="https://github.com/cexoso"><img src="https://avatars2.githubusercontent.com/u/11764107?v=4" title="cexoso" width="80" height="80"></a>
+<a href="https://github.com/dcharbonnier"><img src="https://avatars3.githubusercontent.com/u/6220422?v=4" title="dcharbonnier" width="80" height="80"></a>
+<a href="https://github.com/itaysabato"><img src="https://avatars0.githubusercontent.com/u/2768658?v=4" title="itaysabato" width="80" height="80"></a>
+<a href="https://github.com/stanhuff"><img src="https://avatars2.githubusercontent.com/u/4603784?v=4" title="stanhuff" width="80" height="80"></a>
+
+[//]: contributor-faces

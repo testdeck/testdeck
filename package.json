@@ -6,7 +6,7 @@
   "typings": "typings.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/PanayotCankov/mocha-typescript"
+    "url": "https://github.com/pana-cc/mocha-typescript"
   },
   "bin": {
     "mocha-typescript-watch": "./bin/watch"
@@ -35,7 +35,7 @@
   "dependencies": {
     "chalk": "^2.4.1",
     "cross-spawn": "^6.0.5",
-    "yargs": "^11.0.0"
+    "yargs": "^12.0.5"
   },
   "devDependencies": {
     "@types/chai": "^4.1.7",
@@ -43,6 +43,7 @@
     "@types/mocha": "^5.2.5",
     "@types/node": "^10.1.4",
     "chai": "^4.2.0",
+    "contributor-faces": "^1.0.1",
     "conventional-changelog-cli": "^2.0.1",
     "mocha": "^5.2.0",
     "nyc": "^12.0.2",
@@ -51,7 +52,7 @@
     "source-map-support": "^0.5.6",
     "ts-node": "^6.1.0",
     "tslint": "^5.11.0",
-    "typedi": "^0.7.3",
+    "typedi": "^0.8.0",
     "typescript": "^3.2.1"
   },
   "files": [

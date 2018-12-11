@@ -142,14 +142,15 @@ changes and compiles, your tests will be run, too.
 
 ## Further Reading
 
- - [API](https://github.com/pana-cc/mocha-typescript/blob/gh-115/docs/api.md)
- - [Parameterised Tests](https://github.com/pana-cc/mocha-typescript/blob/gh-115/docs/api.md#parameterised-tests)
- - [Object Oriented Testing](https://github.com/pana-cc/mocha-typescript/blob/gh-115/docs/oop.md)
- - [Extending Test Behaviour](https://github.com/pana-cc/mocha-typescript/blob/gh-115/docs/extendbehave.md)
- - [Using Dependency Injection](https://github.com/pana-cc/mocha-typescript/blob/gh-115/docs/di.md)
- - [Using the Watcher](https://github.com/pana-cc/mocha-typescript/blob/gh-115/docs/watcher.md)
- - [Set up mocha-typescript](https://github.com/pana-cc/mocha-typescript/blob/gh-115/docs/setup.md)
- - [IDE Integration](https://github.com/pana-cc/mocha-typescript/blob/gh-115/docs/ide.md)
+ - [API](/api) *WORK IN PROGRESS*
+ - [General Usage](/usage) *WORK IN PROGRESS*
+ - [Parameterised Tests](/usage#parameterised-tests) *WORK IN PROGRESS*
+ - [Object Oriented Testing](/oop)
+ - [Extending Test Behaviour](/extendbehave)
+ - [Using Dependency Injection](/di)
+ - [Using the Watcher](/watcher)
+ - [Set up mocha-typescript](/setup)
+ - [IDE Integration](/ide)
 
 ### Contributors
 

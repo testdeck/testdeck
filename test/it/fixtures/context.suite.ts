@@ -1,5 +1,5 @@
 import * as mocha from "mocha";
-import { context, only, pending, skip, slow, suite, test, timeout } from "../../../index";
+import { context, suite, test } from "../../../index";
 
 @suite class Static {
     @test public one() {
@@ -12,6 +12,7 @@ import { context, only, pending, skip, slow, suite, test, timeout } from "../../
     { url: "npmjs.com", title: "npmjs" },
 ].forEach(({ url, title }) => {
     // Nice question: How to share the same instance for all tests?
+    // Good answer: You can't. Use #before() to establish the context.
     @suite(`OAuth ${title}`) class OAuthTest {
 
         // Get the mocha context in for instance before and after (before/after each) and test methods.

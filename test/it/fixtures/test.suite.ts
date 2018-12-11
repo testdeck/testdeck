@@ -1,4 +1,5 @@
-import { only, skip, slow, suite, test, timeout } from "../../../index";
+import { skip, slow, suite, test, timeout } from "../../../index";
+import { IN_TIME, OVERLY_SLOW, RATHER_SLOW, SLOW, TIMEOUT } from "../constants";
 
 @suite("mocha typescript")
 class Basic {
@@ -27,7 +28,7 @@ class Basic {
     }
 
     @test("should fail async when callback not called")
-    @timeout(20)
+    @timeout(TIMEOUT)
     @skip
     public assert_fail_async_no_callback(done) {
         // Never called... t/o intentional.
@@ -194,20 +195,20 @@ class Basic {
 //     √ two
 //
 @suite class Times {
-    @test @slow(20) public "when fast is normal"(done) {
-        setTimeout(done, 0);
+    @test @slow(SLOW) public "when fast is normal"(done) {
+        setTimeout(done, IN_TIME);
     }
-    @test @slow(15) public "when average is yellow-ish"(done) {
-        setTimeout(done, 10);
+    @test @slow(SLOW) public "when average is yellow-ish"(done) {
+        setTimeout(done, RATHER_SLOW);
     }
-    @test @slow(15) public "when slow is red-ish"(done) {
-        setTimeout(done, 20);
+    @test @slow(SLOW) public "when slow is red-ish"(done) {
+        setTimeout(done, OVERLY_SLOW);
     }
-    @test @timeout(20) public "when faster than timeout passes"(done) {
-        setTimeout(done, 0);
+    @test @timeout(TIMEOUT) public "when faster than timeout passes"(done) {
+        setTimeout(done, IN_TIME);
     }
-    @test @timeout(20) public "when slower than timeout fails"(done) {
-        setTimeout(done, 30);
+    @test @timeout(TIMEOUT) public "when slower than timeout fails"(done) {
+        setTimeout(done, OVERLY_SLOW);
     }
 }
 //
@@ -283,15 +284,15 @@ class ServerTests {
 //     √ web can disconnect
 //   tear down server.
 //
-@suite @timeout(20) class OverallSlow {
+@suite @timeout(TIMEOUT) class OverallSlow {
     @test public "first fast"(done) {
-        setTimeout(done, 1);
+        setTimeout(done, IN_TIME);
     }
     @test public "second slow"(done) {
-        setTimeout(done, 20);
+        setTimeout(done, OVERLY_SLOW);
     }
     @test public "third fast"(done) {
-        setTimeout(done, 1);
+        setTimeout(done, IN_TIME);
     }
 }
 //
@@ -301,12 +302,12 @@ class ServerTests {
 //     ✓ third fast
 //
 @suite class SlowBefore {
-    @timeout(20) public before(done) {
-        setTimeout(done, 20);
+    @timeout(TIMEOUT) public before(done) {
+        setTimeout(done, OVERLY_SLOW);
     }
     @test public "will fail for slow before"() {}
     public after(done) {
-        setTimeout(done, 1);
+        setTimeout(done, IN_TIME);
     }
 }
 //
@@ -315,8 +316,8 @@ class ServerTests {
         setTimeout(done, 1);
     }
     @test public "will fail for slow after"() {}
-    @timeout(20) public after(done) {
-        setTimeout(done, 20);
+    @timeout(TIMEOUT) public after(done) {
+        setTimeout(done, OVERLY_SLOW);
     }
 }
 //

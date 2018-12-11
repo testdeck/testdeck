@@ -76,6 +76,8 @@ If running in watch mode it may be common to focus a particular test file in you
 and mark the suite or the tests you are currently developing with `only` so that the mocha-typescript watcher would trigger just the tests you are focused on.
 When you are ready, remove the `only` to have the watcher execute all tests again.
 
+To prevent `only` leaking to your production code you can use [tslint-mocha-typescript-no-only](https://www.npmjs.com/package/tslint-mocha-typescript-no-only) [tslint](https://palantir.github.io/tslint/) rule.
+
 ### Timing - Timeout, Slow
 Controlling the time limits, similar to the `it("test", function() { this.slow(ms); /* ... */ });` is done using suite or test traits,
 these are modifiers passed as arguments to the `@suite()` and `@test()` decorators:

@@ -45,11 +45,11 @@
 
   3) TimoutSuite
        slow:
-     Error: Timeout of 20ms exceeded. For async tests and hooks, ensure "done()" is called; if returning a Promise, ensure it resolves.
+     Error: Timeout of 100ms exceeded. For async tests and hooks, ensure "done()" is called; if returning a Promise, ensure it resolves.
 
   4) TimeoutSuite2
        slow:
-     Error: Timeout of 20ms exceeded. For async tests and hooks, ensure "done()" is called; if returning a Promise, ensure it resolves.
+     Error: Timeout of 100ms exceeded. For async tests and hooks, ensure "done()" is called; if returning a Promise, ensure it resolves.
 
   5) SequenceOne
        two:

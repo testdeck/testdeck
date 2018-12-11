@@ -1,4 +1,5 @@
-import { only, pending, skip, slow, suite, test, timeout } from "../../../index";
+import { suite, test, timeout } from "../../../index";
+import { TIMEOUT } from "../constants";
 
 @suite.only class Suite1 {
     @test public test() {}
@@ -9,7 +10,7 @@ import { only, pending, skip, slow, suite, test, timeout } from "../../../index"
 @suite.only("test suite") class Suite3 {
     @test public test() {}
 }
-@suite.only(timeout(20)) class Suite4 {
+@suite.only(timeout(TIMEOUT)) class Suite4 {
     @test public test() {}
 }
 @suite class SuiteNoGo {

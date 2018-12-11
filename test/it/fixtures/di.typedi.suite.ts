@@ -26,12 +26,12 @@ class Linear {
 }
 
 @suite class TypeDITest {
-  constructor(public liner: Linear) { }
+  constructor(public linear: Linear) { }
   @test public "test linear function"() {
     const k = 123;
     const x = 63;
     const b = 235;
-    assert.equal(this.liner.do(k, x, b), k * x + b,
-      `this.liner.do(${k}, ${x}, ${b}) should equal ${k} * ${x} + ${b}`);
+    assert.equal(this.linear.do(k, x, b), k * x + b,
+      `this.linear.do(${k}, ${x}, ${b}) should equal ${k} * ${x} + ${b}`);
   }
 }

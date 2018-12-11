@@ -1,4 +1,5 @@
-import { only, pending, skip, slow, suite, test, timeout } from "../../../index";
+import { suite, test, timeout } from "../../../index";
+import { TIMEOUT } from "../constants";
 
 @suite.pending class Pending1 {
     @test public test1() {}
@@ -9,13 +10,13 @@ import { only, pending, skip, slow, suite, test, timeout } from "../../../index"
 @suite.skip("skipped") class Skip3 {
     @test public test3() {}
 }
-@suite.skip(timeout(20)) class Skip4 {
+@suite.skip(timeout(TIMEOUT)) class Skip4 {
     @test public test4() {}
 }
 @suite.pending("pending") class Pending3 {
     @test public test5() {}
 }
-@suite.pending(timeout(20)) class Pending4 {
+@suite.pending(timeout(TIMEOUT)) class Pending4 {
     @test public test6() {}
 }
 

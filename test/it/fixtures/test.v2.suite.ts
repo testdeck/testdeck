@@ -1,5 +1,6 @@
 import { assert } from "chai";
-import { only, skip, skipOnError, slow, suite, test, timeout, trait } from "../../../index";
+import { skipOnError, slow, suite, test, timeout, trait } from "../../../index";
+import { IN_TIME, OVERLY_SLOW, RATHER_SLOW, SLOW, TIMEOUT } from "../constants";
 
 declare var describe;
 declare var it;
@@ -25,20 +26,20 @@ describe("vanila bdd suite", () => {
     @test public test() {}
 }
 
-@suite(timeout(20))
+@suite(timeout(TIMEOUT))
 class Timeouts {
     @test public pass1(done) {
-        setTimeout(done, 1);
+        setTimeout(done, IN_TIME);
     }
     @test public pass2(done) {
-        setTimeout(done, 20);
+        setTimeout(done, OVERLY_SLOW);
     }
     @test public pass3(done) {
-        setTimeout(done, 1);
+        setTimeout(done, IN_TIME);
     }
 }
 
-@suite(trait((ctx) => ctx.timeout(20)))
+@suite(trait((ctx) => ctx.timeout(TIMEOUT)))
 class InlineTrait {
     @test public timeout(done) {}
 }
@@ -82,16 +83,16 @@ class CustomSequence2 {
     @test public step3() { /* should be skipped */ }
 }
 
-@suite(slow(10))
+@suite(slow(SLOW))
 class Slows {
     @test public pass1(done) {
-        setTimeout(done, 1);
+        setTimeout(done, IN_TIME);
     }
     @test public pass2(done) {
-        setTimeout(done, 20);
+        setTimeout(done, SLOW);
     }
     @test public pass3(done) {
-        setTimeout(done, 1);
+        setTimeout(done, IN_TIME);
     }
 }
 
@@ -114,24 +115,24 @@ class Basic {
     @test.skip public "test skip"() {
     }
 
-    @test(timeout(5))
+    @test(timeout(TIMEOUT))
     public "test intentinally timeout"(done) {
-        setTimeout(done, 10);
+        setTimeout(done, OVERLY_SLOW);
     }
 
-    @test(timeout(20))
+    @test(timeout(TIMEOUT))
     public "test intentinall fail due error before timeout"(done) {
-        setTimeout(() => done("Ooopsss..."), 5);
+        setTimeout(() => done("Ooopsss..."), IN_TIME);
     }
 
-    @test(timeout(100), slow(20))
+    @test(timeout(TIMEOUT * 2), slow(SLOW))
     public "test won't timeout but will be redish slow"(done) {
-        setTimeout(done, 30);
+        setTimeout(done, RATHER_SLOW);
     }
 
-    @test(timeout(100), slow(20))
+    @test(timeout(TIMEOUT * 2), slow(SLOW))
     public "test won't timeout but will be yellowish slow"(done) {
-        setTimeout(done, 15);
+        setTimeout(done, OVERLY_SLOW);
     }
 }
 

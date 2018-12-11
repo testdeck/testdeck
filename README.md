@@ -139,14 +139,14 @@ changes and compiles, your tests will be run, too.
 
 ## Further Reading
 
- - [API](https://github.com/pana-cc/mocha-typescript/blob/gh-115/docs/api.md)
- - [Parameterised Tests](https://github.com/pana-cc/mocha-typescript/blob/gh-115/docs/api.md#parameterised-tests)
- - [Object Oriented Testing](https://github.com/pana-cc/mocha-typescript/blob/gh-115/docs/oop.md)
- - [Extending Test Behaviour](https://github.com/pana-cc/mocha-typescript/blob/gh-115/docs/extendbehave.md)
- - [Using Dependency Injection](https://github.com/pana-cc/mocha-typescript/blob/gh-115/docs/di.md)
- - [Using the Watcher](https://github.com/pana-cc/mocha-typescript/blob/gh-115/docs/watcher.md)
- - [Set up mocha-typescript](https://github.com/pana-cc/mocha-typescript/blob/gh-115/docs/setup.md)
- - [IDE Integration](https://github.com/pana-cc/mocha-typescript/blob/gh-115/docs/ide.md)
+ - [API](https://github.com/pana-cc/mocha-typescript/blob/master/docs/api.md)
+ - [Parameterised Tests](https://github.com/pana-cc/mocha-typescript/blob/master/docs/api.md#parameterised-tests)
+ - [Object Oriented Testing](https://github.com/pana-cc/mocha-typescript/blob/master/docs/oop.md)
+ - [Extending Test Behaviour](https://github.com/pana-cc/mocha-typescript/blob/master/docs/extendbehave.md)
+ - [Using Dependency Injection](https://github.com/pana-cc/mocha-typescript/blob/master/docs/di.md)
+ - [Using the Watcher](https://github.com/pana-cc/mocha-typescript/blob/master/docs/watcher.md)
+ - [Set up mocha-typescript](https://github.com/pana-cc/mocha-typescript/blob/master/docs/setup.md)
+ - [IDE Integration](https://github.com/pana-cc/mocha-typescript/blob/master/docs/ide.md)
 
 ### Contributors
 

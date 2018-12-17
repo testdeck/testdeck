@@ -31,16 +31,21 @@ class WatcherPackage extends AbstractPackageITBase {
   async runTest(params: PackageTestParams) {
     super.runTest(params);
 
+    console.log("Start watcher");
     this.watch = spawn("npm", ["run", "watch"], {
       cwd,
       shell: false,
     });
-    this.readline = readline.createInterface({ input: this.watch.stdout });
+    console.log("Create line reader");
+    this.readline = readline.createInterface({ input: this.watch.stdout, output: this.watch.stdin });
     this.lines = [];
+    console.log("Attach .on('line'...");
     this.readline.on("line", (line) => {
+      console.log("enqueue line: " + line);
       this.lines.push(line);
     });
 
+    console.log("Wait for first line");
     await this.line();
     await this.line(); // > module-usage@1.0.0 watch ...
     await this.line(); // > mocha-typescript-watch ...
@@ -92,16 +97,15 @@ class WatcherPackage extends AbstractPackageITBase {
   line(): Promise<string> {
     if (this.lines.length > 0) {
       const line = this.lines.shift();
-      // console.log("Resolve immediate: " + line);
+      console.log("pop line: " + line);
       return Promise.resolve(line);
     }
 
     return new Promise((resolve, reject) => {
       let unsubscribe;
       const onLine = (l: string) => {
-        // console.log("onLine, has line? " + this.lines.length);
         const line = this.lines.shift();
-        // console.log("L: " + line);
+        console.log("onLine: " + line);
         unsubscribe();
         resolve(line);
       };
@@ -121,6 +125,7 @@ class WatcherPackage extends AbstractPackageITBase {
   sendCtrlCAndExit(): Promise<void> {
     const promise = new Promise<void>((resolve, reject) => {
       terminate(this.watch.pid, (err) => {
+        this.watch = null;
         if (err) {
           reject(err);
         } else {
@@ -128,7 +133,6 @@ class WatcherPackage extends AbstractPackageITBase {
         }
       });
     });
-    this.watch = null;
     return promise;
   }
 
@@ -139,6 +143,9 @@ class WatcherPackage extends AbstractPackageITBase {
   }
 
   async after() {
+    console.log("Calling 'after'");
+    console.log("Is there this? " + this);
+
     if (this.readline) {
       this.readline.close();
       this.readline = null;

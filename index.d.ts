@@ -115,6 +115,15 @@ declare namespace MochaTypeScript {
         new(...args: any[]): T;
         prototype: T;
     }
+    
+    export interface IParamsDefiniton {
+        (params: any, name?: string): PropertyDecorator;
+
+        skip(params: any, name?: string): PropertyDecorator;
+        only(params: any, name?: string): PropertyDecorator;
+        pending(params: any, name?: string): PropertyDecorator;
+        naming(nameForParameters: (parameters: any) => string): PropertyDecorator;
+    }
 
     export interface DependencyInjectionSystem {
         handles<T>(cls: TestClass<T>): boolean;
@@ -125,6 +134,8 @@ declare namespace MochaTypeScript {
 declare module "mocha-typescript" {
     export const suite: Mocha.SuiteFunction & MochaTypeScript.IContextDefinition;
     export const test: Mocha.TestFunction & MochaTypeScript.ITestDefinition;
+
+    export const params: MochaTypeScript.IParamsDefiniton;
 
     export const describe: Mocha.SuiteFunction & MochaTypeScript.IContextDefinition;
     export const it: Mocha.TestFunction & MochaTypeScript.ITestDefinition;

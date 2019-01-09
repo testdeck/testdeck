@@ -6,6 +6,8 @@ class ParamsSuiteIT extends AbstractSuiteITBase {
 
   @params({ target: "es5", fixture: "params.suite" })
   @params({ target: "es6", fixture: "params.suite" })
+  @params({ target: "es5", fixture: "params.async.suite" })
+  @params({ target: "es6", fixture: "params.async.suite" })
   @params({ target: "es5", fixture: "params.skip.suite" })
   @params({ target: "es6", fixture: "params.skip.suite" })
   @params({ target: "es5", fixture: "params.only.suite" })

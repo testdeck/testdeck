@@ -140,10 +140,10 @@ changes and compiles, your tests will be run, too.
 ## Further Reading
 
  - [API](https://github.com/pana-cc/mocha-typescript/blob/master/docs/api.md)
- - [Parameterised Tests](https://github.com/pana-cc/mocha-typescript/blob/master/docs/api.md#parameterised-tests)
  - [Object Oriented Testing](https://github.com/pana-cc/mocha-typescript/blob/master/docs/oop.md)
+   - [Parameterised Tests](https://github.com/pana-cc/mocha-typescript/blob/master/docs/oop_params.md)
+   - [Using Dependency Injection](https://github.com/pana-cc/mocha-typescript/blob/master/docs/di.md)
  - [Extending Test Behaviour](https://github.com/pana-cc/mocha-typescript/blob/master/docs/extendbehave.md)
- - [Using Dependency Injection](https://github.com/pana-cc/mocha-typescript/blob/master/docs/di.md)
  - [Using the Watcher](https://github.com/pana-cc/mocha-typescript/blob/master/docs/watcher.md)
  - [Set up mocha-typescript](https://github.com/pana-cc/mocha-typescript/blob/master/docs/setup.md)
  - [IDE Integration](https://github.com/pana-cc/mocha-typescript/blob/master/docs/ide.md)

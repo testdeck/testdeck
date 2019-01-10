@@ -1,4 +1,5 @@
 import { params, skip, slow, suite, timeout } from "../../index";
+import { platform } from "os";
 import { AbstractPackageITBase, PackageTestParams } from "./AbstractPackageITBase";
 
 import { ChildProcess, spawn } from "child_process";
@@ -19,6 +20,9 @@ function assertStringContains(text: string, contains: string) {
   assert(text.includes(contains), "Expected '" + text + "' to includes '" + contains + "'.");
 }
 
+const isWin = platform() === "win32";
+
+@skip(isWin)
 @suite.only(timeout(90000), slow(90000))
 class WatcherPackage extends AbstractPackageITBase {
 

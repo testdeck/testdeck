@@ -145,6 +145,7 @@ changes and compiles, your tests will be run, too.
  - [API](/api) *WORK IN PROGRESS*
  - [General Usage](/usage) *WORK IN PROGRESS*
  - [Object Oriented Testing](/oop)
+   - [Generated Test Suites](/oop_generated)
    - [Parameterised Tests](/oop_params)
    - [Using Dependency Injection](/di)
  - [Extending Test Behaviour](/extendbehave)

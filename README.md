@@ -141,6 +141,7 @@ changes and compiles, your tests will be run, too.
 
  - [API](https://github.com/pana-cc/mocha-typescript/blob/master/docs/api.md)
  - [Object Oriented Testing](https://github.com/pana-cc/mocha-typescript/blob/master/docs/oop.md)
+   - [Generated Test Suites](https://github.com/pana-cc/mocha-typescript/blob/master/docs/oop_generated.md)
    - [Parameterised Tests](https://github.com/pana-cc/mocha-typescript/blob/master/docs/oop_params.md)
    - [Using Dependency Injection](https://github.com/pana-cc/mocha-typescript/blob/master/docs/di.md)
  - [Extending Test Behaviour](https://github.com/pana-cc/mocha-typescript/blob/master/docs/extendbehave.md)

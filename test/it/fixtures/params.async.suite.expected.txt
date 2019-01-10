@@ -1,0 +1,50 @@
+
+  ParamsAsyncSuite
+    1) callbackTest_0
+    2) callbackTest_1
+    ✓ callbackTest_2
+    3) asyncTest_0
+    4) asyncTest_1
+    ✓ asyncTest_2
+    5) promiseTest_0
+    6) promiseTest_1
+    ✓ promiseTest_2
+
+  3 passing
+  6 failing
+
+  1) ParamsAsyncSuite
+       callbackTest_0:
+
+      AssertionError: expected 3 to equal 4
+
+      -3
+      +4
+
+  2) ParamsAsyncSuite
+       callbackTest_1:
+     Error: sut failed
+
+  3) ParamsAsyncSuite
+       asyncTest_0:
+
+      AssertionError: expected 4 to equal 3
+
+      -4
+      +3
+
+  4) ParamsAsyncSuite
+       asyncTest_1:
+     Error: sut failed
+
+  5) ParamsAsyncSuite
+       promiseTest_0:
+
+      AssertionError: expected 4 to equal 3
+
+      -4
+      +3
+
+  6) ParamsAsyncSuite
+       promiseTest_1:
+     Error: sut failed

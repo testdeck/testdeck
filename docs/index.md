@@ -144,10 +144,10 @@ changes and compiles, your tests will be run, too.
 
  - [API](/api) *WORK IN PROGRESS*
  - [General Usage](/usage) *WORK IN PROGRESS*
- - [Parameterised Tests](/usage#parameterised-tests) *WORK IN PROGRESS*
  - [Object Oriented Testing](/oop)
+   - [Parameterised Tests](/oop_params)
+   - [Using Dependency Injection](/di)
  - [Extending Test Behaviour](/extendbehave)
- - [Using Dependency Injection](/di)
  - [Using the Watcher](/watcher)
  - [Set up mocha-typescript](/setup)
  - [IDE Integration](/ide)

@@ -93,7 +93,7 @@ but this behavior may be dropped in future major versions as it generates too mu
 They are still useful though for setting timeouts on before and after methods (e.g. `@suite class Test { @timeout(100) before() { /* ... */ }}`).
 
 ### Retries
-I would not recommend retrying failed tests multiple times to ensure green light but I also wouldn't judge, here it goes mocha-typescript retries:
+While it is definitely not a good practice to retry failing tests multiple times, sometimes one might not get around it.
 ```TypeScript
 @suite(retries(2))
 class Suite {
@@ -107,21 +107,4 @@ class Suite {
     }
 }
 ```
-The retries can also be used as a decorator similar to `timeout` and `slow` - `@test @retries(3) testMethod() {}`.
-
-### Parameterised Tests
-
-```TypeScript
-
-@suite
-class TestSuite {
-  
-  @params()
-  @params()
-  test() {
-    
-  }
-}
-```
-
-#### Parameterised Test Naming
+The retries can also be used as a decorator similar to `timeout` and `slow`, e.g. `@test @retries(3) testMethod() {}`.

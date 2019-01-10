@@ -11,20 +11,6 @@
 
 ## Usage
 
-### Generated Suites and Tests
-Mocha's simple interface is very flexible when tests have to be dynamically generated.
-If tests for classes have to be generated dynamically here is an example:
-```TypeScript
-[{ title: 'google', url: 'www.google.com' },
- { title: 'github', url: 'www.github.com' }
-].forEach(({title, url}) => {
-    @suite(`Http ${title}`) class GeneratedTestClass {
-        @test login() {}
-        @test logout() {}
-    }
-});
-```
-
 ### Before and After Actions
 By default, before and after test actions are implemented with instance and static before and after methods.
 The static before and after methods are invoked before the suite and after the suite,

@@ -1,5 +1,5 @@
-import { params, skip, slow, suite, timeout } from "../../index";
 import { platform } from "os";
+import { params, skip, slow, suite, timeout } from "../../index";
 import { AbstractPackageITBase, PackageTestParams } from "./AbstractPackageITBase";
 
 import { ChildProcess, spawn } from "child_process";
@@ -11,8 +11,6 @@ import * as readline from "readline";
 
 import * as terminate from "terminate";
 
-// const terminate = require("terminate");
-
 const editFilePath = join(__dirname, "fixtures", "packages", "watcher", "test", "new.ts");
 const cwd = resolve(__dirname, "fixtures", "packages", "watcher");
 
@@ -23,7 +21,7 @@ function assertStringContains(text: string, contains: string) {
 const isWin = platform() === "win32";
 
 @skip(isWin)
-@suite.only(timeout(90000), slow(90000))
+@suite(timeout(90000), slow(90000))
 class WatcherPackage extends AbstractPackageITBase {
 
   watch: ChildProcess;
@@ -34,22 +32,16 @@ class WatcherPackage extends AbstractPackageITBase {
   @params({ fixture: "watcher", installTypesMocha: true }, "can run watcher with @types/mocha")
   async runTest(params: PackageTestParams) {
     super.runTest(params);
-
-    console.log("Start watcher");
     this.watch = spawn("npm", ["run", "watch"], {
       cwd,
       shell: false,
     });
-    console.log("Create line reader");
     this.readline = readline.createInterface({ input: this.watch.stdout, output: this.watch.stdin });
     this.lines = [];
-    console.log("Attach .on('line'...");
     this.readline.on("line", (line) => {
-      console.log("enqueue line: " + line);
       this.lines.push(line);
     });
 
-    console.log("Wait for first line");
     await this.line();
     await this.line(); // > module-usage@1.0.0 watch ...
     await this.line(); // > mocha-typescript-watch ...
@@ -101,7 +93,6 @@ class WatcherPackage extends AbstractPackageITBase {
   line(): Promise<string> {
     if (this.lines.length > 0) {
       const line = this.lines.shift();
-      console.log("pop line: " + line);
       return Promise.resolve(line);
     }
 
@@ -109,7 +100,6 @@ class WatcherPackage extends AbstractPackageITBase {
       let unsubscribe;
       const onLine = (l: string) => {
         const line = this.lines.shift();
-        console.log("onLine: " + line);
         unsubscribe();
         resolve(line);
       };
@@ -147,9 +137,6 @@ class WatcherPackage extends AbstractPackageITBase {
   }
 
   async after() {
-    console.log("Calling 'after'");
-    console.log("Is there this? " + this);
-
     if (this.readline) {
       this.readline.close();
       this.readline = null;

@@ -533,12 +533,12 @@ export const skipOnError: SuiteTrait = trait(function(ctx, ctor) {
     });
 });
 
-function createExecutionModifier(executionSymbol: any): <TFunction extends Function>(target: boolean | Object | TFunction, propertyKey?: string | symbol) => (ClassDecorator & MethodDecorator) {
-    const decorator = function <TFunction extends Function>(target: Object | TFunction, propertyKey?: string | symbol): (ClassDecorator & MethodDecorator) {
+function createExecutionModifier(executionSymbol: any): <TFunction extends Function>(target: boolean | Object | TFunction, propertyKey?: string | symbol) => any {
+    const decorator = function <TFunction extends Function>(target: Object | TFunction, propertyKey?: string | symbol): any {
         if (arguments.length === 1) {
-            if (typeof target === "undefined" || typeof target === "function") {
+            if (typeof target === "undefined" || typeof target === "boolean") {
                 if (target) {
-                    return <ClassDecorator & MethodDecorator>decorator;
+                    return decorator as ClassDecorator & MethodDecorator | void;
                 } else {
                     return () => {};
                 }

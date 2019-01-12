@@ -6,6 +6,8 @@ class GeneratedSuiteIT extends AbstractSuiteITBase {
 
   @params({ target: "es5", fixture: "generated.suite" })
   @params({ target: "es6", fixture: "generated.suite" })
+  @params({ target: "es5", fixture: "generated.named.suite" })
+  @params({ target: "es6", fixture: "generated.named.suite" })
   @params.naming(({ target, fixture }: SuiteTestParams) => `${fixture} ${target}`)
   runTest(params: SuiteTestParams) {
 

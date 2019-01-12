@@ -1,0 +1,5 @@
+
+  Named Suite
+    ✓ myTest
+
+  1 passing

@@ -112,16 +112,15 @@ function applyMixins(derivedCtor: any, baseCtors: any[]) {
     @test logout() {}
   }
   applyMixins(GeneratedTestClass, bases);
-  suite(GeneratedTestClass);
+  suite(title)(GeneratedTestClass);
 });
 
 ```
 
 For starters, have a look at a [working example](https://github.com/pana-cc/mocha-typescript/blob/master/test/it/fixtures/generated.suite.ts).
-
-CAVEATS: the `suite` function currently does not allow you to define the name of your so generated test suite.
+See also [here for named suites](https://github.com/pana-cc/mocha-typescript/blob/master/test/it/fixtures/generated.named.suite.ts).
 
 FUTURE: `mocha-typescript` will provide you with both the `TestMixin` interface, the abstract base class 
-`AbstractMixinTestBase`, the `applyMixins` function and nameable, so generated tests suites.
+`AbstractMixinTestBase`, and the `applyMixins` function.
 
 And maybe also a generic version of the above depicted parameterisation.

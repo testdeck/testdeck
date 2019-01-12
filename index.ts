@@ -196,26 +196,29 @@ function suiteClassCallback(target: SuiteCtor, context: TestFunctions) {
 
             // assert testName is truthy
             if (parameters) {
-                const nameForParameters = method[nameForParametersSymbol];
-                parameters.forEach((parameterOptions, i) => {
-                    const { mark, name, params } = parameterOptions;
+                // we make the parameterised test a child suite so we can late bind the parameterised tests
+                context.describe(testName, function() {
+                    const nameForParameters = method[nameForParametersSymbol];
+                    parameters.forEach((parameterOptions, i) => {
+                        const { mark, name, params } = parameterOptions;
 
-                    let parametersTestName = `${testName}_${i}`;
-                    if (name) {
-                        parametersTestName = name;
-                    } else if (nameForParameters) {
-                        parametersTestName = nameForParameters(params);
-                    }
+                        let parametersTestName = `${testName}_${i}`;
+                        if (name) {
+                            parametersTestName = name;
+                        } else if (nameForParameters) {
+                            parametersTestName = nameForParameters(params);
+                        }
 
-                    const shouldSkipParam = shouldSkip || (mark === Mark.skip);
-                    const shouldOnlyParam = shouldOnly || (mark === Mark.only);
-                    const shouldPendingParam = shouldPending || (mark === Mark.pending);
+                        const shouldSkipParam = shouldSkip || (mark === Mark.skip);
+                        const shouldOnlyParam = shouldOnly || (mark === Mark.only);
+                        const shouldPendingParam = shouldPending || (mark === Mark.pending);
 
-                    const testFunc = ((shouldPendingParam || shouldSkipParam) && context.it.skip)
-                            || (shouldOnlyParam && context.it.only)
-                            || context.it;
+                        const testFunc = ((shouldPendingParam || shouldSkipParam) && context.it.skip)
+                                         || (shouldOnlyParam && context.it.only)
+                                         || context.it;
 
-                    applyTestFunc(testFunc, parametersTestName, method, [params]);
+                        applyTestFunc(testFunc, parametersTestName, method, [params]);
+                    });
                 });
             } else {
                 const testFunc = ((shouldPending || shouldSkip) && context.it.skip)
@@ -233,8 +236,7 @@ function suiteClassCallback(target: SuiteCtor, context: TestFunctions) {
             return (isParameterised && length > 1) || (!isParameterised && length > 0);
         }
 
-        function applyTestFunc(testFunc: Function, testName: string,
-                               method: Function, callArgs: any[]) {
+        function applyTestFunc(testFunc: Function, testName: string, method: Function, callArgs: any[]) {
             if (isAsync(method)) {
                 testFunc(testName, wrapNameAndToString(function(this: Mocha.Context, done) {
                   applyDecorators(this, prototype, method, instance);

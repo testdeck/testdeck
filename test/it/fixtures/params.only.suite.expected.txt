@@ -1,6 +1,7 @@
 
   ParamsOnlySuite
-    ✓ must be run 2
-    ✓ must be run 1
+    parameterised test limiting tests to only specific params
+      ✓ must be run 2
+      ✓ must be run 1
 
   2 passing

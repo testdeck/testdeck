@@ -605,14 +605,3 @@ export function registerDI(instantiator: DependencyInjectionSystem) {
         dependencyInjectionSystems.unshift(instantiator);
     }
 }
-
-/**
- * Dummy Mocha Custom Test UI.
- */
-function mochatypescriptui() {
-
-}
-
-// for Mocha we need to make the root export a function so that it will recognise it as a custom test ui
-module.exports = Object.assign(mochatypescriptui, exports);
-Mocha.interfaces["mocha-typescript"] = mochatypescriptui;

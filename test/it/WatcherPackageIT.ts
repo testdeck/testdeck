@@ -17,11 +17,10 @@ function assertStringContains(text: string, contains: string) {
   assert(text.includes(contains), "Expected '" + text + "' to includes '" + contains + "'.");
 }
 
-console.log("process.platform: " + process.platform);
-const isWin = process.platform === "win32";
+const isWin = process.platform == "win32"; // tslint:disable-line triple-equals
 
-@skip(isWin)
 @suite(timeout(90000), slow(90000))
+@skip(isWin)
 class WatcherPackage extends AbstractPackageITBase {
 
   watch: ChildProcess;

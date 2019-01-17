@@ -1,4 +1,3 @@
-import { platform } from "os";
 import { params, skip, slow, suite, timeout } from "../../index";
 import { AbstractPackageITBase, PackageTestParams } from "./AbstractPackageITBase";
 
@@ -18,7 +17,8 @@ function assertStringContains(text: string, contains: string) {
   assert(text.includes(contains), "Expected '" + text + "' to includes '" + contains + "'.");
 }
 
-const isWin = platform() === "win32";
+console.log("process.platform: " + process.platform);
+const isWin = process.platform === "win32";
 
 @skip(isWin)
 @suite(timeout(90000), slow(90000))

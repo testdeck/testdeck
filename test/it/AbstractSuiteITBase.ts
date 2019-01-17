@@ -20,7 +20,7 @@ export abstract class AbstractSuiteITBase {
         const packagePath = path.resolve("index.ts");
         const mochaPath = path.resolve("node_modules", ".bin", "_mocha" + (isWin ? ".cmd" : ""));
         const mochaArgs = ["--require", "ts-node/register", "--require", packagePath,
-                           "--ui mocha-typescript", "-C", path.join(fixtures, `${fixture}.ts`)];
+                           "-C", path.join(fixtures, `${fixture}.ts`)];
 
         // we need to run this from inside a different shell process, as it will fail otherwise
         const mocha = spawnSync(mochaPath, mochaArgs, { shell: true });

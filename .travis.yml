@@ -9,7 +9,7 @@ cache:
   directories:
     - node_modules
 install:
-  - test -d node_modules && npm prune
+  - test -d node_modules && npm prune || true
   - npm install
 script:
   - npm run tslint

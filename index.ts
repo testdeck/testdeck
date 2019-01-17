@@ -189,8 +189,8 @@ function suiteClassCallback(target: SuiteCtor, context: TestFunctions) {
 
         function runTest(prototype: any, method: Function) {
             const testName = method[testNameSymbol];
-            const shouldSkip = method[skipSymbol];
-            const shouldOnly = method[onlySymbol];
+            const shouldSkip = method[skipSymbol] || prototype.constructor[skipSymbol];
+            const shouldOnly = method[onlySymbol] || prototype.constructor[onlySymbol];
             const shouldPending = method[pendingSymbol];
             const parameters = method[parametersSymbol] as TestParams[];
 

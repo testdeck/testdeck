@@ -1,7 +1,11 @@
+import "../";
+
+import { suite, test } from "mocha-typescript";
+
 import { assert } from "chai";
+
 import { Service } from "typedi";
-import "../../../di/typedi";
-import { suite, test } from "../../../index";
+
 
 @Service()
 class Add {

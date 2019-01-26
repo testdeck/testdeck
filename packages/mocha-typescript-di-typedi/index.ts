@@ -1,8 +1,10 @@
 import "reflect-metadata";
+
 import { Container } from "typedi";
-import { registerDI } from "../index";
+
+import { registerDI } from "mocha-typescript";
 
 registerDI({
-    handles: () => true,
+    handles: (cls) => Container.has(cls),
     create: (cls) => Container.get(cls),
 });

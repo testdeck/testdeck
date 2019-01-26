@@ -1,0 +1,89 @@
+{
+  "name": "mocha-typescript",
+  "version": "1.1.17",
+  "description": "TypeScript decorators based wrapper over mocha's interface",
+  "author": "Panayot Cankov",
+  "contributors": [
+    {
+      "name": "silkentrance",
+      "url": "https://github.com/silkentrance"
+    }
+  ],
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pana-cc/mocha-typescript"
+  },
+  "bin": {
+    "mocha-typescript-watch": "./bin/watch"
+  },
+  "main": "index.js",
+  "typings": "index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "changelog": "conventional-changelog --infile CHANGELOG.md --same-file --preset angular --append --release-count 1 --verbose",
+    "clean": "rm -Rf coverage *.tgz *.js.map *.js bin/*.js* test/it/*.js* test/it/fixtures/*.js* test/it/fixtures/packages/*/node_modules",
+    "coverage": "npm run clean && npm run build && nyc mocha test/it/*SuiteIT.ts --opts test/mocha.opts",
+    "lint": "tslint --project .",
+    "lint:fix": "tslint --fix --project .",
+    "test": "npm run lint && npm run it:package && npm run it:suite",
+    "it:suite": "npm run clean && npm run build && npm run it:suite:run",
+    "it:suite:run": "mocha test/it/*SuiteIT.ts --opts test/mocha.opts",
+    "it:package": "npm run clean && npm run build && npm run it:package:run",
+    "it:package:run": "mocha test/it/*PackageIT.ts --opts test/mocha.opts"
+  },
+  "dependencies": {
+    "chalk": "^2.4.1",
+    "cross-spawn": "^6.0.5",
+    "yargs": "^12.0.5"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.1.7",
+    "@types/cross-spawn": "^6.0.0",
+    "@types/mocha": "^5.2.5",
+    "@types/node": "^10.1.4",
+    "@types/rimraf": "2.0.2",
+    "chai": "^4.2.0",
+    "contributor-faces": "^1.0.1",
+    "conventional-changelog-cli": "^2.0.1",
+    "mocha": "^5.2.0",
+    "nyc": "^12.0.2",
+    "reflect-metadata": "^0.1.12",
+    "rimraf": "^2.6.2",
+    "source-map-support": "^0.5.6",
+    "ts-node": "^6.1.0",
+    "tslint": "^5.11.0",
+    "typedi": "^0.8.0",
+    "typescript": "^3.2.1"
+  },
+  "files": [
+    "bin/watch",
+    "bin/watch.js",
+    "bin/watch.js.map",
+    "globals.d.ts",
+    "index.ts",
+    "index.d.ts",
+    "index.js",
+    "index.js.map"
+  ],
+  "nyc": {
+    "check-coverage": true,
+    "lines": 95,
+    "statements": 85,
+    "functions": 95,
+    "branches": 95,
+    "include": [
+      "**/*.js"
+    ],
+    "exclude": [
+      "bin",
+      "coverage",
+      "test/**/*.js"
+    ],
+    "reporter": [
+      "lcov",
+      "text-summary"
+    ],
+    "all": true
+  }
+}

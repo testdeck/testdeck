@@ -72,6 +72,7 @@ export function cleanup(str: string, eliminateAllEmptyLines = false): string {
 
   // and even more remnants from nyc...
   result = result.replace(/^\s*get .*,$/mg, ELIMINATE_LINE);
+  result = result.replace(/^\s*[}].*$/mg, ELIMINATE_LINE);
 
   // and some more win32 specialities
   result = result.replace(/^C:.*$/mg, ELIMINATE_LINE);

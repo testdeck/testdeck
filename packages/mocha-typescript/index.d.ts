@@ -126,6 +126,12 @@ declare namespace MochaTypeScript {
         pending(... traits: MochaTypeScript.TestTrait[]): PropertyDecorator;
     }
 
+    export interface Class<T> {
+        new(...args: any[]): T;
+        [key: string]: any;
+        prototype: T;
+    }
+
     export interface TestClass<T> {
         new(...args: any[]): T;
         prototype: T;

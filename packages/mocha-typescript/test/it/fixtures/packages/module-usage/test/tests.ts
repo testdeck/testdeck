@@ -1,3 +1,5 @@
+import { Done } from "mocha";
+
 import { IN_TIME, OVERLY_SLOW, TIMEOUT } from '../../../../constants';
 import { suite, test, timeout, skipOnError } from "mocha-typescript";
 
@@ -31,19 +33,19 @@ import { suite, test, timeout, skipOnError } from "mocha-typescript";
 
 @suite(timeout(TIMEOUT))
 class TimoutSuite {
-    @test fast(done: MochaDone) {
+    @test fast(done: Done) {
         setTimeout(done, IN_TIME);
     }
-    @test slow(done: MochaDone) {
+    @test slow(done: Done) {
         setTimeout(done, OVERLY_SLOW);
     }
 }
 
 @suite class TimeoutSuite2 {
-    @test(timeout(TIMEOUT)) fast(done: MochaDone) {
+    @test(timeout(TIMEOUT)) fast(done: Done) {
         setTimeout(done, IN_TIME);
     }
-    @test(timeout(TIMEOUT)) slow(done: MochaDone) {
+    @test(timeout(TIMEOUT)) slow(done: Done) {
         setTimeout(done, OVERLY_SLOW);
     }
 }

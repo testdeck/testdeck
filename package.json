@@ -1,29 +1,8 @@
 {
-  "name": "mocha-typescript",
-  "version": "2.0.0",
+  "name": "mocha-typescript-monorepo",
+  "private": true,
+  "version": "1.0.0",
   "description": "TypeScript decorators based wrapper over mocha's interface",
-  "main": "index.js",
-  "typings": "typings.d.ts",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/pana-cc/mocha-typescript"
-  },
-  "bin": {
-    "mocha-typescript-watch": "./bin/watch"
-  },
-  "scripts": {
-    "clean": "rm -Rf coverage *.tgz *.js.map *.js bin/*.js* di/*.js* test/it/*.js* test/it/fixtures/*.js* test/it/fixtures/packages/*/node_modules",
-    "test": "npm run tslint && npm run it",
-    "it": "npm run clean && mocha test/it/*IT.ts --opts mocha.opts",
-    "itrun": "npm run clean && mocha --opts mocha.opts",
-    "itsuite": "mocha test/it/*SuiteIT.ts --opts mocha.opts",
-    "itpackage": "mocha test/it/*PackageIT.ts --opts mocha.opts",
-    "prepare": "tsc",
-    "tslint-fix": "tslint --fix --project .",
-    "tslint": "tslint --project .",
-    "changelog": "conventional-changelog --infile CHANGELOG.md --same-file --preset angular --append --release-count 1 --verbose",
-    "coverage": "npm run clean && npm run prepare && nyc mocha test/it/*SuiteIT.ts --opts mocha.opts"
-  },
   "author": "Panayot Cankov",
   "contributors": [
     {
@@ -32,58 +11,20 @@
     }
   ],
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pana-cc/mocha-typescript"
+  },
+  "scripts": {
+    "build": "lerna run --stream build",
+    "clean": "lerna run --stream clean",
+    "coverage": "lerna run --stream coverage",
+    "lint": "lerna run --stream lint",
+    "setup": "npm run --stream setup:packages",
+    "setup:packages": "npm install && lerna bootstrap --hoist --no-ci",
+    "test": "lerna run --stream test"
+  },
   "dependencies": {
-    "chalk": "^2.4.1",
-    "cross-spawn": "^6.0.5",
-    "yargs": "^13.2.1"
-  },
-  "devDependencies": {
-    "@types/chai": "^4.1.7",
-    "@types/cross-spawn": "^6.0.0",
-    "@types/mocha": "^5.2.5",
-    "@types/node": "^11.9.5",
-    "braces": "^2.3.1",
-    "chai": "^4.2.0",
-    "contributor-faces": "^1.0.2",
-    "conventional-changelog-cli": "^2.0.1",
-    "mocha": "^6.0.1",
-    "nyc": "^13.3.0",
-    "reflect-metadata": "^0.1.12",
-    "rimraf": "^2.6.2",
-    "source-map-support": "^0.5.6",
-    "ts-node": "^8.0.2",
-    "tslint": "^5.11.0",
-    "typedi": "^0.8.0",
-    "typescript": "^3.2.1"
-  },
-  "files": [
-    "index.js",
-    "typings.d.ts",
-    "index.js",
-    "index.d.ts",
-    "globals.d.ts",
-    "bin/watch",
-    "bin/watch.js",
-    "di/typedi.js"
-  ],
-  "nyc": {
-    "check-coverage": true,
-    "lines": 95,
-    "statements": 85,
-    "functions": 95,
-    "branches": 95,
-    "include": [
-      "**/*.js"
-    ],
-    "exclude": [
-      "bin",
-      "coverage",
-      "test/**/*.js"
-    ],
-    "reporter": [
-      "lcov",
-      "text-summary"
-    ],
-    "all": true
+    "lerna": "^3.10.7"
   }
 }

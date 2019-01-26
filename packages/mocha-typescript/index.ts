@@ -1,7 +1,4 @@
 import * as Mocha from "mocha";
-import * as Common from "mocha/lib/interfaces/common";
-import * as Suite from "mocha/lib/suite";
-import * as Test from "mocha/lib/test";
 
 interface TestFunctions {
     it: {
@@ -342,7 +339,7 @@ function suiteFuncCheckingDecorators(context: TestFunctions) {
     };
 }
 
-function makeSuiteObject(context: TestFunctions): Suite {
+function makeSuiteObject(context: TestFunctions): any {
     return Object.assign(makeSuiteFunction(suiteFuncCheckingDecorators(context), context), {
         skip: makeSuiteFunction(() => context.describe.skip, context),
         only: makeSuiteFunction(() => context.describe.only, context),
@@ -437,7 +434,7 @@ function makeTestFunction(testFunc: () => Function, mark: null | string | symbol
         },
     });
 }
-function makeTestObject(context: TestFunctions): Test {
+function makeTestObject(context: TestFunctions): any {
     return Object.assign(makeTestFunction(() => context.it, null), {
         skip: makeTestFunction(() => context.it.skip, skipSymbol),
         only: makeTestFunction(() => context.it.only, onlySymbol),
@@ -590,7 +587,7 @@ interface TestClass<T> {
 
 interface DependencyInjectionSystem {
     handles<T>(cls: TestClass<T>): boolean;
-    create<T>(cls: TestClass<T>): typeof cls.prototype;
+    create<T>(cls: TestClass<T>): T;
 }
 
 const defaultDependencyInjectionSystem: DependencyInjectionSystem = {

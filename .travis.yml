@@ -10,12 +10,10 @@ cache:
     - node_modules
 install:
   - test -d node_modules && npm prune || true
-  - npm install
+  - npm run setup
 script:
-  - npm run tslint
-  - npm run itpackage
+  - npm run test
   - npm run coverage
-branches:
-  except:
-    - /^gh-.*$/
-
+#branches:
+#  except:
+#    - /^gh-.*$/

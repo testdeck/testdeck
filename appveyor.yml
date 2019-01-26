@@ -10,13 +10,12 @@ environment:
 
 install:
   - ps: Install-Product node $env:nodejs_version
-  - npm install
+  - npm run setup
 
 test_script:
   - node --version
   - npm --version
-  - npm run itpackage
+  - npm run test
   - npm run coverage
 
 build: off
-

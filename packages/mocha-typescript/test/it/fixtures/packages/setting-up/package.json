@@ -4,15 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "pretest": "tsc",
-    "test": "mocha",
+    "test": "mocha --opts test/mocha.opts",
     "watch": "mocha-typescript-watch"
   },
   "author": "",
   "license": "Apache-2.0",
   "devDependencies": {
     "mocha": "*",
-    "source-map-support": "^0.4.14",
+    "source-map-support": "*",
     "typescript": "*"
   }
 }

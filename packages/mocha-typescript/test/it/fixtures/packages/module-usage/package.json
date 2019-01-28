@@ -4,8 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "pretest": "tsc",
-    "test": "mocha"
+    "test": "mocha --opts test/mocha.opts"
   },
   "author": "",
   "license": "Apache-2.0",

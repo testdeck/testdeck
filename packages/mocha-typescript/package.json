@@ -60,7 +60,6 @@
     "bin/watch",
     "bin/watch.js",
     "bin/watch.js.map",
-    "globals.d.ts",
     "index.ts",
     "index.d.ts",
     "index.js",

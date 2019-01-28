@@ -16,7 +16,8 @@
         "no-shadowed-variable": false,
         "forin": false,
         "member-ordering": false,
-        "deprecation": true
+        "deprecation": true,
+        "no-reference": false
     },
     "rulesDirectory": []
 }

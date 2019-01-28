@@ -2,18 +2,6 @@ import { assert } from "chai";
 import { skipOnError, slow, suite, test, timeout, trait } from "../../../index";
 import { IN_TIME, OVERLY_SLOW, RATHER_SLOW, SLOW, TIMEOUT } from "../constants";
 
-declare var describe;
-declare var it;
-
-suite("vanila tdd suite", () => {
-    test("vanila test", () => {});
-    test("vanila failing test", () => { throw new Error("x"); });
-    test("vanila asinc", (done) => setTimeout(done, 5));
-    test("Vanila promise", () => new Promise((resolve, reject) => setTimeout(resolve, 5)));
-    test.pending("pending", () => {});
-    test.skip("skipped", () => {});
-});
-
 describe("vanila bdd suite", () => {
     it("vanila test", () => {});
     it("vanila failing test", () => { throw new Error("x"); });
@@ -51,9 +39,6 @@ class StockSequence {
     @test public step3() { /* should be skipped */ }
     @test public step4() { /* should be skipped */ }
 }
-
-declare var beforeEach;
-declare var afterEach;
 
 const customSkipOnError = trait(function(ctx, ctor) {
     beforeEach(function() {

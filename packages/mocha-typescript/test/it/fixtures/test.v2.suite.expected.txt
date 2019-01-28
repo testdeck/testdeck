@@ -1,15 +1,7 @@
 
-  vanila tdd suite
-    ✓ vanila test
-    1) vanila failing test
-    ✓ vanila asinc
-    ✓ Vanila promise
-    - pending
-    - skipped
-
   vanila bdd suite
     ✓ vanila test
-    2) vanila failing test
+    1) vanila failing test
     ✓ vanila asinc
     ✓ Vanila promise
     - skipped
@@ -19,27 +11,27 @@
 
   Timeouts
     ✓ pass1
-    3) pass2
+    2) pass2
     ✓ pass3
 
   InlineTrait
-    4) timeout
+    3) timeout
 
   StockSequence
     ✓ step1
-    5) step2
+    4) step2
     - step3
     - step4
 
   CustomSequence
     ✓ step1
-    6) step2
+    5) step2
     - step3
     - step4
 
   name and trait
     ✓ step1
-    7) step2
+    6) step2
     - step3
 
   Slows
@@ -50,11 +42,11 @@
   mocha typescript
     ✓ assert pass
     ✓ assert pass 2
-    8) test fail
-    9) test fail 2
+    7) test fail
+    8) test fail 2
     - test skip
-    10) test intentinally timeout
-    11) test intentinall fail due error before timeout
+    9) test intentinally timeout
+    10) test intentinall fail due error before timeout
     ✓ test won't timeout but will be redish slow
     ✓ test won't timeout but will be yellowish slow
 
@@ -78,68 +70,64 @@
 
   InstanceTests
     ✓ test
-    12) testFailing
+    11) testFailing
     ✓ beforeAfterCalled
 
   AsyncInstanceTests
     ✓ test
-    13) testFailing
+    12) testFailing
     ✓ beforeAfterCalled
 
-  24 passing
-  14 pending
-  13 failing
+  21 passing
+  12 pending
+  12 failing
 
-  1) vanila tdd suite
+  1) vanila bdd suite
        vanila failing test:
      Error: x
 
-  2) vanila bdd suite
-       vanila failing test:
-     Error: x
-
-  3) Timeouts
+  2) Timeouts
        pass2:
      Error: Timeout of 100ms exceeded. For async tests and hooks, ensure "done()" is called; if returning a Promise, ensure it resolves.
 
-  4) InlineTrait
+  3) InlineTrait
        timeout:
      Error: Timeout of 100ms exceeded. For async tests and hooks, ensure "done()" is called; if returning a Promise, ensure it resolves.
 
-  5) StockSequence
+  4) StockSequence
        step2:
      Error: Failed
 
-  6) CustomSequence
+  5) CustomSequence
        step2:
      Error: Failed
 
-  7) name and trait
+  6) name and trait
        step2:
      Error: Failed
 
-  8) mocha typescript
+  7) mocha typescript
        test fail:
      Error: Fail intentionally!
 
-  9) mocha typescript
+  8) mocha typescript
        test fail 2:
      Error: Fail intentionally!
 
-  10) mocha typescript
+  9) mocha typescript
        test intentinally timeout:
      Error: Timeout of 100ms exceeded. For async tests and hooks, ensure "done()" is called; if returning a Promise, ensure it resolves.
 
-  11) mocha typescript
+  10) mocha typescript
        test intentinall fail due error before timeout:
      Error: done() invoked with non-Error: Ooopsss...
 
-  12) InstanceTests
+  11) InstanceTests
        testFailing:
 
       AssertionError: expected false to be true
 
-  13) AsyncInstanceTests
+  12) AsyncInstanceTests
        testFailing:
 
       AssertionError: expected false to be true

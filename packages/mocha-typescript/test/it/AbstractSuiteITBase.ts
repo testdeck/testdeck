@@ -19,7 +19,7 @@ export abstract class AbstractSuiteITBase {
         const fixtures = path.resolve(__dirname, "fixtures");
         const packagePath = path.resolve("index.ts");
         const mochaPath = path.resolve("node_modules", ".bin", "_mocha" + (isWin ? ".cmd" : ""));
-        const mochaArgs = ["--require", "ts-node/register", "--require", packagePath,
+        const mochaArgs = ["--require", "ts-node/register", // "--require", packagePath,
                            "-C", path.join(fixtures, `${fixture}.ts`)];
 
         // we need to run this from inside a different shell process, as it will fail otherwise

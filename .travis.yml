@@ -5,9 +5,9 @@ node_js:
   - "9"
   - "8"
 sudo: false
-cache:
-  directories:
-    - node_modules
+#cache:
+#  directories:
+#    - node_modules
 install:
   - test -d node_modules && npm prune || true
   - npm run setup

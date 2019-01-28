@@ -329,8 +329,6 @@ class ServerTests {
 //     9) "after each" hook for "will fail for slow after"
 //
 // Nested suites
-declare var describe;
-declare var it;
 //
 describe("outer suite", () => {
     @suite class TestClass {

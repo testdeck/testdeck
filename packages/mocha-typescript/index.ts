@@ -2,8 +2,6 @@
 
 import * as Mocha from "mocha";
 
-import * as util from "util";
-
 const globalTestFunctions: MochaTypeScript.TestFunctions = {
     get describe() { return (global as any).describe; },
     get it() { return (global as any).it; },
@@ -73,11 +71,6 @@ function applySuiteTraits(context: Mocha.Suite, target: MochaTypeScript.SuiteCto
 }
 
 function suiteClassCallback(target: MochaTypeScript.SuiteCtor, context: MochaTypeScript.TestFunctions) {
-
-    // console.log("suiteCallbackFactory called");
-    // console.log(`target: ${target}`);
-    // console.log(`context: ${context}`);
-
     return function() {
         applySuiteTraits(this, target);
         applyDecorators(this, target, target, target);
@@ -197,9 +190,6 @@ function suiteClassCallback(target: MochaTypeScript.SuiteCtor, context: MochaTyp
                     || (shouldOnly && context.it.only)
                     || context.it;
 
-                // console.log(`applying test: ${testName}`);
-                // console.log(`applying test: ${testFunc}`);
-                // console.log(`applying test: ${method}`);
                 applyTestFunc(testFunc, testName, method, []);
             }
         }
@@ -224,8 +214,6 @@ function suiteClassCallback(target: MochaTypeScript.SuiteCtor, context: MochaTyp
                   applyTestTraits(this, instance, method);
                   return method.call(instance, ...callArgs);
                 }, method));
-                // console.log(`t: ${util.inspect(t)}`);
-                // console.log(`suite: ${util.inspect(t.parent)}`);
             }
         }
 
@@ -256,16 +244,11 @@ function suiteClassCallback(target: MochaTypeScript.SuiteCtor, context: MochaTyp
 }
 
 function suiteOverload(overloads: {
-    // suite(name: string, fn: Function): any;
     suiteCtor(ctor: MochaTypeScript.SuiteCtor): void;
     suiteDecorator(...traits: MochaTypeScript.SuiteTrait[]): ClassDecorator;
     suiteDecoratorNamed(name: string, ...traits: MochaTypeScript.SuiteTrait[]): ClassDecorator;
 }) {
     return function() {
-        // if (arguments.length === 2 && typeof arguments[0] === "string" && typeof arguments[1] === "function" && !arguments[1][isTraitSymbol]) {
-        //     return overloads.suite.apply(this, arguments);
-        // }
-
         const args = [];
         for (let idx = 0; idx < arguments.length; idx++) {
             args[idx] = arguments[idx];
@@ -285,9 +268,6 @@ function suiteOverload(overloads: {
 
 function makeSuiteFunction(suiteFunc: (ctor: MochaTypeScript.SuiteCtor) => Function, context: MochaTypeScript.TestFunctions) {
     return suiteOverload({
-        // suite(name: string, fn: Function): any {
-        //     return suiteFunc()(name, fn);
-        // },
         suiteCtor(ctor: MochaTypeScript.SuiteCtor): void {
             ctor[suiteSymbol] = true;
             suiteFunc(ctor)(ctor.name, suiteClassCallback(ctor, context));
@@ -372,25 +352,16 @@ function testOverload(overloads: {
     testDecoratorNamed(name: string, ...traits: MochaTypeScript.TestTrait[]): PropertyDecorator & MethodDecorator;
 }) {
     return function() {
-        // if (arguments.length === 2 && typeof arguments[0] === "string" && typeof arguments[1] === "function" && !arguments[1][isTraitSymbol]) {
-        //     return overloads.test.apply(this, arguments);
-        // console.log(`testOverload arguments.length = ${arguments.length}`);
-        // console.log(`arguments[0] = ${arguments[0]}`);
-        // console.log(`arguments[1] = ${arguments[1]}`);
-
         const args = [];
         for (let idx = 0; idx < arguments.length; idx++) {
             args[idx] = arguments[idx];
         }
 
         if (arguments.length >= 2 && typeof arguments[0] !== "string" && typeof arguments[0] !== "function") {
-            // console.log('as property decorator');
             return overloads.testProperty.apply(this, args);
         } else if (arguments.length >= 1 && typeof arguments[0] === "string") {
-            // console.log('as named decorator');
             return overloads.testDecoratorNamed.apply(this, args);
         } else {
-            // console.log('as decorator');
             return overloads.testDecorator.apply(this, args);
         }
     };
@@ -398,12 +369,7 @@ function testOverload(overloads: {
 
 function makeTestFunction(testFunc: Mocha.TestFunction | Mocha.PendingTestFunction | Mocha.ExclusiveTestFunction, mark: null | string | symbol) {
     return testOverload({
-        // unable to comply, test decorator overrides standard vanilla test interface
-        // test(name: string, fn: Mocha.Func | Mocha.AsyncFunc): Mocha.Test {
-        //     return testFunc(name, fn);
-        // },
         testProperty(target: Object, propertyKey: string | symbol, descriptor?: PropertyDescriptor): void {
-            // console.log("shizerest");
             target[propertyKey][testNameSymbol] = propertyKey.toString();
             if (mark) {
                 target[propertyKey][mark] = true;
@@ -411,7 +377,6 @@ function makeTestFunction(testFunc: Mocha.TestFunction | Mocha.PendingTestFuncti
         },
         testDecorator(...traits: MochaTypeScript.TestTrait[]): PropertyDecorator & MethodDecorator {
             return function(target: Object, propertyKey: string | symbol, descriptor?: PropertyDescriptor): void {
-                // console.log("shize");
                 target[propertyKey][testNameSymbol] = propertyKey.toString();
                 target[propertyKey][traitsSymbol] = traits;
                 if (mark) {
@@ -421,7 +386,6 @@ function makeTestFunction(testFunc: Mocha.TestFunction | Mocha.PendingTestFuncti
         },
         testDecoratorNamed(name: string, ...traits: MochaTypeScript.TestTrait[]): PropertyDecorator & MethodDecorator {
             return function(target: Object, propertyKey: string | symbol, descriptor?: PropertyDescriptor): void {
-                // console.log("shizer");
                 target[propertyKey][testNameSymbol] = name;
                 target[propertyKey][traitsSymbol] = traits;
                 if (mark) {
@@ -432,9 +396,6 @@ function makeTestFunction(testFunc: Mocha.TestFunction | Mocha.PendingTestFuncti
     });
 }
 function makeTestObject(context: MochaTypeScript.TestFunctions): MochaTypeScript.TestDecorator {
-
-    // console.log("it: " + context.it.skip);
-
     return Object.assign(makeTestFunction(context.it, null), {
         skip: makeTestFunction(context.it.skip, skipSymbol),
         only: makeTestFunction(context.it.only, onlySymbol),
@@ -520,7 +481,7 @@ export const timeout = createNumericBuiltinTrait(timeoutSymbol, (context, value)
 export const retries = createNumericBuiltinTrait(retriesSymbol, (context: Mocha.Context, value) => context.retries(value));
 
 export const skipOnError: MochaTypeScript.SuiteTrait = trait(function(ctx, ctor) {
-    ctx.beforeEach(function() {
+    ctx.beforeEach(function(this: Mocha.Context) {
         if (ctor[skipAllSymbol]) {
             this.skip();
         }

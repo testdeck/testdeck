@@ -1,18 +1,14 @@
 declare namespace MochaTypeScript {
 
     interface Overload<V extends SuiteTrait | TestTrait, R extends ClassDecorator | MethodDecorator> {
-        // new (): T;
-        // (name: string, trait: V, ... traits: V[]): R;
         (name?: string, ... traits: V[]): R;
         (trait: V, ... traits: V[]): R;
     }
 
     interface SuiteDecoratorOverload extends Overload<SuiteTrait, ClassDecorator>, ClassDecorator {
-        // vanilla suite[.skip|.only](title, fn) interface has been dropped with #121 as the interface is too ambiguous
     }
 
     interface TestDecoratorOverload extends Overload<TestTrait, MethodDecorator>, MethodDecorator {
-        // vanilla test[.skip|.only](title, fn) interface has been dropped with #121 as the interface is too ambiguous
     }
 
     export interface SuiteDecorator extends SuiteDecoratorOverload {

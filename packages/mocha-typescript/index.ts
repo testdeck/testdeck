@@ -266,15 +266,20 @@ function suiteOverload(overloads: {
         //     return overloads.suite.apply(this, arguments);
         // }
 
+        const args = [];
+        for (let idx = 0; idx < arguments.length; idx++) {
+            args[idx] = arguments[idx];
+        }
+
         if (arguments.length === 1 && typeof arguments[0] === "function" && !arguments[0][isTraitSymbol]) {
-            return overloads.suiteCtor.apply(this, arguments);
+            return overloads.suiteCtor.apply(this, args);
         }
 
         if (arguments.length >= 1 && typeof arguments[0] === "string") {
-            return overloads.suiteDecoratorNamed.apply(this, arguments);
+            return overloads.suiteDecoratorNamed.apply(this, args);
         }
 
-        return overloads.suiteDecorator.apply(this, arguments);
+        return overloads.suiteDecorator.apply(this, args);
     };
 }
 
@@ -372,15 +377,21 @@ function testOverload(overloads: {
         // console.log(`testOverload arguments.length = ${arguments.length}`);
         // console.log(`arguments[0] = ${arguments[0]}`);
         // console.log(`arguments[1] = ${arguments[1]}`);
+
+        const args = [];
+        for (let idx = 0; idx < arguments.length; idx++) {
+            args[idx] = arguments[idx];
+        }
+
         if (arguments.length >= 2 && typeof arguments[0] !== "string" && typeof arguments[0] !== "function") {
             // console.log('as property decorator');
-            return overloads.testProperty.apply(this, arguments);
+            return overloads.testProperty.apply(this, args);
         } else if (arguments.length >= 1 && typeof arguments[0] === "string") {
             // console.log('as named decorator');
-            return overloads.testDecoratorNamed.apply(this, arguments);
+            return overloads.testDecoratorNamed.apply(this, args);
         } else {
             // console.log('as decorator');
-            return overloads.testDecorator.apply(this, arguments);
+            return overloads.testDecorator.apply(this, args);
         }
     };
 }

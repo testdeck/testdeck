@@ -17,21 +17,21 @@
   "main": "index.js",
   "typings": "index.d.ts",
   "scripts": {
-    "build": "tsc",
+    "build": "npm run build:cjs && npm run build:web",
+    "build:cjs": "tsc",
+    "build:web": "webpack",
     "changelog": "conventional-changelog --infile CHANGELOG.md --same-file --preset angular --append --release-count 1 --verbose",
-    "clean": "rm -Rf coverage *.tgz *.js.map *.js test/*.js*",
-    "coverage": "npm run clean && npm run build && nyc mocha test/*Test.ts --opts test/mocha.opts",
+    "clean": "rm -Rf coverage *.tgz *.js.map index.js test/*.js test/*.js.map",
+    "coverage": "npm run clean && npm run build:cjs && nyc mocha test/it/*SuiteIT.ts --opts test/mocha.opts",
     "lint": "tslint --project .",
     "lint:fix": "tslint --fix --project .",
-    "test": "npm run clean && npm run lint && npm run build && npm run test:run",
-    "test:run": "mocha test/*Test.ts --opts test/mocha.opts"
+    "test": "npm run lint && npm run it:suite",
+    "it:suite": "npm run clean && npm run build:cjs && npm run it:suite:run",
+    "it:suite:run": "mocha test/it/*SuiteIT.ts --opts test/mocha.opts"
   },
   "dependencies": {
-    "typedi": "^0.8.0",
-    "reflect-metadata": "^0.1.12"
-  },
-  "peerDependencies": {
-    "mocha-typescript": "latest"
+    "reflect-metadata": "^0.1.12",
+    "typedi": "^0.8.0"
   },
   "devDependencies": {
     "@types/chai": "^4.1.7",
@@ -42,17 +42,22 @@
     "contributor-faces": "^1.0.1",
     "conventional-changelog-cli": "^2.0.1",
     "mocha": "^5.2.0",
+    "mocha-typescript": "^1.1.17",
     "nyc": "^12.0.2",
     "source-map-support": "^0.5.6",
     "ts-node": "^6.1.0",
     "tslint": "^5.11.0",
-    "typescript": "^3.2.1"
+    "typescript": "^3.2.1",
+    "ts-loader": "^5.3.3",
+    "webpack": "^4.29.0",
+    "webpack-cli": "^3.2.1"
   },
   "files": [
     "index.ts",
     "index.d.ts",
     "index.js",
-    "index.js.map"
+    "index.js.map",
+    "dist/index.js"
   ],
   "nyc": {
     "check-coverage": true,

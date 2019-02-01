@@ -20,29 +20,30 @@
   "main": "index.js",
   "typings": "index.d.ts",
   "scripts": {
-    "build": "tsc",
+    "build": "npm run build:cjs && npm run build:web",
+    "build:cjs": "tsc",
+    "build:web": "webpack",
     "changelog": "conventional-changelog --infile CHANGELOG.md --same-file --preset angular --append --release-count 1 --verbose",
-    "clean": "rm -Rf coverage *.tgz *.js.map *.js bin/*.js* test/it/*.js* test/it/fixtures/*.js* test/it/fixtures/packages/*/node_modules",
-    "coverage": "npm run clean && npm run build && nyc mocha test/it/*SuiteIT.ts --opts test/mocha.opts",
+    "clean": "rm -Rf coverage dist *.tgz *.js.map index.js bin/*.js* test/it/*.js* test/it/fixtures/*.js* test/it/fixtures/packages/*/node_modules",
+    "coverage": "npm run clean && npm run build:cjs && nyc mocha test/it/*SuiteIT.ts --opts test/mocha.opts",
     "lint": "tslint --project .",
     "lint:fix": "tslint --fix --project .",
     "test": "npm run lint && npm run it:package && npm run it:suite",
-    "it:suite": "npm run clean && npm run build && npm run it:suite:run",
+    "it:suite": "npm run clean && npm run build:cjs && npm run it:suite:run",
     "it:suite:run": "mocha test/it/*SuiteIT.ts --opts test/mocha.opts",
-    "it:package": "npm run clean && npm run build && npm run it:package:run",
+    "it:package": "npm run clean && npm run build:cjs && npm run it:package:run",
     "it:package:run": "mocha test/it/*PackageIT.ts --opts test/mocha.opts"
   },
-  "dependencies": {
-    "chalk": "^2.4.1",
-    "cross-spawn": "^6.0.5",
-    "yargs": "^12.0.5"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@types/chai": "^4.1.7",
     "@types/cross-spawn": "^6.0.0",
     "@types/mocha": "^5.2.5",
     "@types/node": "^10.1.4",
     "@types/rimraf": "2.0.2",
+    "chalk": "^2.4.1",
+    "cross-spawn": "^6.0.5",
+    "yargs": "^12.0.5",
     "chai": "^4.2.0",
     "contributor-faces": "^1.0.1",
     "conventional-changelog-cli": "^2.0.1",
@@ -54,7 +55,10 @@
     "ts-node": "^6.1.0",
     "tslint": "^5.11.0",
     "typedi": "^0.8.0",
-    "typescript": "^3.2.1"
+    "typescript": "^3.2.1",
+    "ts-loader": "^5.3.3",
+    "webpack": "^4.29.0",
+    "webpack-cli": "^3.2.1"
   },
   "files": [
     "bin/watch",
@@ -63,7 +67,8 @@
     "index.ts",
     "index.d.ts",
     "index.js",
-    "index.js.map"
+    "index.js.map",
+    "dist/index.js"
   ],
   "nyc": {
     "check-coverage": true,

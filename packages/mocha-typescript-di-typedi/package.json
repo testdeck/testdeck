@@ -42,7 +42,7 @@
     "contributor-faces": "^1.0.1",
     "conventional-changelog-cli": "^2.0.1",
     "mocha": "^5.2.0",
-    "mocha-typescript": "^1.1.17",
+    "mocha-typescript": "^1.2.0",
     "nyc": "^12.0.2",
     "source-map-support": "^0.5.6",
     "ts-node": "^6.1.0",
@@ -70,6 +70,8 @@
     ],
     "exclude": [
       "bin",
+      "dist",
+      "webpack.config.js",
       "coverage",
       "test/**/*.js"
     ],

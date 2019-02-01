@@ -1,6 +1,12 @@
 {
   "packages": [
-    "packages/mocha-typescript"
+    "packages/mocha-typescript",
+    "packages/mocha-typescript-di-typedi"
   ],
+  "command": {
+    "bootstrap": {
+      "npmClientArgs": ["--no-package-lock"]
+    }
+  },
   "version": "0.0.0"
 }

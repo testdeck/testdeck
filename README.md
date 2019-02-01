@@ -26,8 +26,8 @@ This will install all required dependencies and will also bootstrap `lerna`.
 The following npm scripts are available
 
 - clean    -- clean the available packages
-- build    -- runs `tsc` on all available packages
+- build    -- runs a build on all available packages
 - coverage -- runs `nyc` on all available packages
 - lint     -- runs `tslint` on all sources in all available packages
 - test     -- run all tests on all available packages
-- setup    -- runs **npm install** and then bootstraps `lerna`
+- setup    -- runs `npm install` and then bootstraps `lerna`

@@ -1,0 +1,14 @@
+{
+  "name": "plain",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test:ci": "mocha --opts test/mocha.opts"
+  },
+  "devDependencies": {
+    "@types/mocha": "^5.2.5",
+    "mocha": "^5.2.0",
+    "mocha-typescript": "^2.0.0",
+    "typescript": "^3.3.3"
+  }
+}

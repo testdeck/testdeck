@@ -1,6 +1,6 @@
 {
   "name": "mocha-typescript",
-  "version": "1.2.0",
+  "version": "2.0.0",
   "description": "TypeScript decorators based wrapper over mocha's interface",
   "author": "Panayot Cankov",
   "contributors": [
@@ -17,58 +17,50 @@
   "bin": {
     "mocha-typescript-watch": "./bin/watch"
   },
-  "main": "index.js",
-  "typings": "index.d.ts",
+  "main": "dist/index.js",
+  "types": "typings/index.d.ts",
   "scripts": {
-    "build": "npm run build:cjs && npm run build:web",
+    "build": "npm run clean && npm run build:cjs && npm run build:test",
     "build:cjs": "tsc",
-    "build:web": "webpack",
+    "build:test": "tsc -p tsconfig.test.json",
     "changelog": "conventional-changelog --infile CHANGELOG.md --same-file --preset angular --append --release-count 1 --verbose",
-    "clean": "rm -Rf coverage dist *.tgz *.js.map index.js bin/*.js* test/it/*.js* test/it/fixtures/*.js* test/it/fixtures/packages/*/node_modules",
-    "coverage": "npm run clean && npm run build:cjs && nyc mocha test/it/*SuiteIT.ts --opts test/mocha.opts",
+    "clean": "rm -Rf .nyc_output coverage dist *.tgz src/*.js.map src/*.js bin/*.js* test/it/*.js* test/it/fixtures/*.js* test/it/fixtures/packages/*/node_modules",
+    "coverage": "npm run build && npm run coverage:run",
+    "coverage:run": "nyc mocha test/it/*SuiteIT.ts --opts test/mocha.opts",
     "lint": "tslint --project .",
     "lint:fix": "tslint --fix --project .",
-    "test": "npm run lint && npm run it:package && npm run coverage",
-    "it:suite": "npm run clean && npm run build:cjs && npm run it:suite:run",
-    "it:suite:run": "mocha test/it/*SuiteIT.ts --opts test/mocha.opts",
-    "it:package": "npm run clean && npm run build:cjs && npm run it:package:run",
-    "it:package:run": "mocha test/it/*PackageIT.ts --opts test/mocha.opts"
+    "test:ci": "npm run build && npm run lint && npm run coverage:run",
+    "test": "npm run build && npm run lint && npm run it:suite:run",
+    "it:suite": "npm run build && npm run it:suite:run",
+    "it:suite:run": "mocha test/it/*SuiteIT.ts --opts test/mocha.opts"
   },
   "dependencies": {},
   "devDependencies": {
     "@types/chai": "^4.1.7",
     "@types/cross-spawn": "^6.0.0",
     "@types/mocha": "^5.2.5",
-    "@types/node": "^10.1.4",
-    "@types/rimraf": "2.0.2",
-    "chalk": "^2.4.1",
+    "@types/node": "^10.12.24",
+    "@types/rimraf": "^2.0.2",
+    "chalk": "^2.4.2",
     "cross-spawn": "^6.0.5",
     "yargs": "^12.0.5",
     "chai": "^4.2.0",
-    "contributor-faces": "^1.0.1",
-    "conventional-changelog-cli": "^2.0.1",
+    "contributor-faces": "^1.0.2",
+    "conventional-changelog-cli": "^2.0.11",
     "mocha": "^5.2.0",
-    "nyc": "^12.0.2",
-    "reflect-metadata": "^0.1.12",
-    "rimraf": "^2.6.2",
-    "source-map-support": "^0.5.6",
-    "ts-node": "^6.1.0",
-    "tslint": "^5.11.0",
+    "nyc": "^13.2.0",
+    "reflect-metadata": "^0.1.13",
+    "rimraf": "^2.6.3",
+    "source-map-support": "^0.5.10",
+    "ts-node": "^8.0.2",
+    "tslint": "^5.12.1",
     "typedi": "^0.8.0",
-    "typescript": "^3.2.1",
-    "ts-loader": "^5.3.3",
-    "webpack": "^4.29.0",
-    "webpack-cli": "^3.2.1"
+    "typescript": "^3.3.3"
   },
   "files": [
     "bin/watch",
-    "bin/watch.js",
-    "bin/watch.js.map",
-    "index.ts",
-    "index.d.ts",
-    "index.js",
-    "index.js.map",
-    "dist/index.js"
+    "dist/*",
+    "typings/*"
   ],
   "nyc": {
     "check-coverage": true,
@@ -77,12 +69,11 @@
     "functions": 95,
     "branches": 95,
     "include": [
-      "**/*.js"
+      "src/**/*"
     ],
     "exclude": [
       "bin",
       "dist",
-      "webpack.config.js",
       "coverage",
       "test/**/*.js"
     ],

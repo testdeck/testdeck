@@ -1,4 +1,4 @@
-import { pending, suite, test } from "../../../index";
+import { pending, suite, test } from "../../../src/";
 
 @suite @pending class Suite1 {
     @test public test1() {}

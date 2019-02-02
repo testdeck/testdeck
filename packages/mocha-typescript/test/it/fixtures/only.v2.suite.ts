@@ -1,4 +1,4 @@
-import { suite, test, timeout } from "../../../index";
+import { suite, test, timeout } from "../../../src/";
 import { TIMEOUT } from "../constants";
 
 @suite.only class Suite1 {

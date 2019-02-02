@@ -1,4 +1,4 @@
-import { suite, test } from "../../../index";
+import { suite, test } from "../../../src/";
 
 @suite class Suite1 {
     @test public test1() {}

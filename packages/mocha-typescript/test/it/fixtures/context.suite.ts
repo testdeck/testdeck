@@ -1,5 +1,5 @@
 import * as mocha from "mocha";
-import { context, suite, test } from "../../../index";
+import { context, suite, test } from "../../../src/";
 
 @suite class Static {
     @test public one() {

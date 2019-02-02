@@ -1,4 +1,4 @@
-import "../../";
+import "../../src/";
 
 import { suite, test } from "mocha-typescript";
 

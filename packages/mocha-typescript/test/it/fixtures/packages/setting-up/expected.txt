@@ -1,6 +1,0 @@
-
-
-  Hello
-    ✓ world
-
-  1 passing

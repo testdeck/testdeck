@@ -1,4 +1,4 @@
-import { suite, test, timeout } from "../../../index";
+import { suite, test, timeout } from "../../../src/";
 
 @suite()
 class Suite {

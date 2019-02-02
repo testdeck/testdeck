@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "target": "es6",
+        "target": "es5",
         "module": "commonjs",
         "removeComments": false,
         "preserveConstEnums": true,
@@ -8,11 +8,19 @@
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
         "declaration": false,
-        "listFiles": false
+        "outDir": "dist",
+        "listFiles": false,
+        "lib": [
+          "es5", "es6"
+        ]
     },
     "compileOnSave": false,
+    "include": [
+      "src/**/*.ts",
+      "typings/**/*.d.ts"
+    ],
     "exclude": [
         "node_modules",
-        "test/it/fixtures/packages"
+        "test"
     ]
 }

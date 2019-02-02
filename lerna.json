@@ -1,7 +1,12 @@
 {
   "packages": [
     "packages/mocha-typescript",
-    "packages/mocha-typescript-di-typedi"
+    "packages/mocha-typescript-di-typedi",
+
+    "integration-test/plain",
+    "integration-test/plain-di-typedi",
+    "integration-test/karma-plain",
+    "integration-test/karma-di-typedi"
   ],
   "command": {
     "bootstrap": {

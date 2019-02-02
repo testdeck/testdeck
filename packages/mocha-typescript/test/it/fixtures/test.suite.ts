@@ -1,4 +1,4 @@
-import { skip, slow, suite, test, timeout } from "../../../index";
+import { skip, slow, suite, test, timeout } from "../../../src/";
 import { IN_TIME, OVERLY_SLOW, RATHER_SLOW, SLOW, TIMEOUT } from "../constants";
 
 @suite("mocha typescript")

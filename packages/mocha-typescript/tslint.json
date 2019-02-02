@@ -17,7 +17,8 @@
         "forin": false,
         "member-ordering": false,
         "deprecation": true,
-        "no-reference": false
+        "no-reference": false,
+        "trailing-comma": false
     },
     "rulesDirectory": []
 }

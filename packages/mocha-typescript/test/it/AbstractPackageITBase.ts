@@ -2,7 +2,7 @@ import { assert } from "chai";
 import { spawnSync } from "child_process";
 import * as path from "path";
 import * as rimraf from "rimraf";
-import { timeout } from "../../index";
+import { timeout } from "../../src/";
 import { assertOutput, cleanup, win32fixes } from "./util";
 
 export interface PackageTestParams {
@@ -36,13 +36,14 @@ export abstract class AbstractPackageITBase {
 
     let args: string[];
     if (installTypesMocha) {
-      args = ["i", AbstractPackageITBase.tgzPath, "@types/mocha", "-ddd", "--no-save", "--no-package-lock"];
+      args = ["i", AbstractPackageITBase.tgzPath, "@types/mocha", "--force", "-dd", "--no-save", "--no-package-lock"];
     } else {
-      args = ["i", AbstractPackageITBase.tgzPath, "-ddd", "--no-save", "--no-package-lock"];
+      args = ["i", AbstractPackageITBase.tgzPath, "--force", "-dd", "--no-save", "--no-package-lock"];
     }
 
     const npmitgz = spawnSync("npm", args, { cwd, shell: true });
     // we keep this in in case any issues arise
+    // console.log(npmitgz.stdout.toString());
     // console.log(npmitgz.stderr.toString());
     assert.equal(npmitgz.status, 0, "'npm i <tgz>' failed.");
   }

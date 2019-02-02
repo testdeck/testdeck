@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import { params, suite } from "../../../index";
+import { params, suite } from "../../../src/";
 
 @suite
 class ParamsOnlySuite {

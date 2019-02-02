@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import { suite, test } from "../../../index";
+import { suite, test } from "../../../src/";
 
 // TODO: Assert that the callbacks are actually called and end is awaited.
 

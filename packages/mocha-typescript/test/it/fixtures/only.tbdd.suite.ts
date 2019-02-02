@@ -1,4 +1,4 @@
-import { suite, test } from "../../../index";
+import { suite, test } from "../../../src/";
 
 describe("vanila bdd suite", () => {
     it("vanila test", () => {});

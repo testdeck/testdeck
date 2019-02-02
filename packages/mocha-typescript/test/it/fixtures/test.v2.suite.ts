@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import { skipOnError, slow, suite, test, timeout, trait } from "../../../index";
+import { skipOnError, slow, suite, test, timeout, trait } from "../../../src/";
 import { IN_TIME, OVERLY_SLOW, RATHER_SLOW, SLOW, TIMEOUT } from "../constants";
 
 describe("vanila bdd suite", () => {

@@ -1,0 +1,24 @@
+{
+    "compilerOptions": {
+        "target": "es5",
+        "module": "commonjs",
+        "removeComments": false,
+        "preserveConstEnums": true,
+        "sourceMap": true,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "declaration": false,
+        "listFiles": false,
+        "lib": [
+          "es5", "es6"
+        ]
+    },
+    "compileOnSave": false,
+    "include": [
+      "src/**/*.ts"
+    ],
+    "exclude": [
+        "node_modules",
+        "test"
+    ]
+}

@@ -16,15 +16,15 @@
     "url": "https://github.com/pana-cc/mocha-typescript"
   },
   "scripts": {
-    "build": "lerna run --stream build",
     "clean": "lerna run --stream clean",
     "coverage": "lerna run --stream coverage",
     "lint": "lerna run --stream lint",
     "setup": "npm run --stream setup:packages",
     "setup:packages": "npm install --no-package-lock && lerna bootstrap --hoist --no-ci",
-    "test": "lerna run --stream test"
+    "test": "lerna run --stream test",
+    "test:ci": "lerna run --stream test:ci"
   },
   "dependencies": {
-    "lerna": "^3.10.7"
+    "lerna": "latest"
   }
 }

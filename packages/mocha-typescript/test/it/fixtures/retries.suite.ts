@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import { retries, suite, test } from "../../../index";
+import { retries, suite, test } from "../../../src/";
 
 @suite class FlakyMethodDecorator {
     private static runCount1 = 0;

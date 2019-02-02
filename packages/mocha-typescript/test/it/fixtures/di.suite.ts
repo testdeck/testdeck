@@ -1,6 +1,6 @@
 import { assert } from "chai";
 
-import { registerDI, suite, test } from "../../../index";
+import { registerDI, suite, test } from "../../../src/";
 
 const MARK = "INJECTED";
 

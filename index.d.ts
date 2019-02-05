@@ -90,6 +90,7 @@ declare namespace MochaTypeScript {
 
         skip(arg: any): any;
         skip(): ClassDecorator;
+        skip(condition: boolean): ClassDecorator;
         skip(name: string): ClassDecorator;
         skip(name: string, ... traits: MochaTypeScript.SuiteTrait[]): ClassDecorator;
         skip(... traits:MochaTypeScript.SuiteTrait[]): ClassDecorator;
@@ -107,6 +108,7 @@ declare namespace MochaTypeScript {
 
         skip(target: Object, propertyKey: string | symbol): void;
         skip(name: string): PropertyDecorator;
+        skip(condition: boolean): ClassDecorator;
         skip(name: string, ... traits: MochaTypeScript.TestTrait[]): PropertyDecorator;
         skip(... traits: MochaTypeScript.TestTrait[]): PropertyDecorator;
     }

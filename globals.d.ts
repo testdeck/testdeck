@@ -169,4 +169,5 @@ declare function retries(count: number): PropertyDecorator & ClassDecorator & Mo
 
 declare function pending<TFunction extends Function>(target: Object | TFunction, propertyKey?: string | symbol): void;
 declare function only<TFunction extends Function>(target: Object, propertyKey?: string | symbol): void;
+declare function skip<TFunction extends Function>(condition: boolean): ClassDecorator & MethodDecorator;
 declare function skip<TFunction extends Function>(target: Object | TFunction, propertyKey?: string | symbol): void;

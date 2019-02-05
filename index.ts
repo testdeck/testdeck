@@ -189,8 +189,8 @@ function suiteClassCallback(target: SuiteCtor, context: TestFunctions) {
 
         function runTest(prototype: any, method: Function) {
             const testName = method[testNameSymbol];
-            const shouldSkip = method[skipSymbol];
-            const shouldOnly = method[onlySymbol];
+            const shouldSkip = method[skipSymbol] || prototype.constructor[skipSymbol];
+            const shouldOnly = method[onlySymbol] || prototype.constructor[onlySymbol];
             const shouldPending = method[pendingSymbol];
             const parameters = method[parametersSymbol] as TestParams[];
 
@@ -535,14 +535,23 @@ export const skipOnError: SuiteTrait = trait(function(ctx, ctor) {
     });
 });
 
-function createExecutionModifier(executionSymbol: any): <TFunction extends Function>(target: Object | TFunction, propertyKey?: string | symbol) => void {
-    return function <TFunction extends Function>(target: Object | TFunction, propertyKey?: string | symbol): void {
+function createExecutionModifier(executionSymbol: any): <TFunction extends Function>(target: boolean | Object | TFunction, propertyKey?: string | symbol) => any {
+    const decorator = function <TFunction extends Function>(target: Object | TFunction, propertyKey?: string | symbol): any {
         if (arguments.length === 1) {
-            target[executionSymbol] = true;
+            if (typeof target === "undefined" || typeof target === "boolean") {
+                if (target) {
+                    return decorator as ClassDecorator & MethodDecorator | void;
+                } else {
+                    return () => {};
+                }
+            } else {
+                target[executionSymbol] = true;
+            }
         } else {
             target[propertyKey][executionSymbol] = true;
         }
     };
+    return decorator;
 }
 
 /**
@@ -563,6 +572,7 @@ export const only = createExecutionModifier(onlySymbol);
  * Mark a test or suite to skip.
  *  - Used as `@suite @skip class` is `describe.skip("name", ...);`.
  *  - Used as `@test @skip method` is `it.skip("name")`.
+ *  - Used as conditional skip mark `@skip(isWin)`.
  */
 export const skip = createExecutionModifier(skipSymbol);
 

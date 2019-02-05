@@ -1,9 +1,11 @@
-import { params, suite, timeout } from "../../index";
+import { only, params, suite, test, timeout } from "../../index";
 import { AbstractSuiteITBase, SuiteTestParams } from "./AbstractSuiteITBase";
 
 @suite(timeout(10000))
 class SkipSuiteIT extends AbstractSuiteITBase {
 
+  @params({ target: "es5", fixture: "skip.suite" })
+  @params({ target: "es6", fixture: "skip.suite" })
   @params.naming(({ target, fixture }: SuiteTestParams) => `${fixture} ${target}`)
   runTest(params: SuiteTestParams) {
 

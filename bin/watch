@@ -6,6 +6,7 @@ const chalk = require("chalk");
 const spawn = require("cross-spawn");
 const readline = require("readline");
 const yargs = require("yargs");
+const process = require("process");
 
 const argv = yargs
     .options({

@@ -1,4 +1,4 @@
-import { skip, suite, test } from "../../../index";
+import { skip, suite, test } from "../../../src";
 
 @suite
 class Suite1 {

@@ -8,18 +8,28 @@ interface Overload<V extends SuiteTrait | TestTrait, R extends ClassDecorator | 
 interface SuiteDecoratorOverload extends Overload<SuiteTrait, ClassDecorator>, ClassDecorator {
 }
 
+// interface SkipSuiteDecoratorOverload extends Overload<SuiteTrait, ClassDecorator>, ClassDecorator {
+//   skip(condition: boolean): ClassDecorator;
+// }
+
 interface TestDecoratorOverload extends Overload<TestTrait, MethodDecorator>, MethodDecorator {
 }
+
+// interface SkipTestDecoratorOverload extends TestDecoratorOverload {
+//   (condition: boolean): MethodDecorator;
+// }
 
 export interface SuiteDecorator extends SuiteDecoratorOverload {
   only: SuiteDecoratorOverload;
   skip: SuiteDecoratorOverload;
+  // skip: SkipSuiteDecoratorOverload;
   pending: SuiteDecoratorOverload;
 }
 
 export interface TestDecorator extends TestDecoratorOverload {
   only: TestDecoratorOverload;
   skip: TestDecoratorOverload;
+  // skip: SkipTestDecoratorOverload;
   pending: TestDecoratorOverload;
 }
 
@@ -55,6 +65,10 @@ export type TestTrait = (this: Mocha.Context, ctx: Mocha.Context, instance: Suit
 
 export type NumericDecoratorOrTrait = (time: number) => PropertyDecorator & MethodDecorator & ClassDecorator & SuiteTrait & TestTrait;
 export type ClassOrMethodDecorator = () => MethodDecorator | ClassDecorator;
+
+export interface SkipDecorator extends ClassOrMethodDecorator {
+  (condition: boolean): ClassOrMethodDecorator;
+}
 
 export interface Prototype {
   [key: string]: any;

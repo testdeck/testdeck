@@ -1,7 +1,7 @@
 import * as Mocha from "mocha";
 
 import {
-  Class,
+  Class, ClassOrMethodDecorator,
   DependencyInjectionSystem,
   NumericDecoratorOrTrait,
   SuiteCtor,
@@ -179,8 +179,10 @@ function suiteClassCallback(target: SuiteCtor, context: TestFunctions) {
 
     function runTest(prototype: any, method: Function) {
       const testName = method[testNameSymbol];
-      const shouldSkip = method[skipSymbol];
-      const shouldOnly = method[onlySymbol];
+      // const shouldSkip = method[skipSymbol];
+      // const shouldOnly = method[onlySymbol];
+      const shouldSkip = method[skipSymbol] || prototype.constructor[skipSymbol];
+      const shouldOnly = method[onlySymbol] || prototype.constructor[onlySymbol];
       const shouldPending = method[pendingSymbol];
       const parameters = method[parametersSymbol] as TestParams[];
 
@@ -524,14 +526,22 @@ export const skipOnError: SuiteTrait = trait(function(ctx, ctor) {
   });
 });
 
-function createExecutionModifier(executionSymbol: any): <TFunction extends Function>(target: Object | TFunction, propertyKey?: string | symbol) => void {
-  return function <TFunction extends Function>(target: Object | TFunction, propertyKey?: string | symbol): void {
+function createExecutionModifier(executionSymbol: any): <TFunction extends Function>(target: boolean | Object | TFunction, propertyKey?: string | symbol) => any {
+  const decorator = function <TFunction extends Function>(target: Object | TFunction, propertyKey?: string | symbol): any {
+    if (typeof target === "undefined" || typeof target === "boolean") {
+      if (target) {
+        return decorator;
+      } else {
+        return () => {};
+      }
+    }
     if (arguments.length === 1) {
       target[executionSymbol] = true;
     } else {
       target[propertyKey][executionSymbol] = true;
     }
   };
+  return decorator;
 }
 
 /**

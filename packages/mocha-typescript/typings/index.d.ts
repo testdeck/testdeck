@@ -1,7 +1,9 @@
 import {
   ClassOrMethodDecorator,
   NumericDecoratorOrTrait,
-  ParameterisedTestDecorator, SuiteDecorator,
+  ParameterisedTestDecorator,
+  SkipDecorator,
+  SuiteDecorator,
   SuiteTrait,
   TestDecorator,
   DependencyInjectionSystem
@@ -19,7 +21,7 @@ export const retries: NumericDecoratorOrTrait;
 
 export const pending: ClassOrMethodDecorator;
 export const only: ClassOrMethodDecorator;
-export const skip: ClassOrMethodDecorator;
+export const skip: SkipDecorator;
 
 export const context: PropertyDecorator;
 

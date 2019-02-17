@@ -6,6 +6,7 @@
   "devDependencies": {
     "@types/expect.js": "^0.3.29",
     "@types/mocha": "^5.2.5",
+    "@types/node": "^10.12.24",
     "expect.js": "^0.3.1",
     "karma": "^4.0.0",
     "karma-chrome-launcher": "^2.2.0",
@@ -15,6 +16,7 @@
     "karma-typescript-es6-transform": "^4.0.0",
     "mocha": "^5.2.0",
     "mocha-typescript": "^2.0.0",
+    "ts-node": "^8.0.2",
     "typescript": "^3.3.3"
   },
   "scripts": {

@@ -15,7 +15,7 @@ export default function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      { pattern: "../../node_modules/expect.js/index.js" },
+      { pattern: "./node_modules/expect.js/index.js" },
       { pattern: "src/**/*.ts" }
     ],
 

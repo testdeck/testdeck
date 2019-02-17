@@ -3,6 +3,8 @@
     "packages/mocha-typescript",
     "packages/mocha-typescript-di-typedi",
 
+    "packages/jest-typescript",
+
     "integration-test/plain",
     "integration-test/plain-di-typedi",
     "integration-test/karma-plain",

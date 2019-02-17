@@ -1,5 +1,6 @@
 !karma.conf.js
 !webpack.config.js
+!jest.config.js
 *.js
 *.js.map
 *.tgz

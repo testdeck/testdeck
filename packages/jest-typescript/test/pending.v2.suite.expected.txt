@@ -1,0 +1,24 @@
+
+  Pending1
+    - test1
+
+  Skip2
+    - test2
+
+  skipped
+    - test3
+
+  Skip4
+    - test4
+
+  pending
+    - test5
+
+  Pending4
+    - test6
+
+  Suite2
+    ✓ test1
+
+  1 passing
+  6 pending

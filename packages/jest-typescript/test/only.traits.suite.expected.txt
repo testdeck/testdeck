@@ -1,0 +1,15 @@
+
+  Suite
+    1) testOnlyThis
+    2) renamed
+
+  0 passing
+  2 failing
+
+  1) Suite
+       testOnlyThis:
+     Error: Timeout of 1ms exceeded.
+
+  2) Suite
+       renamed:
+     Error: Timeout of 1ms exceeded.

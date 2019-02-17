@@ -20,7 +20,7 @@
     "coverage": "lerna run --stream coverage",
     "lint": "lerna run --stream lint",
     "setup": "npm run --stream setup:packages",
-    "setup:packages": "npm install --no-package-lock && lerna bootstrap --hoist --no-ci",
+    "setup:packages": "npm install --no-package-lock && lerna bootstrap --no-ci",
     "test": "lerna run --stream test",
     "test:ci": "lerna run --stream test:ci"
   },

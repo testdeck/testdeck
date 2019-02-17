@@ -1,0 +1,8 @@
+
+  AsyncSuite
+    ✓ test
+
+  AsyncSuiteAfterAssert
+    ✓ assertStaticAfterCalledAndAwaited
+
+  2 passing

@@ -1,0 +1,8 @@
+
+  ConcreteTest
+    1) inherited test from AbstractTestBase
+  0 passing
+  1 failing
+  1) ConcreteTest
+       inherited test from AbstractTestBase:
+     AssertionError: derived suites must implement this

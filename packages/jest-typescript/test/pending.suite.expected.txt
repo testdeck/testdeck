@@ -1,0 +1,9 @@
+
+  Suite1
+    - test1
+
+  Suite2
+    ✓ test1
+
+  1 passing
+  1 pending

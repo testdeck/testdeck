@@ -1,0 +1,11 @@
+
+  GeneratedTestClass
+    ✓ login
+    ✓ logout
+    ✓ test1
+    ✓ login
+    ✓ logout
+    ✓ test1
+    ✓ test2
+
+  7 passing

@@ -156,7 +156,7 @@ class Basic {
 //   FailingAsyncLifeCycle
 //     √ one
 //     4) "after each" hook for "one"
-//     5) "after all" hook
+//     5) "after all" hook for "two"
 //
 @suite class PassingAsyncLifeCycle {
 //

@@ -4,12 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "pretest": "tsc",
     "test": "mocha"
   },
   "author": "",
   "license": "Apache-2.0",
   "devDependencies": {
     "mocha": "*",
-    "typescript": "^2.4.0"
+    "typescript": "*"
   }
 }

@@ -11,6 +11,7 @@ import * as readline from "readline";
 import * as terminate from "terminate";
 
 const editFilePath = join(__dirname, "fixtures", "packages", "watcher", "test", "new.ts");
+const editFileJSPath = join(__dirname, "fixtures", "packages", "watcher", "test", "new.js");
 const cwd = resolve(__dirname, "fixtures", "packages", "watcher");
 
 function assertStringContains(text: string, contains: string) {
@@ -133,6 +134,10 @@ class WatcherPackage extends AbstractPackageITBase {
     if (existsSync(editFilePath)) {
       unlinkSync(editFilePath);
     }
+
+    if (existsSync(editFileJSPath)) {
+      unlinkSync(editFileJSPath);
+    }
   }
 
   async after() {
@@ -147,6 +152,10 @@ class WatcherPackage extends AbstractPackageITBase {
 
     if (existsSync(editFilePath)) {
       unlinkSync(editFilePath);
+    }
+
+    if (existsSync(editFileJSPath)) {
+      unlinkSync(editFileJSPath);
     }
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "mocha-typescript",
-  "version": "1.1.17",
+  "version": "2.0.0",
   "description": "TypeScript decorators based wrapper over mocha's interface",
   "main": "index.js",
   "typings": "typings.d.ts",
@@ -35,23 +35,24 @@
   "dependencies": {
     "chalk": "^2.4.1",
     "cross-spawn": "^6.0.5",
-    "yargs": "^12.0.5"
+    "yargs": "^13.2.1"
   },
   "devDependencies": {
     "@types/chai": "^4.1.7",
     "@types/cross-spawn": "^6.0.0",
     "@types/mocha": "^5.2.5",
-    "@types/node": "^10.1.4",
+    "@types/node": "^11.9.5",
+    "braces": "^2.3.1",
     "chai": "^4.2.0",
-    "contributor-faces": "^1.0.1",
+    "contributor-faces": "^1.0.2",
     "conventional-changelog-cli": "^2.0.1",
-    "mocha": "^5.2.0",
-    "nyc": "^12.0.2",
+    "mocha": "^6.0.1",
+    "nyc": "^13.3.0",
     "reflect-metadata": "^0.1.12",
     "rimraf": "^2.6.2",
     "source-map-support": "^0.5.6",
     "terminate": "^2.1.2",
-    "ts-node": "^6.1.0",
+    "ts-node": "^8.0.2",
     "tslint": "^5.11.0",
     "typedi": "^0.8.0",
     "typescript": "^3.2.1"

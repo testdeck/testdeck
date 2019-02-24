@@ -102,7 +102,7 @@
      Error: Timeout of 2000ms exceeded. For async tests and hooks, ensure "done()" is called; if returning a Promise, ensure it resolves.
 
   5) FailingAsyncLifeCycle
-       "after all" hook:
+       "after all" hook for "two":
      Error: Promise rejected with no or falsy reason
 
   6) Times

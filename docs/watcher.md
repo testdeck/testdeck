@@ -37,7 +37,8 @@ test suite files as arguments to mocha-typescript-watch and they will be passed 
 ```json
 {
   "scripts": {
-    "watch": "mocha-typescript-watch -p tsconfig.test.json -o mocha.opts dist/test1.js dist/test2.js"
+    "watch": "mocha-typescript-watch -p tsconfig.test.json -o mocha.opts dist/test1.js dist/test2.js",
+    "watch-once": "mocha-typescript-watch -n 1"
   }
 }
 ```
@@ -67,4 +68,6 @@ Options:
   -f, --fgrep    Passed down to mocha: only run tests containing <string>
                                                                         [string]
   -h, --help     Show help                                             [boolean]
+  -n, --times    Run the watcher at most n times.
+                           [int] [default: INFINITY]
 ```

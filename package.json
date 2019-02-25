@@ -51,7 +51,6 @@
     "reflect-metadata": "^0.1.12",
     "rimraf": "^2.6.2",
     "source-map-support": "^0.5.6",
-    "terminate": "^2.1.2",
     "ts-node": "^8.0.2",
     "tslint": "^5.11.0",
     "typedi": "^0.8.0",

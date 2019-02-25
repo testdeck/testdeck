@@ -15,8 +15,19 @@ export abstract class AbstractPackageITBase {
   private static tgzPath: string;
 
   protected runTest({ fixture, installTypesMocha = false }: PackageTestParams): void {
+    this.install({fixture, installTypesMocha});
+    const cwd = path.resolve(__dirname, "fixtures", "packages", fixture);
+    const npmtest = spawnSync("npm", ["test"], { cwd, shell: true });
+    this.runStandardAssertionsOnExternalProcess(npmtest, cwd);
+  }
+
+  protected runStandardAssertionsOnExternalProcess(externalProcess, cwd) {
+    assert.equal("", cleanup(externalProcess.stderr.toString()), "should not have failed");
+    assertOutput(win32fixes(externalProcess.stdout.toString()), path.join(cwd, "expected.txt"));
+  }
+
+  protected install({ fixture, installTypesMocha = false }: PackageTestParams): void {
     let cwd;
-    let npmtest;
     cwd = path.resolve(__dirname, "fixtures", "packages", fixture);
     rimraf.sync(path.join(cwd, "node_modules"));
 
@@ -34,10 +45,6 @@ export abstract class AbstractPackageITBase {
     // we keep this in in case any issues arise
     // console.log(npmitgz.stderr.toString());
     assert.equal(npmitgz.status, 0, "'npm i <tgz>' failed.");
-
-    npmtest = spawnSync("npm", ["test"], { cwd, shell: true });
-    assert.equal("", cleanup(npmtest.stderr.toString()), "should not have failed");
-    assertOutput(win32fixes(npmtest.stdout.toString()), path.join(cwd, "expected.txt"));
   }
 
   @timeout(30000)

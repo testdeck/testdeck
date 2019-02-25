@@ -1,17 +1,17 @@
 {
-  "name": "module-usage",
+  "name": "watcher-test",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "scripts": {
-    "pretest": "tsc",
-    "test": "mocha",
-    "watch": "mocha-typescript-watch"
+    "watch": "mocha-typescript-watch -n 1"
   },
   "author": "",
   "license": "Apache-2.0",
   "devDependencies": {
     "mocha": "*",
     "typescript": "*"
+  },
+  "dependencies": {
+    "mocha-typescript": "file:../../../../../mocha-typescript-2.0.0.tgz"
   }
 }

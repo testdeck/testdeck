@@ -57,6 +57,12 @@ export function cleanup(str: string, eliminateAllEmptyLines = false): string {
   // cleanup npm bailing out something that we already know
   result = result.replace("npm ERR! Test failed.  See above for more details.", ELIMINATE_LINE);
 
+  // clean up watcher specific tests, e.g.
+  // 22:37:03 - Found 0 errors. Watching for file changes.
+  // Run mocha.
+  result = result.replace(/^.*Watching for file changes.*$/mg, ELIMINATE_LINE);
+  result = result.replace(/^.*Run mocha.*$/mg, ELIMINATE_LINE);
+
   // there are spurious typescript remnants when running suite.inheritance.suite.ts
   // somehow nyc seems to inject these into the output, at least they only occur in that context
   // we might want to further investigate this in the future

@@ -6,7 +6,7 @@ import { spawnSync, SpawnSyncReturns } from "child_process";
 
 import * as path from "path";
 
-@suite(timeout(150000), slow(90000))
+@suite(timeout(200000), slow(90000))
 class WatcherPackage extends AbstractPackageITBase {
 
   watch: SpawnSyncReturns<Buffer>;

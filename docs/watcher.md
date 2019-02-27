@@ -69,5 +69,5 @@ Options:
                                                                         [string]
   -h, --help     Show help                                             [boolean]
   -n, --times    Run the watcher at most n times.
-                           [int] [default: INFINITY]
+                                                       [int] [default: INFINITY]
 ```

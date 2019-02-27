@@ -142,6 +142,12 @@ declare namespace MochaTypeScript {
     skip(name: string): ClassDecorator;
     skip(name: string, ... traits: MochaTypeScript.SuiteTrait[]): ClassDecorator;
     skip(... traits:MochaTypeScript.SuiteTrait[]): ClassDecorator;
+
+    pending(arg: any): any;
+    pending(): ClassDecorator;
+    pending(name: string): ClassDecorator;
+    pending(name: string, ... traits: MochaTypeScript.SuiteTrait[]): ClassDecorator;
+    pending(... traits:MochaTypeScript.SuiteTrait[]): ClassDecorator;
   }
   export interface ITestDefinition {
     (target: Object, propertyKey: string | symbol): void;
@@ -158,6 +164,11 @@ declare namespace MochaTypeScript {
     skip(name: string): PropertyDecorator;
     skip(name: string, ... traits: MochaTypeScript.TestTrait[]): PropertyDecorator;
     skip(... traits: MochaTypeScript.TestTrait[]): PropertyDecorator;
+
+    pending(target: Object, propertyKey: string | symbol): void;
+    pending(name: string): PropertyDecorator;
+    pending(name: string, ... traits: MochaTypeScript.TestTrait[]): PropertyDecorator;
+    pending(... traits: MochaTypeScript.TestTrait[]): PropertyDecorator;
   }
 }
 

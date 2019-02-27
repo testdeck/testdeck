@@ -11,496 +11,583 @@
 
 ## API
 
-- [Declarative Interface](#declarative-interface)
-  - [suite Function](#suite-function)
-  - [suite.only Function](#suite.only-function)
-  - [suite.skip Function](#suite.skip-function)
-  - [test Function](#test-function)
-  - [test,only Function](#test.only-function)
-  - [test.skip Function](#test.skip-function)
-  - [retries Function](#retries-function)
-  - [slow Function](#slow-function)
-  - [timeout Function](#timeout-function)
-- [Object Oriented Interface](#object-oriented-interface)
-  - [@suite Decorator](#@suite-decorator)
-  - [@suite.only Decorator](#@suiteonly-decorator)
-  - [@suite.skip Decorator](#@suiteskip-decorator)
-  - [@test Decorator](#@test-decorator)
-  - [@test.only Decorator](#@testonly-decorator)
-  - [@test.skip Decorator](#@testskip-decorator)
-  - [@params Decorator](#@params-decorator)
-  - [@params.naming Decorator](#@paramsnaming-decorator)
-  - [@params.only Decorator](#@paramsonly-decorator)
-  - [@params.skip Decorator](#@paramsskip-decorator)
-  - [@retries Decorator](#@retries-decorator)
-  - [@slow Decorator](#@slow-decorator)
-  - [@timeout Decorator](#@timeout-decorator)
-  - [Traits](#traits)
-    - [retries](#retries-trait)
-    - [slow](#slow-trait)
-    - [timeout](#timeout-trait)
+- [@suite Decorator](#@suite-decorator)
+- [@suite.only Decorator](#@suiteonly-decorator)
+- [@suite.pending Decorator](#@suitepending-decorator)
+- [@suite.skip Decorator](#@suiteskip-decorator)
+- [@test Decorator](#@test-decorator)
+- [@test.only Decorator](#@testonly-decorator)
+- [@test.skip Decorator](#@testskip-decorator)
+- [@test.pending Decorator](#@testpending-decorator)
+- [@params Decorator](#@params-decorator)
+- [@params.naming Decorator](#@paramsnaming-decorator)
+- [@params.only Decorator](#@paramsonly-decorator)
+- [@params.skip Decorator](#@paramsskip-decorator)
+- [@only Decorator](#@only-decorator)
+- [@pending Decorator](#@pending-decorator)
+- [@retries Decorator](#@retries-decorator)
+- [@skip Decorator](#@skip-decorator)
+- [@slow Decorator](#@slow-decorator)
+- [@timeout Decorator](#@timeout-decorator)
+- [Traits](#traits)
+  - [retries](#retries-trait)
+  - [slow](#slow-trait)
+  - [timeout](#timeout-trait)
+  - [skipOnError](#skiponerror-trait)
 
-### Declarative Interface
 
-The declarative interface tries to match the original Mocha API as close as possible.
+### @suite Decorator
 
-#### suite Function
+The `@suite` decorator is used for declaring test suites from classes.
 
-The `suite` function is an alias for `describe` and `context` and is part of the declarative interface.
+The decorator can be used in multiple different ways.
 
-Using `suite`, you declare test suites, just like you are accustomed to with Mocha.
+#### Example Usages
 
-And, just as in Mocha, you can declare nested test suites or generate test suites on the fly.
+```typescript
+import { suite, timeout, retries, slow, skipOnError } from "mocha-typescript";
 
-We recommend using `suite` only as this will give you a more easy transition to the 
-[Object Oriented Interface](#object-oriented-interface).
-
-##### Synopsis
-
-```TypeScript
-declare function suite(title: string, fn: (this: Mocha.Suite) => void): Mocha.Suite;
-declare function describe(title: string, fn: (this: Mocha.Suite) => void): Mocha.Suite;
-declare function context(title: string, fn: (this: Mocha.Suite) => void): Mocha.Suite;
-```
-
-##### Example Usage
-
-```TypeScript
-import { suite } from "mocha-typescript";
-
-suite("Suite", () => {
-  
-  // ...
-});
-```
-
-***IMPORTANT*** Please note that `describe` and `context` are global and cannot be imported from `mocha-typescript`.
-
-#### suite.only Function
-
-The `suite.only` function is an alias for `describe.only` and is part of the declarative interface.
-
-Using `suite.only` TBD
-
-##### Synopsis
-
-```TypeScript
-namespace describe {
-
-  declare function only(title: string, fn: (this: Mocha.Suite) => void): Mocha.ExclusiveSuiteFunction;
+@suite
+class Suite {
 }
 
-namespace suite {
-  
-  declare function only(title: string, fn: (this: Mocha.Suite) => void): Mocha.ExclusiveSuiteFunction;
+@suite("my-suite")
+class NamedSuite {
+}
+
+@suite(timeout(10000), slow(5000), retries(5), skipOnError)
+class SuiteWithTraits {
+}
+
+@suite("my-suite", timeout(10000), slow(5000), retries(5))
+class NamedSuiteWithTraits {
 }
 ```
 
-***IMPORTANT*** Please note that `describe` is global and cannot be imported from `mocha-typescript`.
+### @suite.only Decorator
 
-##### Example Usage
+The `@suite.only` decorator is a specialisation of the `@suite` decorator. It supports the same set of parameters.
 
-```TypeScript
-import { suite } from "mocha-typescript";
+Decorating a class with this will ensure that only this suite, and all other suites that have been decorated by this, 
+will be run.
 
-suite.only("Suite", () => {
-  
-  // ...
-});
-```
+The same behaviour can be achieved by decorating your suite using the `@only` decorator.
 
-***CAVEAT*** Your IDE may not recognise this as a valid test suite.
+#### Example Usages
 
-#### suite.skip Function
+```typescript
+import { suite, only } from "mocha-typescript";
 
-The `suite.skip` function is an alias for `suite.pending` and is part of the declarative interface.
-
-Additional aliases for this are `xdescribe`, `xcontext`, and `describe.skip`.
-
-Using `suite.skip` TBD
-
-##### Synopsis
-
-```TypeScript
-declare function xdescribe(title: string, fn: (this: Mocha.Suite) => void): Mocha.PendingSuiteFunction;
-declare function xcontext(title: string, fn: (this: Mocha.Suite) => void): Mocha.PendingSuiteFunction;
-
-namespace describe {
-
-  declare function skip(title: string, fn: (this: Mocha.Suite) => void): Mocha.PendingSuiteFunction;
+@suite.only
+class OnlySuite {
 }
 
-namespace suite {
-  
-  declare function skip(title: string, fn: (this: Mocha.Suite) => void): Mocha.PendingSuiteFunction;
-  declare function pending(title: string, fn: (this: Mocha.Suite) => void): Mocha.PendingSuiteFunction;
+@suite.only("my-only-suite")
+class NamedOnlySuite {
+}
+
+@suite("my-alt-only-suite")
+@only
+class AltOnlySuite {
 }
 ```
 
-##### Example Usage
+### @suite.pending Decorator
 
-```TypeScript
-import { suite } from "mocha-typescript";
+This is an alias for `@suite.skip`.
 
-suite.skip("Suite", () => {
-  
-  // ...
-});
-```
+#### Example Usages
 
-***CAVEAT*** Your IDE may not recognise this as a valid test suite. 
+```typescript
+import { suite, pending } from "mocha-typescript";
 
-***IMPORTANT*** Please note that `xdescribe` and `xcontext` are global and cannot be imported from `mocha-typescript`.
-
-#### test Function
-
-The `test` function is an alias for `it` and `specify` and is part of the declarative interface.
-
-Using `test`, you declare tests within test suites, just like you are accustomed to with Mocha.
-
-And, just as in Mocha, you can generate tests on the fly.
-
-We recommend using `test` only as this will give you a more easy transition to the 
-[Object Oriented Interface](#object-oriented-interface).
-
-##### Synopsis
-
-```TypeScript
-declare function specify(name: string, callable: Mocha.Func): void;
-declare function specify(name: string, callable: Mocha.AsyncFunc): void;
-declare function it(name: string, callable: Mocha.Func): void;
-declare function it(name: string, callable: Mocha.AsyncFunc): void;
-declare function test(name: string, callable: Mocha.Func): void;
-declare function test(name: string, callable: Mocha.AsyncFunc): void;
-```
-
-***IMPORTANT*** Please note that `it` and `specify` are global and cannot be imported from `mocha-typescript`.
-
-##### Example Usage
-
-```TypeScript
-import { suite, test } from "mocha-typescript";
-
-suite("Suite", () => {
-  
-  test("Test", () => {
-    
-    // ...
-  });
-  
-  // ...
-});
-```
-
-#### test.only Function
-
-The `test.only` function is an alias for `it.only` and is part of the declarative interface.
-
-Using `test.only` TBD
-
-##### Synopsis
-
-```TypeScript
-namespace it {
-  
-  declare function only(name: string, callable: () => void): Mocha.Test;
+@suite.pending
+class SkippedSuite {
 }
 
-namespace test {
-  
-  declare function only(name: string, callable: () => void): void;
+@suite.pending("my-pending-suite")
+class NamedPendingSuite {
+}
+
+@suite("my-alt-pending-suite")
+@pending
+class AltPendingSuite {
 }
 ```
 
-***IMPORTANT*** Please note that `it` is global and cannot be imported from `mocha-typescript`.
+### @suite.skip Decorator
 
-##### Example Usage
+The `@suite.skip` decorator is a specialisation of the `@suite` decorator. It supports the same set of parameters.
 
-```TypeScript
-import { suite, test } from "mocha-typescript";
+Decorating a class with this will ensure that this suite, and all other suites that have been decorated by this, will 
+be skipped.
 
-suite("Suite", () => {
-  
-  test.only("Test", () => {
-    
-    // ...
-  });
+The same behaviour can be achieved by decorating your suite using the `@skip` decorator.
 
-  // ...
-});
-```
+#### Example Usages
 
-***CAVEAT*** Your IDE may not recognise this as a valid test.
+```typescript
+import { suite, skip } from "mocha-typescript";
 
-#### test.skip Function
-
-The `test.skip` function is an alias for `test.pending` and is part of the declarative interface.
-
-Additional aliases for this are `xit`, `xspecify`, and `it.skip`. 
-
-Using `test.skip` TBD
-
-##### Synopsis
-
-```TypeScript
-declare function xit(name: string, callable: () => void): Mocha.PendingTestFunction;
-declare function xspecify(name: string, callable: () => void): Mocha.PendingTestFunction;
-
-namespace it {
-  
-  declare function skip(name: string, callable: () => void): void;  
+@suite.skip
+class SkippedSuite {
 }
 
-namespace test {
-  
-  declare function skip(name: string, callable: () => void): void;
-  declare function pending(name: string, callable: () => void): void;
+@suite.skip("my-skipped-suite")
+class NamedSkippedSuite {
+}
+
+@suite("my-alt-skip-suite")
+@skip
+class AltSkippedSuite {
 }
 ```
 
-***IMPORTANT*** Please note that `xit`, `xspecify` and `it` are global and cannot be imported from `mocha-typescript`.
+### @test Decorator
 
-##### Example Usage
+The `@test` decorator is used to declare individual methods of your suite class as tests.
 
-```TypeScript
-import { suite, test } from "mocha-typescript";
+The decorator can be used in multiple different ways.
 
-suite("Suite", () => {
-  
-  test.skip("Test", () => {
-    
-    // ...
-  });
+#### Example Usages
 
-  // ...
-});
-```
-
-***CAVEAT*** Your IDE may not recognise this as a valid test.
-
-#### retries Function
-
-TBD retries function.
-
-##### Synopsis
-
-```TypeScript
-declare function retries(times: number): void;
-```
-
-##### Example Usage
-
-```TypeScript
-import { suite, test } from "mocha-typescript";
-
-suite("Suite", () => {
-  
-  this.retries(5);
-  
-  test("Test", () => {
-    
-    this.retries(5);
-    
-    // ...
-  });
-
-  // ...
-});
-```
-
-#### slow Function
-
-TBD slow function.
-
-##### Synopsis
-
-```TypeScript
-declare function slow(timeInSeconds: number): void;
-```
-
-##### Example Usage
-
-```TypeScript
-import { suite, test } from "mocha-typescript";
-
-suite("Suite", () => {
-  
-  this.slow(5);
-  
-  test("Test", () => {
-    
-    this.slow(5);
-    
-    // ...
-  });
-
-  // ...
-});
-```
-
-#### timeout Function
-
-TBD timeout function.
-
-##### Synopsis
-
-```TypeScript
-declare function timeout(timeInSeconds: number): void;
-```
-
-##### Example Usage
-
-```TypeScript
-import { suite, test } from "mocha-typescript";
-
-suite("Suite", () => {
-
-  this.timeout(5);
-  
-  test("Test", () => {
-    
-    this.timeout(5);
-    
-    // ...
-  });
-
-  // ...
-});
-```
-
-### Object Oriented Interface
-
-#### @suite Decorator
-
-The `@suite` decorator is part of the object oriented interface.
-
-##### Synopsis
-
-```TypeScript
-declare function suite(name?: String, ... traits: SuiteTrait); 
-```
-
-##### Example Usage
-
-#### @suite.only Decorator
-
-The `@suite.only` decorator is part of the object oriented interface.
-
-##### Synopsis
-
-```TypeScript
-declare function suite.only(name: string, ... traits: SuiteTrait): void;
-```
-
-##### Example Usage
-
-#### @test Decorator
-
-The `@test` decorator is part of the object oriented interface.
-
-##### Synopsis
-
-```TypeScript
-import { suite, test } from "mocha-typescript";
+```typescript
+import { suite, test, timeout, slow, retries } from "mocha-typescript";
 
 @suite
 class Suite {
   
-  @test[([name][, timeout][, slow][, retries])]
-  public testMethod() {}
+  @test
+  testMethod() {}
+  
+  @test("named-test")
+  namedTest() {}
+  
+  @test("named-test-with-traits", timeout(10000), slow(5000), retries(2))
+  namedTestWithTraits() {}
+
+  @test(timeout(10000), slow(5000), retries(2))
+  testWithTraits() {}
 }
 ```
 
-##### Example Usage
+### @test.only Decorator
 
-#### @test.only Decorator
+The `@test.only` decorator is a specialisation of the `@test` decorator. It supports the same set of parameters.
 
-The `@test.only` decorator is part of the object oriented interface.
+Decorating a method with this will ensure that only this method, and all other methods that have been decorated by this,
+will be run.
 
-##### Synopsis
+The same behaviour can be achieved by decorating your method using the `@only` decorator.
 
-```TypeScript
-import { suite, test } from "mocha-typescript";
+#### Example Usages
+
+```typescript
+import { suite, test, only } from "mocha-typescript";
 
 @suite
 class Suite {
   
-  @test.only[([name][, timeout][, slow][, retries])]
-  public testMethod() {}
+  @test.only
+  onlyTest() {}
+
+  @test.only("named-only-test")
+  namedOnlyTest() {}
+
+  @test
+  @only
+  altOnlyTest() {}
 }
 ```
 
-#### @test.skip Decorator
+### @test.pending Decorator
 
-The `@test.skip` decorator is part of the object oriented interface.
+This is an alias for `@test.skip`. See also the `@pending` decorator.
 
-##### Synopsis
+#### Example Usages
 
-```TypeScript
-import { suite, test } from "mocha-typescript";
+```typescript
+import { suite, test, pending } from "mocha-typescript";
 
 @suite
 class Suite {
   
-  @test.skip[([name][, timeout][, slow][, retries])]
-  public testMethod() {}
+  @test.pending
+  pendingTest() {}
+
+  @test.skip("named-pending-test")
+  namedPendingTest() {}
+
+  @test
+  @pending
+  altPendingTest() {}
 }
 ```
 
-##### Example Usage
+### @test.skip Decorator
 
-#### @params Decorator
+The `@test.skip` decorator is a specialisation of the `@test` decorator. It supports the same set of parameters.
 
-##### Synopsis
+Decorating a method with this will ensure that this method, and all other methods that have been decorated by this,
+will be skipped.
 
-##### Example Usage
+The same behaviour can be achieved by decorating your method using the `@skip` decorator.
 
-#### @params.naming Decorator
+#### Example Usages
 
-##### Synopsis
+```typescript
+import { suite, test, skip } from "mocha-typescript";
 
-##### Example Usage
+@suite
+class Suite {
+  
+  @test.skip
+  skipTest() {}
 
-#### @params.only Decorator
+  @test.skip("named-skip-test")
+  namedSkipTest() {}
 
-##### Synopsis
+  @test
+  @skip
+  altSkipTest() {}
+}
+```
 
-##### Example Usage
+### @params Decorator
 
-#### @params.skip Decorator
+The decorator allows you to parametrise your tests. Under the hood, it behaves similarly to the `@test` decorator, so
+you do not have to also decorate your test methods with the extra decorator.
 
-##### Synopsis
+The decorator can be used in multiple different ways and it can be used multiple times, too.
 
-##### Example Usage
+Please note, that you cannot pass any traits to the decorator. Instead, you have to use the existing decorator
+alternatives, such as `@timeout`, `@slow` or `@retries`.
 
-#### @retries Decorator
+#### Example Usages
 
-##### Synopsis
+```typescript
+import { suite, params, timeout } from "mocha-typescript";
 
-#### @slow Decorator
+@suite
+class Suite {
+  
+  @params({ arg1: "arg1", arg2: "arg2" })
+  @params({ arg1: "arg1.1", arg2: "arg2.1" })
+  parametrisedTest({ arg1, arg2 }) {}
 
-##### Synopsis
+  @params({ arg1: "arg1", arg2: "arg2" }, "named-parametrised-test.1")
+  @params({ arg1: "arg1.1", arg2: "arg2.1" }, "named-parametrised-test.2")
+  @timeout(50000)
+  namedParametrisedTest({ arg1, arg2 }) {}
+}
+```
 
-#### @timeout Decorator
+### @params.naming Decorator
 
-##### Synopsis
+The decorator allows you to override the standard naming strategy for parametrised tests by passing in a function that
+will return the actual name based on the parameters that currently being tested.
+
+#### Example Usages
+
+```typescript
+import { suite, params } from "mocha-typescript";
+
+@suite
+class Suite {
+  
+  @params({ arg1: "arg1", arg2: "arg2" })
+  @params({ arg1: "arg1.1", arg2: "arg2.1" }, "overriding-the-custom-naming-strategy-here")
+  @params.naming(args => `testing_${args.arg1}_${args.arg2}`)
+  customNamedParametrisedTest({ arg1, arg2 }) {}
+}
+```
+
+### @params.only Decorator
+
+The `@params.only` decorator is a specialisation of the `@params` decorator. It supports the same set of parameters.
+
+Decorating a method with this will ensure that only this set of parameters, and all sets of parameters that have been
+decorated by this, will be run.
+
+Please note that this will also affect the other tests in the same suite, which will not be run unless they have been
+decorated by one of the available `only` decorators.
+
+#### Example Usages
+
+```typescript
+import { suite, params } from "mocha-typescript";
+
+@suite
+class Suite {
+  
+  @params.only({ arg1: "arg1", arg2: "arg2" })
+  @params({ arg1: "arg1.1", arg2: "arg2.1" }, "overriding-the-custom-naming-strategy-here")
+  @params.naming(args => `testing_${args.arg1}_${args.arg2}`)
+  onlyCustomNamedParametrisedTest({ arg1, arg2 }) {}
+}
+```
+
+### @params.pending Decorator
+
+This is an alias for `@params.skip`.
+
+#### Example Usages
+
+```typescript
+import { suite, params } from "mocha-typescript";
+
+@suite
+class Suite {
+  
+  @params.pending({ arg1: "arg1", arg2: "arg2" })
+  @params({ arg1: "arg1.1", arg2: "arg2.1" }, "overriding-the-custom-naming-strategy-here")
+  @params.naming(args => `testing_${args.arg1}_${args.arg2}`)
+  customNamedParametrisedTest({ arg1, arg2 }) {}
+}
+```
+
+### @params.skip Decorator
+
+The `@params.skip` decorator is a specialisation of the `@params` decorator. It supports the same set of parameters.
+
+Decorating a method with this will ensure that this set of parameters, and all other sets of parameters that have been
+decorated by this, will be skipped.
+
+#### Example Usages
+
+```typescript
+import { suite, params } from "mocha-typescript";
+
+@suite
+class Suite {
+  
+  @params.skip({ arg1: "arg1", arg2: "arg2" })
+  @params({ arg1: "arg1.1", arg2: "arg2.1" }, "overriding-the-custom-naming-strategy-here")
+  @params.naming(args => `testing_${args.arg1}_${args.arg2}`)
+  customNamedParametrisedTest({ arg1, arg2 }) {}
+}
+```
+
+### @retries Decorator
+
+The decorator can be used as an alternative for the `retries` trait.
+
+It can be used as a test method decorator.
+
+#### Example Usages
+
+```typescript
+import { suite, test, retries } from "mocha-typescript";
+
+@suite
+class SuiteWithRetries {
+  
+  @test
+  @retries(5)
+  retriesTest() {}
+}
+```
+
+### @only Decorator
+
+The decorator can be used as an alternative for both `@suite.only` and `@test.only`.
+
+It can be used as both a suite class decorator as well as a test method decorator.
+
+#### Example Usages
+
+```typescript
+import { suite, test, only } from "mocha-typescript";
+
+@suite
+@only
+class OnlySuite {}
+
+@suite
+class OnlyTestSuite {
+  
+  @test
+  @only
+  onlyTest() {}
+}
+```
+
+### @pending Decorator
+
+The decorator is an alias for `@skip`.
+
+It can be used as both a suite class decorator as well as a test method decorator.
+
+### Example Usages
+
+```typescript
+import { suite, test, pending } from "mocha-typescript";
+
+@suite
+@pending
+class PendingSuite {}
+
+@suite
+class PendingTestSuite {
+  
+  @test
+  @pending
+  pendingTest() {}
+}
+```
+
+### @skip Decorator
+
+The decorator can be used as an alternative for both `@suite.skip` and `@test.skip`.
+
+It can be used as both a suite class decorator as well as a test method decorator.
+
+#### Example Usages
+
+```typescript
+import { suite, test, skip } from "mocha-typescript";
+
+@suite
+@skip
+class SkippedSuite {}
+
+@suite
+class SkippedTestSuite {
+  
+  @test
+  @skip
+  skippedTest() {}
+}
+```
+
+### @slow Decorator
+
+The decorator can be used as an alternative for the `slow` trait.
+
+It can be used as both a suite class decorator as well as a test method decorator.
+
+#### Example Usages
+
+```typescript
+import { suite, test, slow } from "mocha-typescript";
+
+@suite
+@slow(1000) // default timeout is 2000
+class SuiteWithTimeout {
+  
+  @test
+  test() {}
+}
+
+@suite
+class SuiteWithTestTimeout {
+  
+  @test
+  @slow(1000) // default timeout is 2000
+  slowTest() {}
+}
+```
+
+### @timeout Decorator
+
+The decorator can be used as an alternative for the `timeout` trait.
+
+It can be used as both a suite class decorator as well as a test method decorator.
+
+#### Example Usages
+
+```typescript
+import { suite, test, timeout } from "mocha-typescript";
+
+@suite
+@timeout(20000)
+class SuiteWithTimeout {
+  
+  @test
+  test() {}
+}
+
+@suite
+class SuiteWithTestTimeout {
+  
+  @test
+  @timeout(20000)
+  timeoutTest() {}
+}
+```
 
 ### Traits
 
-#### retries Trait
+Traits can be passed in as parameters to either `@suite` or `@test`. Alternatively, for most traits, there also exists
+a decorator that can be used instead.
 
-##### Synopsis
+### retries Trait
 
-##### Example Usage
+TBD: test trait only
 
-#### slow Trait
+#### Example Usage
 
-##### Synopsis
+```typescript
+import { suite, test, retries } from "mocha-typescript";
 
-##### Example Usage
+@suite
+class Suite {
+  
+  @test(retries(5))
+  retriedTest() {}
+}
+```
 
-#### timeout Trait
+### slow Trait
 
-##### Synopsis
+TBD: both suite and test trait
 
-##### Example Usage
+#### Example Usage
+
+```typescript
+import { suite, test, slow } from "mocha-typescript";
+
+@suite(slow(5000))
+class SlowSuite {
+  
+  @test(slow(3000))
+  slowTest() {}
+}
+```
+
+### timeout Trait
+
+TBD: both suite and test trait
+
+#### Example Usage
+
+```typescript
+import { suite, test, timeout } from "mocha-typescript";
+
+@suite(timeout(10000))
+class TimeoutSuite {
+  
+  @test(timeout(5000))
+  timeoutTest() {}
+}
+```
+
+### skipOnError Trait
+
+TBD: suite trait only
+
+#### Example Usage
+
+```typescript
+import { suite, test, skipOnError } from "mocha-typescript";
+
+@suite(skipOnError)
+class TimeoutSuite {
+  
+  @test
+  failingTest() { assert.fail("failing, everything else will be skipped"); }
+
+  @test
+  skippedTest() {}
+}
+```

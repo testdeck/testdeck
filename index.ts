@@ -481,7 +481,7 @@ function createNumericBuiltinTrait(traitSymbol: any, fn: (ctx: Mocha.Suite | Moc
             }
 
             if (arguments.length === 3 && typeof arguments[2] === "function") {
-                // Metod trait as retries in `@suite class { @test(retries(4)) method() {} }`
+                // Method trait as retries in `@suite class { @test(retries(4)) method() {} }`
                 const context: Mocha.Context = arguments[0];
                 const instance = arguments[1];
                 const method = arguments[2];
@@ -577,7 +577,7 @@ export const only = createExecutionModifier(onlySymbol);
 export const skip = createExecutionModifier(skipSymbol);
 
 /**
- * Mark a method as test. Use the method name as test name.
+ * Mark a property into which the mocha context will be injected into.
  */
 export function context(target: Object, propertyKey: string | symbol): void {
     target[contextSymbol] = propertyKey;

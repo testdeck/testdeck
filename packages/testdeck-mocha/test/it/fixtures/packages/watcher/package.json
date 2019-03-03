@@ -1,0 +1,14 @@
+{
+  "name": "watcher-test",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "watch": "testdeck-watch -n 1"
+  },
+  "author": "",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "mocha": "*",
+    "typescript": "*"
+  }
+}

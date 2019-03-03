@@ -1,19 +1,19 @@
 {
   "packages": [
-    "packages/testdeck-mocha",
-    "packages/testdeck-jest",
+    "packages/@testdeck/mocha",
+    "packages/@testdeck/jest",
 
-    "packages/testdeck-mocha-di-typedi",
+    "packages/@testdeck/di-typedi",
 
-    "integration-test/testdeck-mocha/plain",
-    "integration-test/testdeck-mocha/plain-di-typedi",
-    "integration-test/testdeck-mocha/karma-plain",
-    "integration-test/testdeck-mocha/karma-di-typedi"
+    "integration-test/@testdeck/mocha/plain",
+    "integration-test/@testdeck/mocha/plain-di-typedi",
+    "integration-test/@testdeck/mocha/karma-plain",
+    "integration-test/@testdeck/mocha/karma-di-typedi"
   ],
   "command": {
     "bootstrap": {
       "npmClientArgs": ["--no-package-lock"]
     }
   },
-  "version": "0.0.0"
+  "version": "0.0.1"
 }

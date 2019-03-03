@@ -1,0 +1,16 @@
+{
+  "name": "plain",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test:ci": "mocha --opts test/mocha.opts"
+  },
+  "devDependencies": {
+    "@types/mocha": "^5.2.5",
+    "@types/node": "^10.12.24",
+    "mocha": "^5.2.0",
+    "@testdeck/mocha": "*",
+    "ts-node": "^8.0.2",
+    "typescript": "^3.3.3"
+  }
+}

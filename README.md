@@ -1,21 +1,22 @@
-# mocha-typescript
+# testdeck 
 
-This is the monorepo for the mocha-typescript packages.
+This is the monorepo for the testdeck packages.
 
 ## Packages
 
-- [mocha-typescript](./packages/mocha-typescript)
-- [mocha-typescript-di-typedi](./packages/mocha-typescript-di-typedi)
+- [testdeck-mocha](./packages/testdeck-mocha)
+- [testdeck-mocha-di-typedi](./packages/testdeck-mocha-di-typedi)
+- [testdeck-jest](./packages/testdeck-jest)
 
 ## Build
 
 Clone this repository using
 
 ```
-git clone https://github.com/pana-cc/mocha-typescript.git
+git clone https://github.com/testdeck/testdeck.git
 ```
 
-Then from inside the so created `mocha-typescript` directory run
+Then from inside the so created `testdeck` directory run
 
 ```
 npm run setup

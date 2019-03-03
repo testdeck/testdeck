@@ -1,8 +1,8 @@
 {
-  "name": "mocha-typescript-monorepo",
+  "name": "testdeck",
   "private": true,
   "version": "1.0.0",
-  "description": "TypeScript decorators based wrapper over mocha's interface",
+  "description": "TypeScript decorators based wrapper over various test framework interfaces",
   "author": "Panayot Cankov",
   "contributors": [
     {
@@ -13,7 +13,7 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/pana-cc/mocha-typescript"
+    "url": "https://github.com/testdeck"
   },
   "scripts": {
     "clean": "lerna run --stream clean",

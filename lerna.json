@@ -1,14 +1,14 @@
 {
   "packages": [
-    "packages/mocha-typescript",
-    "packages/mocha-typescript-di-typedi",
+    "packages/testdeck-mocha",
+    "packages/testdeck-jest",
 
-    "packages/jest-typescript",
+    "packages/testdeck-mocha-di-typedi",
 
-    "integration-test/plain",
-    "integration-test/plain-di-typedi",
-    "integration-test/karma-plain",
-    "integration-test/karma-di-typedi"
+    "integration-test/testdeck-mocha/plain",
+    "integration-test/testdeck-mocha/plain-di-typedi",
+    "integration-test/testdeck-mocha/karma-plain",
+    "integration-test/testdeck-mocha/karma-di-typedi"
   ],
   "command": {
     "bootstrap": {

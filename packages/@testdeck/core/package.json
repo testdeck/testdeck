@@ -1,0 +1,29 @@
+{
+  "name": "@testdeck/core",
+  "version": "0.0.1",
+  "description": "ES6 class syntax testing through decorators interface.",
+  "author": "Panayot Cankov",
+  "contributors": [
+    {
+      "name": "silkentrance",
+      "url": "https://github.com/silkentrance"
+    }
+  ],
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/testdeck"
+  },
+  "bin": {
+    "testdeck-watch": "./bin/watch"
+  },
+  "main": "dist/index.js",
+  "types": "typings/index.d.ts",
+  "scripts": {
+  },
+  "dependencies": {},
+  "devDependencies": {
+  },
+  "files": [
+  ]
+}

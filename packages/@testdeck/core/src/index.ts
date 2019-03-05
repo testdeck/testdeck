@@ -1,4 +1,5 @@
 import T from "../typings/index";
+import { Runner } from "mocha";
 
 export class ClassTestUI<RunnerSuiteType, RunnerTestType> implements T.ClassTestUI<RunnerSuiteType, RunnerTestType> {
   /**
@@ -7,22 +8,37 @@ export class ClassTestUI<RunnerSuiteType, RunnerTestType> implements T.ClassTest
    */
   private static MakeSymbol(key: string) { return "__testdeck_" + key; }
 
-  static readonly suiteSymbol = ClassTestUI.MakeSymbol("suite");
-  static readonly testNameSymbol = ClassTestUI.MakeSymbol("test");
-  static readonly parametersSymbol = ClassTestUI.MakeSymbol("parametersSymbol");
-  static readonly nameForParametersSymbol = ClassTestUI.MakeSymbol("nameForParameters");
-  static readonly slowSymbol = ClassTestUI.MakeSymbol("slow");
-  static readonly timeoutSymbol = ClassTestUI.MakeSymbol("timeout");
-  static readonly retriesSymbol = ClassTestUI.MakeSymbol("retries");
-  static readonly onlySymbol = ClassTestUI.MakeSymbol("only");
-  static readonly pendingSymbol = ClassTestUI.MakeSymbol("pending");
-  static readonly skipSymbol = ClassTestUI.MakeSymbol("skip");
-  static readonly traitsSymbol = ClassTestUI.MakeSymbol("traits");
-  static readonly isTraitSymbol = ClassTestUI.MakeSymbol("isTrait");
-  static readonly contextSymbol = ClassTestUI.MakeSymbol("context");
-  static readonly skipAllSymbol = ClassTestUI.MakeSymbol("skipAll");
+  private static readonly suiteSymbol = ClassTestUI.MakeSymbol("suite");
+  private static readonly testNameSymbol = ClassTestUI.MakeSymbol("test");
+  private static readonly parametersSymbol = ClassTestUI.MakeSymbol("parametersSymbol");
+  private static readonly nameForParametersSymbol = ClassTestUI.MakeSymbol("nameForParameters");
+  private static readonly slowSymbol = ClassTestUI.MakeSymbol("slow");
+  private static readonly timeoutSymbol = ClassTestUI.MakeSymbol("timeout");
+  private static readonly retriesSymbol = ClassTestUI.MakeSymbol("retries");
+  private static readonly onlySymbol = ClassTestUI.MakeSymbol("only");
+  private static readonly pendingSymbol = ClassTestUI.MakeSymbol("pending");
+  private static readonly skipSymbol = ClassTestUI.MakeSymbol("skip");
+  private static readonly traitsSymbol = ClassTestUI.MakeSymbol("traits");
+  private static readonly isTraitSymbol = ClassTestUI.MakeSymbol("isTrait");
+  private static readonly contextSymbol = ClassTestUI.MakeSymbol("context");
+  private static readonly skipAllSymbol = ClassTestUI.MakeSymbol("skipAll");
 
-  public readonly runner: T.TestRunner;
+  public readonly runner: T.TestRunner<RunnerSuiteType, RunnerTestType>;
+
+  public readonly suite: T.SuiteDecorator<RunnerSuiteType>;
+  public readonly test: T.TestDecorator<RunnerTestType>;
+  public readonly params: T.ParameterisedTestDecorator;
+
+  public readonly slow: T.NumericDecoratorOrTrait<RunnerSuiteType, RunnerTestType>;
+  public readonly timeout: T.NumericDecoratorOrTrait<RunnerSuiteType, RunnerTestType>;
+  public readonly retries: T.NumericDecoratorOrTrait<RunnerSuiteType, RunnerTestType>;
+
+  public readonly pending: T.ConditionalClassAndMethodDecorator;
+  public readonly only: T.ConditionalClassAndMethodDecorator;
+  public readonly skip: T.ConditionalClassAndMethodDecorator;
+
+  public readonly context: PropertyDecorator;
+  public readonly skipOnError: T.SuiteTrait<RunnerSuiteType>;
 
   private readonly dependencyInjectionSystems: T.DependencyInjectionSystem[] = [{
     handles() { return true; },
@@ -31,8 +47,38 @@ export class ClassTestUI<RunnerSuiteType, RunnerTestType> implements T.ClassTest
     }
   }];
 
-  public constructor(runner: T.TestRunner) {
+  public constructor(runner: T.TestRunner<RunnerSuiteType, RunnerTestType>) {
     this.runner = runner;
+
+    this.suite = this.makeSuiteObject();
+    this.test = this.makeTestObject();
+    this.params = this.makeParamsObject();
+
+    this.slow = this.createNumericBuiltinTrait(ClassTestUI.slowSymbol, (context, value) => this.runner.setSlow(context, value));
+    this.timeout = this.createNumericBuiltinTrait(ClassTestUI.timeoutSymbol, (context, value) => this.runner.setTimeout(context, value));
+    this.retries = this.createNumericBuiltinTrait(ClassTestUI.retriesSymbol, (context, value) => this.runner.setRetries(context, value));
+
+    this.pending = this.createExecutionModifier(ClassTestUI.pendingSymbol);
+    this.only = this.createExecutionModifier(ClassTestUI.onlySymbol);
+    this.skip = this.createExecutionModifier(ClassTestUI.skipSymbol);
+
+    this.context = function context(target: Object, propertyKey: string): void {
+      target[ClassTestUI.contextSymbol] = propertyKey;
+    };
+    
+    // TODO: This is so tricky! There is a chance that only mocha's context will allow setting skip() when tests are in progress...
+    this.skipOnError = this.trait(function(ctx, ctor) {
+      ctx.beforeEach(function(this: Mocha.Context) {
+        if (ctor[ClassTestUI.skipAllSymbol]) {
+          this.skip();
+        }
+      });
+      ctx.afterEach(function() {
+        if (this.currentTest.state === "failed") {
+          ctor[ClassTestUI.skipAllSymbol] = true;
+        }
+      });
+    });
   }
 
   /**
@@ -47,25 +93,246 @@ export class ClassTestUI<RunnerSuiteType, RunnerTestType> implements T.ClassTest
     }
   }
 
-  public readonly suite: T.SuiteDecorator<RunnerSuiteType>;
-  public readonly test: T.TestDecorator<RunnerTestType>;
-  public readonly params: T.ParameterisedTestDecorator;
+  /**
+   * Declares the provided object as trait.
+   */
+  public trait<Arg extends T.SuiteTrait<RunnerSuiteType> | T.TestTrait<RunnerTestType>>(arg: Arg): Arg {
+    arg[ClassTestUI.isTraitSymbol] = true;
+    return arg;
+  }
 
-  public readonly slow: T.NumericDecoratorOrTrait<RunnerSuiteType, RunnerTestType>;
-  public readonly timeout: T.NumericDecoratorOrTrait<RunnerSuiteType, RunnerTestType>;
-  public readonly retries: T.NumericDecoratorOrTrait<RunnerSuiteType, RunnerTestType>;
+  // Things regarding suite, abstract in a separate class...
+  private makeSuiteObject(): T.SuiteDecorator<RunnerSuiteType> {
+    return Object.assign(this.makeSuiteFunction(this.suiteFuncCheckingDecorators()), {
+      skip: this.makeSuiteFunction(() => this.runner.declareSuiteSkip),
+      only: this.makeSuiteFunction(() => this.runner.declareSuiteOnly),
+      pending: this.makeSuiteFunction(() => this.runner.declareSuitePending)
+    });
+  }
 
-  public readonly pending: T.ClassOrMethodDecorator;
-  public readonly only: T.ClassOrMethodDecorator;
-  public readonly skip: T.SkipDecorator;
+  private makeSuiteFunction(suiteFunc: (ctor: T.SuiteCtor) => Function) {
+    return this.suiteOverload({
+      suiteCtor(ctor: T.SuiteCtor): void {
+        ctor[ClassTestUI.suiteSymbol] = true;
+        suiteFunc(ctor)(ctor.name, this.suiteClassCallback(ctor, context)); // TODO: The this on this line points to the wrong place
+      },
+      suiteDecorator(...traits: T.SuiteTrait<RunnerSuiteType>[]): ClassDecorator {
+        return function <TFunction extends Function>(ctor: TFunction): void {
+          ctor[ClassTestUI.suiteSymbol] = true;
+          ctor[ClassTestUI.traitsSymbol] = traits;
+          suiteFunc(ctor as any)(ctor.name, this.suiteClassCallback(ctor as any, context));
+        };
+      },
+      suiteDecoratorNamed(name: string, ...traits: T.SuiteTrait<RunnerSuiteType>[]): ClassDecorator {
+        return function <TFunction extends Function>(ctor: TFunction): void {
+          ctor[ClassTestUI.suiteSymbol] = true;
+          ctor[ClassTestUI.traitsSymbol] = traits;
+          suiteFunc(ctor as any)(name, this.suiteClassCallback(ctor as any, context));
+        };
+      }
+    });
+  }
 
-  public readonly context: PropertyDecorator;
-  public readonly skipOnError: T.SuiteTrait<RunnerSuiteType>;
+  private suiteFuncCheckingDecorators() {
+    return (ctor: T.SuiteCtor) => {
+      const shouldSkip = ctor[ClassTestUI.skipSymbol];
+      const shouldOnly = ctor[ClassTestUI.onlySymbol];
+      const shouldPending = ctor[ClassTestUI.pendingSymbol];
+      return (shouldOnly && this.runner.declareSuiteOnly)
+            || (shouldSkip && this.runner.declareSuiteSkip)
+            || (shouldPending && this.runner.declareSuitePending)
+            || this.runner.declareSuite;
+    };
+  }
+
+  private suiteOverload({suiteCtor, suiteDecorator, suiteDecoratorNamed}: {
+    suiteCtor(ctor: T.SuiteCtor): void;
+    suiteDecorator(...traits: T.SuiteTrait<RunnerSuiteType>[]): ClassDecorator;
+    suiteDecoratorNamed(name: string, ...traits: T.SuiteTrait<RunnerSuiteType>[]): ClassDecorator;
+  }) {
+    return function() {
+      const args = [];
+      for (let idx = 0; idx < arguments.length; idx++) {
+        args[idx] = arguments[idx];
+      }
+
+      if (arguments.length === 1 && typeof arguments[0] === "function" && !arguments[0][ClassTestUI.isTraitSymbol]) {
+        return suiteCtor.apply(this, args);
+      }
+
+      if (arguments.length >= 1 && typeof arguments[0] === "string") {
+        return suiteDecoratorNamed.apply(this, args);
+      }
+
+      return suiteDecorator.apply(this, args);
+    };
+  }
+
+  // Things regarding test, abstract in a separate class...
+  private makeTestObject(): T.TestDecorator<RunnerTestType> {
+    return Object.assign(this.makeTestFunction(), {
+      skip: this.makeTestFunction(ClassTestUI.skipSymbol),
+      only: this.makeTestFunction(ClassTestUI.onlySymbol),
+      pending: this.makeTestFunction(ClassTestUI.pendingSymbol)
+    });
+  }
+
+  private makeTestFunction(mark: null | string | symbol = null) {
+    return this.testOverload({
+      testProperty(target: Object, propertyKey: string | symbol, descriptor?: PropertyDescriptor): void {
+        target[propertyKey][ClassTestUI.testNameSymbol] = propertyKey.toString();
+        if (mark) {
+          target[propertyKey][mark] = true;
+        }
+      },
+      testDecorator(...traits: T.TestTrait<RunnerTestType>[]): PropertyDecorator & MethodDecorator {
+        return function(target: Object, propertyKey: string | symbol, descriptor?: PropertyDescriptor): void {
+          target[propertyKey][ClassTestUI.testNameSymbol] = propertyKey.toString();
+          target[propertyKey][ClassTestUI.traitsSymbol] = traits;
+          if (mark) {
+            target[propertyKey][mark] = true;
+          }
+        };
+      },
+      testDecoratorNamed(name: string, ...traits: T.TestTrait<RunnerTestType>[]): PropertyDecorator & MethodDecorator {
+        return function(target: Object, propertyKey: string | symbol, descriptor?: PropertyDescriptor): void {
+          target[propertyKey][ClassTestUI.testNameSymbol] = name;
+          target[propertyKey][ClassTestUI.traitsSymbol] = traits;
+          if (mark) {
+            target[propertyKey][mark] = true;
+          }
+        };
+      }
+    });
+  }
+
+  private testOverload({testProperty, testDecorator, testDecoratorNamed}: {
+    testProperty(target: Object, propertyKey: string | symbol, descriptor?: PropertyDescriptor): void;
+    testDecorator(...traits: T.TestTrait<RunnerTestType>[]): PropertyDecorator & MethodDecorator;
+    testDecoratorNamed(name: string, ...traits: T.TestTrait<RunnerTestType>[]): PropertyDecorator & MethodDecorator;
+  }) {
+    return function() {
+      const args = [];
+      for (let idx = 0; idx < arguments.length; idx++) {
+        args[idx] = arguments[idx];
+      }
+
+      if (arguments.length >= 2 && typeof arguments[0] !== "string" && typeof arguments[0] !== "function") {
+        return testProperty.apply(this, args);
+      } else if (arguments.length >= 1 && typeof arguments[0] === "string") {
+        return testDecoratorNamed.apply(this, args);
+      } else {
+        return testDecorator.apply(this, args);
+      }
+    };
+  }
+
+  private makeParamsFunction(mark: null | string | symbol = null) {
+    return (params: any, name?: string) => {
+      return (target: Object, propertyKey: string) => {
+        target[propertyKey][ClassTestUI.testNameSymbol] = propertyKey.toString();
+        target[propertyKey][ClassTestUI.parametersSymbol] = target[propertyKey][ClassTestUI.parametersSymbol] || [];
+        target[propertyKey][ClassTestUI.parametersSymbol].push({ mark, name, params });
+      };
+    };
+  }
+
+  private makeParamsNameFunction() {
+    return (nameForParameters: (parameters: any) => string) => {
+      return (target: Object, propertyKey: string) => {
+        target[propertyKey][ClassTestUI.nameForParametersSymbol] = nameForParameters;
+      };
+    };
+  }
+
+  private makeParamsObject() {
+    return Object.assign(this.makeParamsFunction(), {
+      skip: this.makeParamsFunction(ClassTestUI.skipSymbol),
+      only: this.makeParamsFunction(ClassTestUI.onlySymbol),
+      pending: this.makeParamsFunction(ClassTestUI.pendingSymbol),
+      naming: this.makeParamsNameFunction()
+    });
+  }
+
+  // slow, timeout, retries
+  private createNumericBuiltinTrait(traitSymbol: any, fn: (ctx: RunnerSuiteType | RunnerTestType, value: number) => void): T.NumericDecoratorOrTrait<RunnerSuiteType, RunnerTestType> {
+    const classTestUIInstance = this;
+    return function(value: number): ClassDecorator & MethodDecorator & T.SuiteTrait<RunnerSuiteType> & T.TestTrait<RunnerTestType> {
+      return classTestUIInstance.trait(function() {
+        if (arguments.length === 1) {
+          // Class decorator
+          const target = arguments[0];
+          target[traitSymbol] = value;
+          return;
+        }
+
+        /* istanbul ignore if  */
+        if (arguments.length === 2 && typeof arguments[1] === "string") {
+          // PropertyDecorator, some TSC versions generated property decorators when decorating method
+          const target = arguments[0];
+          const property = arguments[1];
+          target[property][traitSymbol] = value;
+          return;
+        }
+
+        if (arguments.length === 2) {
+          // Class trait as retries in `@suite(repeat(2)) class X {}`
+          const context: RunnerSuiteType = arguments[0];
+          const ctor = arguments[1];
+          fn(context, value);
+          return;
+        }
+
+        if (arguments.length === 3 && typeof arguments[2] === "function") {
+          // Metod trait as retries in `@suite class { @test(retries(4)) method() {} }`
+          const context: RunnerTestType = arguments[0];
+          const instance = arguments[1];
+          const method = arguments[2];
+          fn(context, value);
+          return;
+        }
+
+        /* istanbul ignore else */
+        if (arguments.length === 3 && typeof arguments[1] === "string") {
+          // MethodDecorator
+          const proto: RunnerTestType = arguments[0];
+          const prop = arguments[1];
+          const descriptor = arguments[2];
+          proto[prop][traitSymbol] = value;
+          return;
+        }
+
+        // assert unreachable.
+      });
+    };
+  }
+
+  // pending, only, skip
+  private createExecutionModifier(executionSymbol: any): <TFunction extends Function>(target: boolean | Object | TFunction, propertyKey?: string | symbol) => any {
+    const decorator = function <TFunction extends Function>(target: Object | TFunction, propertyKey?: string | symbol): any {
+      if (typeof target === "undefined" || typeof target === "boolean") {
+        if (target) {
+          return decorator;
+        } else {
+          return () => {};
+        }
+      }
+      if (arguments.length === 1) {
+        target[executionSymbol] = true;
+      } else {
+        target[propertyKey][executionSymbol] = true;
+      }
+    };
+    return decorator;
+  }
 }
 
-// Move these to Mocha and Jest
-const mochaRunner: T.TestRunner = {
+// Move these to Mocha, Jest, Jasmine...
+const mochaRunner: T.TestRunner<Mocha.Suite, Mocha.Context> = {
   get declareSuite() { return describe; },
+  get declareSuiteOnly() { return describe.only; },
+  get declareSuiteSkip() { return describe.skip; },
+  get declareSuitePending() { return describe.skip; },
   get declareTest() { return it; },
   get declareTestSkip() { return it.skip },
   get declareTestPending() { return it },
@@ -73,7 +340,12 @@ const mochaRunner: T.TestRunner = {
   get declareBeforeEach() { return beforeEach },
   get declareAfterAll() { return after },
   get declareAfterEach() { return afterEach },
+
+  setSlow(context: Mocha.Suite | Mocha.Context, ms: number) { context.slow(ms); },
+  setTimeout(context: Mocha.Suite | Mocha.Context, ms: number) { context.timeout(ms); },
+  setRetries(context: Mocha.Suite | Mocha.Context, attempts: number) { context.retries(attempts); }
 };
+
 const mochaDecorators = new ClassTestUI<Mocha.Suite, Mocha.Context>(mochaRunner);
 
 // import * as Mocha from "mocha";
@@ -112,7 +384,23 @@ const mochaDecorators = new ClassTestUI<Mocha.Suite, Mocha.Context>(mochaRunner)
 //   }
 // };
 
+// // key => Symbol("mocha-typescript:" + key)
+// const nodeSymbol = (key): string => "__mts_" + key;
 
+// const suiteSymbol = nodeSymbol("suite");
+// const testNameSymbol = nodeSymbol("test");
+// const parametersSymbol = nodeSymbol("parametersSymbol");
+// const nameForParametersSymbol = nodeSymbol("nameForParameters");
+// const slowSymbol = nodeSymbol("slow");
+// const timeoutSymbol = nodeSymbol("timeout");
+// const retriesSymbol = nodeSymbol("retries");
+// const onlySymbol = nodeSymbol("only");
+// const pendingSymbol = nodeSymbol("pending");
+// const skipSymbol = nodeSymbol("skip");
+// const traitsSymbol = nodeSymbol("traits");
+// const isTraitSymbol = nodeSymbol("isTrait");
+// const contextSymbol = nodeSymbol("context");
+// const skipAllSymbol = nodeSymbol("skipAll");
 
 // const wrapNameAndToString = (cb: (done?: Function) => any, innerFunction: Function): () => any => {
 //   cb.toString = () => innerFunction.toString();
@@ -650,4 +938,13 @@ const mochaDecorators = new ClassTestUI<Mocha.Suite, Mocha.Context>(mochaRunner)
 //   return di.create(testClass);
 // }
 
-
+// /**
+//  * Register a dependency injection system.
+//  */
+// export function registerDI(instantiator: DependencyInjectionSystem) {
+//   // Maybe check if it is not already added?
+//   /* istanbul ignore else */
+//   if (!dependencyInjectionSystems.some((di) => di === instantiator)) {
+//     dependencyInjectionSystems.unshift(instantiator);
+//   }
+// }

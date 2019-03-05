@@ -8,9 +8,14 @@ export class ClassTestUI<RunnerSuiteType, RunnerTestType> {
    */
   public registerDI(instantiator: DependencyInjectionSystem): void;
 
-  public readonly runner: TestRunner;
+  /**
+   * Declares the provided object as trait.
+   */
+  public trait<Arg extends SuiteTrait<RunnerSuiteType> | TestTrait<RunnerTestType>>(arg: Arg): Arg;
 
-  public constructor(runner: TestRunner);
+  public readonly runner: TestRunner<RunnerSuiteType, RunnerTestType>;
+
+  public constructor(runner: TestRunner<RunnerSuiteType, RunnerTestType>);
 
   public readonly suite: SuiteDecorator<RunnerSuiteType>;
   public readonly test: TestDecorator<RunnerTestType>;
@@ -71,15 +76,13 @@ export interface SuiteProto extends Prototype {
   after?: (done?: Done) => void;
 }
 
-
 export type SuiteTrait<RunnerSuiteType> = (this: RunnerSuiteType, ctx: RunnerSuiteType, ctor: SuiteCtor) => void;
 export type TestTrait<RunnerTestType> = (this: RunnerTestType, ctx: RunnerTestType, instance: SuiteProto, method: Function) => void;
 
-export type NumericDecoratorOrTrait<RunnerSuiteType, RunnerTestType> = (time: number) => PropertyDecorator & MethodDecorator & ClassDecorator & RunnerSuiteType & RunnerTestType;
-export type ClassOrMethodDecorator = () => MethodDecorator | ClassDecorator;
+export type NumericDecoratorOrTrait<RunnerSuiteType, RunnerTestType> = (value: number) => PropertyDecorator & MethodDecorator & ClassDecorator & SuiteTrait<RunnerSuiteType> & TestTrait<RunnerTestType>;
 
-export interface SkipDecorator extends ClassOrMethodDecorator {
-  (condition: boolean): ClassOrMethodDecorator;
+export interface ConditionalClassAndMethodDecorator extends MethodDecorator, ClassDecorator {
+  (condition: boolean): MethodDecorator | ClassDecorator;
 }
 
 export interface Prototype {
@@ -146,7 +149,7 @@ export interface DependencyInjectionSystem {
  * When that cb is called it will further call declareTest with the "myTest" name and a test function.
  * The test function when called will instantiate MyClass and call the myTest on that instance.
  */
-export interface TestRunner {
+export interface TestRunner<RunnerSuiteType, RunnerTestType> {
   /**
    * Declare a test suite. For example:
    *  - For mocha and jest call "global.describe".
@@ -162,6 +165,24 @@ export interface TestRunner {
    * @param cb 
    */
   declareTest(name: string, cb: () => void | Promise<void>);
+
+  /**
+   * Declares a suite, that is the only suite the runner should execute.
+   * For example with the mocha runner these are declared as `describe.only("suite", cb)`.
+   * These are very useful for development, when you want to focus on a single suite and reduce code change to test execution times.
+   */
+  declareSuiteOnly?(name: string, cb: () => void);
+
+  declareSuiteSkip?(name: string, cb: () => void);
+
+  declareSuitePending?(name: string, cb: () => void);
+
+  /**
+   * Declares a test, that is the only test the runner should execute.
+   * For example with the mocha runner these are declared as `it.only("suite", cb)`.
+   * hese are very useful for development, when you want to focus on a single suite and reduce code change to test execution times.
+   */
+  declareTestOnly?(name: string, cb: () => void);
 
   /**
    * For example:
@@ -185,4 +206,9 @@ export interface TestRunner {
   declareBeforeEach?(cb: () => void | Promise<void>);
   declareAfterAll?(cb: () => void | Promise<void>);
   declareAfterEach?(cb: () => void | Promise<void>);
+
+  // TODO: I am sloppy here, before merge split on "setSuiteSlow" and "setTestSlow" pairs
+  setSlow?(context: RunnerSuiteType | RunnerTestType, ms: number);
+  setTimeout?(context: RunnerSuiteType | RunnerTestType, ms: number);
+  setRetries?(context: RunnerSuiteType | RunnerTestType, attempts: number);
 }

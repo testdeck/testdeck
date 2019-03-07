@@ -25,9 +25,9 @@ export class ClassTestUI<RunnerSuiteType, RunnerTestType> {
   public readonly timeout: NumericDecoratorOrTrait<RunnerSuiteType, RunnerTestType>;
   public readonly retries: NumericDecoratorOrTrait<RunnerSuiteType, RunnerTestType>;
 
-  public readonly pending: ClassOrMethodDecorator;
-  public readonly only: ClassOrMethodDecorator;
-  public readonly skip: SkipDecorator;
+  public readonly pending: ConditionalClassAndMethodDecorator;
+  public readonly only: ConditionalClassAndMethodDecorator;
+  public readonly skip: ConditionalClassAndMethodDecorator;
 
   public readonly context: PropertyDecorator;
 
@@ -66,7 +66,7 @@ export interface ParameterisedTestDecorator {
 
 type Done = (err?: any) => void;
 
-export interface SuiteCtor extends Class<SuiteProto> {
+export interface SuiteCtor extends Class<SuiteProto>, Function {
   before?: (done?: Done) => void;
   after?: (done?: Done) => void;
 }
@@ -78,7 +78,6 @@ export interface SuiteProto extends Prototype {
 
 export type SuiteTrait<RunnerSuiteType> = (this: RunnerSuiteType, ctx: RunnerSuiteType, ctor: SuiteCtor) => void;
 export type TestTrait<RunnerTestType> = (this: RunnerTestType, ctx: RunnerTestType, instance: SuiteProto, method: Function) => void;
-
 export type NumericDecoratorOrTrait<RunnerSuiteType, RunnerTestType> = (value: number) => PropertyDecorator & MethodDecorator & ClassDecorator & SuiteTrait<RunnerSuiteType> & TestTrait<RunnerTestType>;
 
 export interface ConditionalClassAndMethodDecorator extends MethodDecorator, ClassDecorator {
@@ -92,7 +91,7 @@ export interface Prototype {
 export interface Class<T extends Prototype> {
   new(...args: any[]): T;
   [key: string]: any;
-  prototype: T;
+  prototype: any;
 }
 
 export interface DependencyInjectionSystem {
@@ -105,7 +104,7 @@ export interface DependencyInjectionSystem {
  */
 export interface Class<T extends Prototype> {
   new(...args: any[]): T;
-  prototype: T;
+  prototype: any;
 }
 
 /**
@@ -164,7 +163,7 @@ export interface TestRunner<RunnerSuiteType, RunnerTestType> {
    * @param name 
    * @param cb 
    */
-  declareTest(name: string, cb: () => void | Promise<void>);
+  declareTest(name: string, cb: (done?: Done) => void | Promise<void>);
 
   /**
    * Declares a suite, that is the only suite the runner should execute.
@@ -202,10 +201,10 @@ export interface TestRunner<RunnerSuiteType, RunnerTestType> {
    */
   declareTestPending?(name: string);
 
-  declareBeforeAll?(cb: () => void | Promise<void>);
-  declareBeforeEach?(cb: () => void | Promise<void>);
-  declareAfterAll?(cb: () => void | Promise<void>);
-  declareAfterEach?(cb: () => void | Promise<void>);
+  declareBeforeAll?(cb: (done?: Done) => void | Promise<void>);
+  declareBeforeEach?(cb: (done?: Done) => void | Promise<void>);
+  declareAfterAll?(cb: (done?: Done) => void | Promise<void>);
+  declareAfterEach?(cb: (done?: Done) => void | Promise<void>);
 
   // TODO: I am sloppy here, before merge split on "setSuiteSlow" and "setTestSlow" pairs
   setSlow?(context: RunnerSuiteType | RunnerTestType, ms: number);

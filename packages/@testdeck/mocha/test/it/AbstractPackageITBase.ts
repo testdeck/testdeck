@@ -50,6 +50,9 @@ export abstract class AbstractPackageITBase {
 
   @timeout(30000)
   public static before() {
+
+    // TODO: Also pack @testdeck/core...
+
     const pack = spawnSync("npm", ["pack", "--quiet"], { shell: true });
     assert.equal(pack.stderr.toString(), "");
     assert.equal(pack.status, 0, "npm pack failed.");

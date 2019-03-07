@@ -36,7 +36,9 @@
     "it:suite": "npm run build && npm run it:suite:run",
     "it:suite:run": "mocha test/it/*SuiteIT.ts --opts test/mocha.opts"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@testdeck/core": "0.0.1"
+  },
   "devDependencies": {
     "@types/chai": "^4.1.7",
     "@types/cross-spawn": "^6.0.0",

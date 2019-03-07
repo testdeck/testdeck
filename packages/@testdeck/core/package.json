@@ -19,11 +19,10 @@
   },
   "main": "dist/index.js",
   "types": "typings/index.d.ts",
-  "scripts": {
-  },
+  "scripts": {},
   "dependencies": {},
   "devDependencies": {
+    "@types/mocha": "*"
   },
-  "files": [
-  ]
+  "files": []
 }

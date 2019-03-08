@@ -23,7 +23,6 @@
     "build": "npm run clean && npm run build:cjs && npm run build:test",
     "build:cjs": "tsc",
     "build:test": "tsc -p tsconfig.test.json",
-    "changelog": "conventional-changelog --infile CHANGELOG.md --same-file --preset angular --append --release-count 1 --verbose",
     "clean": "rm -Rf .nyc_output coverage dist *.tgz src/*.js.map src/*.js bin/*.js* test/it/*.js* test/it/fixtures/*.js* test/it/fixtures/packages/*/node_modules",
     "coverage": "npm run build && npm run coverage:run",
     "coverage:run": "nyc mocha test/it/*SuiteIT.ts --opts test/mocha.opts",

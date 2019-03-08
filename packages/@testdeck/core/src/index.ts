@@ -1,4 +1,4 @@
-import T from "../typings/index";
+import * as T from "../typings/index";
 import * as Mocha from "mocha";
 
 const enum Mark { test, skip, only, pending }

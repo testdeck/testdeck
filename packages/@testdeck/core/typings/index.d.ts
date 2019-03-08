@@ -134,6 +134,8 @@ export interface DependencyInjectionSystem {
   create<T>(cls: Class<T>): T;
 }
 
+export type MaybeAsyncCallback = (done?: Done) => void | Promise<void>;
+
 /**
  * An adapter for a test runner that is used by the class syntax decorators based test ui.
  * 
@@ -163,7 +165,7 @@ export interface TestRunner<RunnerSuiteType, RunnerTestType> {
    * @param name 
    * @param cb 
    */
-  declareTest(name: string, cb: (done?: Done) => void | Promise<void>);
+  declareTest(name: string, cb: MaybeAsyncCallback);
 
   /**
    * Declares a suite, that is the only suite the runner should execute.
@@ -181,7 +183,7 @@ export interface TestRunner<RunnerSuiteType, RunnerTestType> {
    * For example with the mocha runner these are declared as `it.only("suite", cb)`.
    * hese are very useful for development, when you want to focus on a single suite and reduce code change to test execution times.
    */
-  declareTestOnly?(name: string, cb: () => void);
+  declareTestOnly?(name: string, cb: MaybeAsyncCallback);
 
   /**
    * For example:
@@ -190,7 +192,7 @@ export interface TestRunner<RunnerSuiteType, RunnerTestType> {
    * @param name The name of the suite.
    * @param cb A test callback thay may be provided.
    */
-  declareTestSkip?(name: string, cb: () => void | Promise<void>);
+  declareTestSkip?(name: string, cb: MaybeAsyncCallback);
 
   /**
    * For example:
@@ -201,10 +203,10 @@ export interface TestRunner<RunnerSuiteType, RunnerTestType> {
    */
   declareTestPending?(name: string);
 
-  declareBeforeAll?(cb: (done?: Done) => void | Promise<void>);
-  declareBeforeEach?(cb: (done?: Done) => void | Promise<void>);
-  declareAfterAll?(cb: (done?: Done) => void | Promise<void>);
-  declareAfterEach?(cb: (done?: Done) => void | Promise<void>);
+  declareBeforeAll?(cb: MaybeAsyncCallback);
+  declareBeforeEach?(cb: MaybeAsyncCallback);
+  declareAfterAll?(cb: MaybeAsyncCallback);
+  declareAfterEach?(cb: MaybeAsyncCallback);
 
   // TODO: I am sloppy here, before merge split on "setSuiteSlow" and "setTestSlow" pairs
   setSlow?(context: RunnerSuiteType | RunnerTestType, ms: number);

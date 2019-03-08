@@ -19,10 +19,15 @@
   },
   "main": "dist/index.js",
   "types": "typings/index.d.ts",
-  "scripts": {},
+  "scripts": {
+    "build": "npm run clean && npm run build:cjs",
+    "build:cjs": "tsc",
+    "clean": "rm -Rf .nyc_output coverage dist *.tgz src/*.js.map src/*.js bin/*.js* test/it/*.js* test/it/fixtures/*.js* test/it/fixtures/packages/*/node_modules",
+    "test": "npm run build"
+  },
   "dependencies": {},
   "devDependencies": {
-    "@types/mocha": "*"
+    "typescript": "*"
   },
   "files": []
 }

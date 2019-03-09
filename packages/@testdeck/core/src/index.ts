@@ -1,5 +1,4 @@
 import * as T from "../typings/index";
-import * as Mocha from "mocha";
 
 const enum Mark { test, skip, only, pending }
 
@@ -14,7 +13,7 @@ export class ClassTestUI<RunnerSuiteType, RunnerTestType> implements T.ClassTest
    * This is supposed to create a `Symbol(key)` but some platforms does not support Symbols yet so fallback to string keys for now.
    * @param key 
    */
-  private static MakeSymbol(key: string) { return "__testdeck_" + key; }
+  protected static MakeSymbol(key: string) { return "__testdeck_" + key; }
 
   private static readonly suiteSymbol = ClassTestUI.MakeSymbol("suite");
   private static readonly testNameSymbol = ClassTestUI.MakeSymbol("test");
@@ -29,7 +28,6 @@ export class ClassTestUI<RunnerSuiteType, RunnerTestType> implements T.ClassTest
   private static readonly traitsSymbol = ClassTestUI.MakeSymbol("traits");
   private static readonly isTraitSymbol = ClassTestUI.MakeSymbol("isTrait");
   private static readonly contextSymbol = ClassTestUI.MakeSymbol("context");
-  private static readonly skipAllSymbol = ClassTestUI.MakeSymbol("skipAll");
 
   public readonly runner: T.TestRunner<RunnerSuiteType, RunnerTestType>;
 
@@ -46,7 +44,6 @@ export class ClassTestUI<RunnerSuiteType, RunnerTestType> implements T.ClassTest
   public readonly skip: T.ConditionalClassAndMethodDecorator;
 
   public readonly context: PropertyDecorator;
-  public readonly skipOnError: T.SuiteTrait<RunnerSuiteType>;
 
   private readonly dependencyInjectionSystems: T.DependencyInjectionSystem[] = [{
     handles() { return true; },
@@ -73,20 +70,6 @@ export class ClassTestUI<RunnerSuiteType, RunnerTestType> implements T.ClassTest
     this.context = function context(target: Object, propertyKey: string): void {
       target[ClassTestUI.contextSymbol] = propertyKey;
     };
-    
-    // TODO: This is so tricky! There is a chance that only mocha's context will allow setting skip() when tests are in progress...
-    this.skipOnError = this.trait(function(ctx, ctor) {
-      ctx.beforeEach(function(this: Mocha.Context) {
-        if (ctor[ClassTestUI.skipAllSymbol]) {
-          this.skip();
-        }
-      });
-      ctx.afterEach(function() {
-        if (this.currentTest.state === "failed") {
-          ctor[ClassTestUI.skipAllSymbol] = true;
-        }
-      });
-    });
   }
 
   /**
@@ -236,7 +219,7 @@ export class ClassTestUI<RunnerSuiteType, RunnerTestType> implements T.ClassTest
           }, prototype.after);
         }
       } else {
-        afterEachFunction = function(this: Mocha.Context) {
+        afterEachFunction = function(this: RunnerTestType) {
           instance = undefined;
         };
       }

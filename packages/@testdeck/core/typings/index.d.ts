@@ -2,6 +2,9 @@
  * A class that encapsulates the decorators test ui based on a TestRunner adapter. 
  */
 export class ClassTestUI<RunnerSuiteType, RunnerTestType> {
+
+  protected static MakeSymbol(key: string): string | Symbol;
+
   /**
    * Register a dependency injection system to be used when instantiating test classes.
    * @param instantiator The dependency injection system implementation.
@@ -30,8 +33,6 @@ export class ClassTestUI<RunnerSuiteType, RunnerTestType> {
   public readonly skip: ConditionalClassAndMethodDecorator;
 
   public readonly context: PropertyDecorator;
-
-  public readonly skipOnError: SuiteTrait<RunnerSuiteType>;
 }
 
 interface SuiteDecoratorOverload<RunnerSuiteType> extends ClassDecorator {

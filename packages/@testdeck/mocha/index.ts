@@ -54,7 +54,7 @@ class MochaClassTestUI extends core.ClassTestUI<Mocha.Suite, Mocha.Context> {
 
   public readonly skipOnError: core.SuiteTrait<Mocha.Suite>;
 
-  public constructor(runner: core.TestRunner<Mocha.Suite, Mocha.Context>) {
+  public constructor(runner: core.TestRunner<Mocha.Suite, Mocha.Context> = mochaRunner) {
     super(runner);
 
     // TODO: This is so tricky! There is a chance that only mocha's context will allow setting skip() when tests are in progress...
@@ -73,6 +73,6 @@ class MochaClassTestUI extends core.ClassTestUI<Mocha.Suite, Mocha.Context> {
   }
 }
 
-const mochaDecorators = new core.ClassTestUI<Mocha.Suite, Mocha.Context>(mochaRunner);
+const mochaDecorators = new MochaClassTestUI();
 
 export = mochaDecorators;

@@ -1,7 +1,7 @@
 {
   "name": "testdeck",
   "private": true,
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "TypeScript decorators based wrapper over various test framework interfaces",
   "author": "Panayot Cankov",
   "contributors": [
@@ -15,16 +15,12 @@
     "type": "git",
     "url": "https://github.com/testdeck"
   },
-  "scripts": {
-    "clean": "lerna run --stream clean",
-    "coverage": "lerna run --stream coverage",
-    "lint": "lerna run --stream lint",
-    "setup": "npm run --stream setup:packages",
-    "setup:packages": "npm install --no-package-lock && lerna bootstrap --no-ci",
-    "test": "lerna run --stream test",
-    "test:ci": "lerna run --stream test:ci"
+  "devDependencies": {
+    "lerna": "latest",
+    "tsc": "latest"
   },
-  "dependencies": {
-    "lerna": "latest"
+  "scripts": {
+    "prepare": "lerna bootstrap --no-ci",
+    "test": "lerna run --stream test"
   }
 }

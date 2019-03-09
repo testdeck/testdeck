@@ -7,20 +7,10 @@
         "sourceMap": true,
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
-        "declaration": false,
-        "outDir": "dist",
-        "listFiles": false,
+        "declaration": true,
         "lib": [
           "es5", "es6"
         ]
     },
-    "compileOnSave": false,
-    "include": [
-      "src/**/*.ts",
-      "typings/**/*.d.ts"
-    ],
-    "exclude": [
-        "node_modules",
-        "test"
-    ]
+    "compileOnSave": false
 }

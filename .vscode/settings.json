@@ -4,10 +4,7 @@
         "**/.git": true,
         "**/.svn": true,
         "**/.hg": true,
-        "**/.DS_Store": true,
-        "**/*.config.js": false,
-        "**/*.js": true,
-        "**/*.js.map": true,
+        "**/.DS_Store": true
     },
     "javascript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": false,
     "javascript.format.insertSpaceBeforeFunctionParenthesis": false,

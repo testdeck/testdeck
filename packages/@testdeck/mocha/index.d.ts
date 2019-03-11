@@ -1,9 +1,6 @@
-/// <reference types="mocha" />
 import * as core from "@testdeck/core";
-declare class MochaClassTestUI extends core.ClassTestUI<Mocha.Suite, Mocha.Context> {
-    private static readonly skipAllSymbol;
-    readonly skipOnError: core.SuiteTrait<Mocha.Suite>;
-    constructor(runner?: core.TestRunner<Mocha.Suite, Mocha.Context>);
+declare class ClassTestUI extends core.ClassTestUI {
+    constructor(runner?: core.TestRunner);
 }
-declare const mochaDecorators: MochaClassTestUI;
+declare const mochaDecorators: ClassTestUI;
 export = mochaDecorators;

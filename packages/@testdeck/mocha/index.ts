@@ -1,78 +1,76 @@
 import * as core from "@testdeck/core";
 
-const mochaRunner: core.TestRunner<Mocha.Suite, Mocha.Context> = {
-  declareSuite(name: string, cb: () => void) {
-    describe(name, cb);
-  },
-  declareSuiteOnly(name: string, cb: () => void) {
-    describe.only(name, cb);
-  },
-  declareSuiteSkip(name: string, cb: () => void) {
-    describe.skip(name, cb);
-  },
-  declareSuitePending(name: string, cb: () => void) {
-    describe.skip(name, cb);
-  },
-
-  declareTest(name: string, cb: core.MaybeAsyncCallback) {
-    it(name, cb);
-  },
-  declareTestSkip(name: string, cb: core.MaybeAsyncCallback) {
-    it.skip(name, cb);
-  },
-  declareTestPending(name: string) {
-    it(name);
-  },
-
-  declareBeforeAll(cb: core.MaybeAsyncCallback) {
-    before(cb);
-  },
-  declareBeforeEach(cb: core.MaybeAsyncCallback) {
-    beforeEach(cb);
-  },
-  declareAfterAll(cb: core.MaybeAsyncCallback) {
-    after(cb);
-  },
-  declareAfterEach(cb: core.MaybeAsyncCallback) {
-    afterEach(cb);
-  },
-
-  setSlow(context: Mocha.Suite | Mocha.Context, ms: number) {
-    context.slow(ms);
-  },
-  setTimeout(context: Mocha.Suite | Mocha.Context, ms: number) {
-    context.timeout(ms);
-  },
-  setRetries(context: Mocha.Suite | Mocha.Context, attempts: number) {
-    context.retries(attempts);
-  }
-};
-
-class MochaClassTestUI extends core.ClassTestUI<Mocha.Suite, Mocha.Context> {
-
-  private static readonly skipAllSymbol = core.ClassTestUI.MakeSymbol("skipAll");
-
-  public readonly skipOnError: core.SuiteTrait<Mocha.Suite>;
-
-  public constructor(runner: core.TestRunner<Mocha.Suite, Mocha.Context> = mochaRunner) {
-    super(runner);
-
-    // TODO: This is so tricky! There is a chance that only mocha's context will allow setting skip() when tests are in progress...
-    this.skipOnError = this.trait(function(ctx, ctor) {
-      ctx.beforeEach(function(this: Mocha.Context) {
-        if (ctor[MochaClassTestUI.skipAllSymbol as any]) {
-          this.skip();
-        }
-      });
-      ctx.afterEach(function() {
-        if (this.currentTest.state === "failed") {
-          ctor[MochaClassTestUI.skipAllSymbol as any] = true;
-        }
-      });
-    });
+function applyTimings(fn: any, settings: any): any {
+  if (fn.length === 1) {
+    return core.wrap(function(done) {
+      if (settings.retries !== undefined) this.retries(settings.retries);
+      if (settings.slow !== undefined) this.slow(settings.slow);
+      if (settings.timeout !== undefined) this.timeout(settings.timeout);
+      return fn.call(this, done);
+    }, fn);
+  } else {
+    return core.wrap(function() {
+      if (settings.retries !== undefined) this.retries(settings.retries);
+      if (settings.slow !== undefined) this.slow(settings.slow);
+      if (settings.timeout !== undefined) this.timeout(settings.timeout);
+      return fn.call(this);
+    }, fn);
   }
 }
 
-const mochaDecorators = new MochaClassTestUI();
+const mochaRunner: core.TestRunner = {
+  suite(name: string, callback: () => void, settings: core.SuiteSettings) {
+    switch(settings.execution) {
+      case "only":
+        describe.only(name, applyTimings(callback, settings));
+        break;
+      case "skip":
+        describe.skip(name, applyTimings(callback, settings));
+        break;
+      case "pending":
+        describe(name);
+        break;
+      default:
+        describe(name, applyTimings(callback, settings));
+    }
+  },
+  test(name: string, callback: core.CallbackOptionallyAsync, settings: core.TestSettings) {
+    switch(settings.execution) {
+      case "only":
+        it.only(name, applyTimings(callback, settings));
+        break;
+      case "skip":
+        it.skip(name, applyTimings(callback, settings));
+        break;
+      case "pending":
+        it(name);
+        break;
+      default:
+        it(name, applyTimings(callback, settings));
+    }
+  },
+
+  beforeAll(callback: core.CallbackOptionallyAsync, settings: core.LifecycleSettings) {
+    before(applyTimings(callback, settings));
+  },
+  beforeEach(callback: core.CallbackOptionallyAsync, settings: core.LifecycleSettings) {
+    beforeEach(applyTimings(callback, settings));
+  },
+  afterEach(callback: core.CallbackOptionallyAsync, settings: core.LifecycleSettings) {
+    afterEach(applyTimings(callback, settings));
+  },
+  afterAll(callback: core.CallbackOptionallyAsync, settings: core.LifecycleSettings) {
+    after(applyTimings(callback, settings));
+  }
+};
+
+class ClassTestUI extends core.ClassTestUI {
+  // TODO: skipOnError, @context
+  public constructor(runner: core.TestRunner = mochaRunner) {
+    super(runner);
+  }
+}
+
+const mochaDecorators = new ClassTestUI();
 
 export = mochaDecorators;

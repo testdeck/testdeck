@@ -64,13 +64,13 @@ const mochaRunner: core.TestRunner = {
   }
 };
 
-class ClassTestUI extends core.ClassTestUI {
+class MochaClassTestUI extends core.ClassTestUI {
   // TODO: skipOnError, @context
   public constructor(runner: core.TestRunner = mochaRunner) {
     super(runner);
   }
 }
 
-const mochaDecorators = new ClassTestUI();
+const mochaDecorators = new MochaClassTestUI();
 
 export = mochaDecorators;

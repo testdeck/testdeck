@@ -1,4 +1,4 @@
-export declare class ClassTestUI {
+export declare abstract class ClassTestUI {
     /**
      * This is supposed to create a `Symbol(key)` but some platforms does not support Symbols yet so fallback to string keys for now.
      * @param key

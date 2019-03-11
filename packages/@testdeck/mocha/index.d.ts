@@ -1,6 +1,6 @@
 import * as core from "@testdeck/core";
-declare class ClassTestUI extends core.ClassTestUI {
+declare class MochaClassTestUI extends core.ClassTestUI {
     constructor(runner?: core.TestRunner);
 }
-declare const mochaDecorators: ClassTestUI;
+declare const mochaDecorators: MochaClassTestUI;
 export = mochaDecorators;

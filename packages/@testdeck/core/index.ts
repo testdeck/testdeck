@@ -82,6 +82,7 @@ export abstract class ClassTestUI {
       slow: obj[ClassTestUI.slowSymbol],
       timeout: obj[ClassTestUI.timeoutSymbol],
       retries: obj[ClassTestUI.retriesSymbol],
+      execution: obj[ClassTestUI.executionSymbol]
     };
   }
 
@@ -295,9 +296,6 @@ export abstract class ClassTestUI {
         target[propertyKey][ClassTestUI.nameSymbol] = propertyKey.toString();
         if (execution) {
           target[propertyKey][ClassTestUI.executionSymbol] = execution;
-        }
-        if (execution) {
-          target[propertyKey][execution] = true;
         }
       },
       testDecorator(...decorators: MethodDecorator[]): PropertyDecorator & MethodDecorator {

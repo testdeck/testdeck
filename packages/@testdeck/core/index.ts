@@ -22,9 +22,9 @@ export class ClassTestUI {
   public readonly suite: SuiteDecorator;
   public readonly test: TestDecorator;
 
-  public readonly slow: ExecutionOption;
-  public readonly timeout: ExecutionOption;
-  public readonly retries: ExecutionOption;
+  public readonly slow: ExecutionOptionDecorator;
+  public readonly timeout: ExecutionOptionDecorator;
+  public readonly retries: ExecutionOptionDecorator;
 
   public readonly pending: ExecutionModifierDecorator;
   public readonly only: ExecutionModifierDecorator;
@@ -77,15 +77,6 @@ export class ClassTestUI {
     return arg;
   }
 
-  /**
-   * Transfers the base's toString and name to the wrapping function.
-   */
-  public wrap<T extends Function>(wrap: T, base: Function): T {
-    wrap.toString = () => base.toString();
-    Object.defineProperty(wrap, "name", { value: base.name, writable: false });
-    return wrap;
-  };
-
   private getSettings(obj: any): LifecycleSettings | TestSettings | SuiteSettings {
     return {
       slow: obj[ClassTestUI.slowSymbol],
@@ -105,25 +96,26 @@ export class ClassTestUI {
     return function() {
       // Regsiter the static before method of the class to be called before-all tests.  
       if (target.before) {
+        const settings = theTestUI.getSettings(target.before);
         if (isAsync(target.before)) {
-          theTestUI.runner.beforeAll(theTestUI.wrap(function(done) {
+          theTestUI.runner.beforeAll(wrap(function(done) {
             return target.before(done);
-          }, target.before), theTestUI.getSettings(target.before));
+          }, target.before), settings);
         } else {
-          theTestUI.runner.beforeAll(theTestUI.wrap(function() {
+          theTestUI.runner.beforeAll(wrap(function() {
             return target.before();
-          }, target.before), theTestUI.getSettings(target.before));
+          }, target.before), settings);
         }
       }
 
       // Register the static after method of the class to be called after-all tests.
       if (target.after) {
         if (isAsync(target.after)) {
-          theTestUI.runner.afterAll(theTestUI.wrap(function(done) {
+          theTestUI.runner.afterAll(wrap(function(done) {
             return target.after(done);
           }, target.after), theTestUI.getSettings(target.before));
         } else {
-          theTestUI.runner.afterAll(theTestUI.wrap(function() {
+          theTestUI.runner.afterAll(wrap(function() {
             return target.after();
           }, target.after), theTestUI.getSettings(target.before));
         }
@@ -141,11 +133,11 @@ export class ClassTestUI {
       // Register the instance before method to be called before-each test method.
       if (prototype.before) {
         if (isAsync(prototype.before)) {
-          theTestUI.runner.beforeEach(theTestUI.wrap(function(done: Function) {
+          theTestUI.runner.beforeEach(wrap(function(done: Function) {
             return prototype.before.call(instance, done);
           }, prototype.before), theTestUI.getSettings(prototype.before));
         } else {
-          theTestUI.runner.beforeEach(theTestUI.wrap(function() {
+          theTestUI.runner.beforeEach(wrap(function() {
             return prototype.before.call(instance);
           }, prototype.before), theTestUI.getSettings(prototype.before));
         }
@@ -154,11 +146,11 @@ export class ClassTestUI {
       // Register the instance after method to be called after-each test method.
       if (prototype.after) {
         if (isAsync(prototype.after)) {
-          theTestUI.runner.afterEach(theTestUI.wrap(function(done) {
+          theTestUI.runner.afterEach(wrap(function(done) {
             return prototype.after.call(instance, done);
           }, prototype.after), theTestUI.getSettings(prototype.after));
         } else {
-          theTestUI.runner.afterEach(theTestUI.wrap(function() {
+          theTestUI.runner.afterEach(wrap(function() {
             return prototype.after.call(instance);
           }, prototype.after), theTestUI.getSettings(prototype.after));
         }
@@ -194,79 +186,47 @@ export class ClassTestUI {
         }
       }
 
-      // function declareTestMethod(prototype: any, method: Function) {
-      //   const testName = method[ClassTestUI.nameSymbol];
+      function declareTestMethod(prototype: any, method: Function) {
+        const testName = method[ClassTestUI.nameSymbol];
+        const parameters = method[ClassTestUI.parametersSymbol] as TestParams[];
+        if (parameters) {
+          // we make the parameterised test a child suite so we can late bind the parameterised tests
+          const settings = theTestUI.getSettings(method);
+          theTestUI.runner.suite(testName, function() {
+            const nameForParameters = method[ClassTestUI.nameForParametersSymbol];
+            parameters.forEach((parameterOptions, i) => {
+              const { execution, name, params } = parameterOptions;
+              let parametersTestName = `${testName}_${i}`;
+              if (name) {
+                parametersTestName = name;
+              } else if (nameForParameters) {
+                parametersTestName = nameForParameters(params);
+              }
+              applyTestFunc(parametersTestName, method, [params], { execution });
+            });
+          }, theTestUI.getSettings(method));
+        } else {
+          applyTestFunc(testName, method, [], theTestUI.getSettings(method));
+        }
+      }
 
-      //   let execution: Execution = method[ClassTestUI.executionSymbol];
-      //   execution = mergeExecution(execution, prototype.constructor[ClassTestUI.executionSymbol]);
+      function applyTestFunc(testName: string, method: Function, callArgs: any[], testSettings: TestSettings) {
+        if (isAsync(method)) {
+          theTestUI.runner.test(testName, function(done) {
+            return method.call(instance, done, ...callArgs);
+          }, testSettings);
+        } else {
+          theTestUI.runner.test(testName, function() {
+            return method.call(instance, ...callArgs);
+          }, testSettings);
+        }
+      }
 
-      //   const parameters = method[ClassTestUI.parametersSymbol] as TestParams[];
-
-      //   if (parameters) {
-      //     // we make the parameterised test a child suite so we can late bind the parameterised tests
-      //     // theTestUI.runner.suite(testName, function() {
-      //     // }, theTestUI.getSettings());
-      //     theTestUI.runner.declareTest(testName, function() {
-      //       const nameForParameters = method[ClassTestUI.nameForParametersSymbol];
-      //       parameters.forEach((parameterOptions, i) => {
-      //         let { execution: paramExecution, name, params } = parameterOptions;
-              
-      //         paramExecution = mergeExecution(paramExecution, execution);
-
-      //         let parametersTestName = `${testName}_${i}`;
-      //         if (name) {
-      //           parametersTestName = name;
-      //         } else if (nameForParameters) {
-      //           parametersTestName = nameForParameters(params);
-      //         }
-
-      //         applyTestFunc(execution, parametersTestName, method, [params]);
-      //       });
-      //     });
-      //   } else {
-      //     const testFunc = ((shouldPending || shouldSkip) && theTestUI.runner.declareTestSkip)
-      //                     || (shouldOnly && theTestUI.runner.declareTestOnly)
-      //                     || theTestUI.runner.declareTest;
-
-      //     applyTestFunc(testFunc, testName, method, []);
-      //   }
-      // }
-
-      // function applyTestFunc(execution: undefined | Execution, testName: string, method: Function, callArgs: any[]) {
-      //   if (isAsync(method)) {
-      //     testFunc(testName, theTestUI.wrap(function(done) {
-      //       return method.call(instance, done, ...callArgs);
-      //     }, method));
-      //   } else {
-      //     testFunc(testName, theTestUI.wrap(function() {
-      //       return method.call(instance, ...callArgs);
-      //     }, method));
-      //   }
-      // }
-
-      // // collect all tests along the inheritance chain, allow overrides
-      // const collectedTests: { [key: string]: any[] } = {};
-      // let currentPrototype = prototype;
-      // while (currentPrototype !== Object.prototype) {
-      //   Object.getOwnPropertyNames(currentPrototype).forEach((key) => {
-      //     if (typeof prototype[key] === "function") {
-      //       const method = prototype[key];
-      //       if (method[ClassTestUI.nameSymbol] && !collectedTests[key]) {
-      //         collectedTests[key] = [prototype, method];
-      //       }
-      //     }
-      //   });
-      //   currentPrototype = (Object as any).getPrototypeOf(currentPrototype);
-      //   if (currentPrototype !== Object.prototype && currentPrototype.constructor[ClassTestUI.suiteSymbol]) {
-      //     throw new Error(`@suite ${prototype.constructor.name} cannot be a subclass of @suite ${currentPrototype.constructor.name}.`);
-      //   }
-      // }
-
-      // // run all collected tests
-      // for (const key in collectedTests) {
-      //   const value = collectedTests[key];
-      //   declareTestMethod(value[0], value[1]);
-      // }
+      // run all collected tests
+      for (const key in collectedTests) {
+        const value = collectedTests[key];
+        declareTestMethod(value[0], value[1]);
+      }
     };
   }
 
@@ -278,7 +238,7 @@ export class ClassTestUI {
     });
   }
 
-  private makeSuiteFunction(executionSymbol?: Execution): SuiteDecoratorOrName {
+  private makeSuiteFunction(execution?: Execution): SuiteDecoratorOrName {
     const theTestUI = this;
     const decorator = function() {
       // Used as `@suite() class MySuite {}`
@@ -290,7 +250,9 @@ export class ClassTestUI {
       if (arguments.length === 1 && typeof arguments[0] === "function" && !arguments[0][ClassTestUI.isDecoratorSymbol]) {
         const ctor = arguments[0];
         ctor[ClassTestUI.suiteSymbol] = true;
-        ctor[ClassTestUI.executionSymbol] = mergeExecution(ctor[ClassTestUI.executionSymbol], executionSymbol)
+        if (execution) {
+          ctor[ClassTestUI.executionSymbol] = execution;
+        }
         theTestUI.runner.suite(ctor.name, theTestUI.suiteCallbackFromClass(ctor), theTestUI.getSettings(ctor));
       }
 
@@ -305,7 +267,9 @@ export class ClassTestUI {
       
       return function(ctor) {
         ctor[ClassTestUI.suiteSymbol] = true;
-        ctor[ClassTestUI.executionSymbol] = mergeExecution(ctor[ClassTestUI.executionSymbol], executionSymbol)
+        if (execution) {
+          ctor[ClassTestUI.executionSymbol] = execution;
+        }
         for(const decorator of decorators) {
           decorator(ctor);
         }
@@ -325,13 +289,15 @@ export class ClassTestUI {
     });
   }
 
-  private makeTestFunction(executionSymbol?: Execution) {
+  private makeTestFunction(execution?: Execution) {
     return this.testOverload({
       testProperty(target: Object, propertyKey: string | symbol, descriptor?: PropertyDescriptor): void {
         target[propertyKey][ClassTestUI.nameSymbol] = propertyKey.toString();
-        target[propertyKey][ClassTestUI.executionSymbol] = mergeExecution(target[propertyKey][ClassTestUI.executionSymbol], executionSymbol);
-        if (executionSymbol) {
-          target[propertyKey][executionSymbol] = true;
+        if (execution) {
+          target[propertyKey][ClassTestUI.executionSymbol] = execution;
+        }
+        if (execution) {
+          target[propertyKey][execution] = true;
         }
       },
       testDecorator(...decorators: MethodDecorator[]): PropertyDecorator & MethodDecorator {
@@ -340,7 +306,9 @@ export class ClassTestUI {
           for(const decorator of decorators) {
             decorator(target, propertyKey, descriptor);
           }
-          target[propertyKey][ClassTestUI.executionSymbol] = mergeExecution(target[propertyKey][ClassTestUI.executionSymbol], executionSymbol);
+          if (execution) {
+            target[propertyKey][ClassTestUI.executionSymbol] = execution;
+          }
         };
       },
       testDecoratorNamed(name: string, ...decorators: MethodDecorator[]): PropertyDecorator & MethodDecorator {
@@ -349,7 +317,9 @@ export class ClassTestUI {
           for(const decorator of decorators) {
             decorator(target, propertyKey, descriptor);
           }
-          target[propertyKey][ClassTestUI.executionSymbol] = mergeExecution(target[propertyKey][ClassTestUI.executionSymbol], executionSymbol);
+          if (execution) {
+            target[propertyKey][ClassTestUI.executionSymbol] = execution;
+          }
         };
       }
     });
@@ -406,7 +376,7 @@ export class ClassTestUI {
   /**
    * Create execution options such as `@slow`, `@timeout` and `@retries`.
    */
-  private createExecutionOption(key: symbol | string): ExecutionOption {
+  private createExecutionOption(key: symbol | string): ExecutionOptionDecorator {
     const classTestUIInstance = this;
     return function(value: number): ClassDecorator | MethodDecorator {
       return classTestUIInstance.markAsDecorator(function() {
@@ -436,20 +406,13 @@ export class ClassTestUI {
         }
       }
       if (arguments.length === 1) {
-        target[ClassTestUI.executionSymbol] = mergeExecution(execution, target[ClassTestUI.executionSymbol]);
+        target[ClassTestUI.executionSymbol] = execution;
       } else {
-        target[propertyKey][ClassTestUI.executionSymbol] = mergeExecution(execution, target[ClassTestUI.executionSymbol]);
+        target[propertyKey][ClassTestUI.executionSymbol] = execution;
       }
     };
     return decorator;
   }
-}
-
-function mergeExecution(a: Execution, b: Execution): Execution {
-  if (a === "only" || b === "only") return "only";
-  if (a === "skip" || b === "skip") return "skip";
-  if (a === "pending" || b === "pending") return "pending";
-  return undefined;
 }
 
 export type Done = (err?: any) => void;
@@ -510,7 +473,7 @@ export interface TestDecorator extends TestDecoratorOrName {
  * these decortors can be used as `@slow(1000)`, `@timeout(2000)` and `@retries(3)`.
  * These can also be used as traits - such as `@suite(timeout(2000))`.
  */
-export interface ExecutionOption {
+export interface ExecutionOptionDecorator {
   (value: number): ClassDecorator | MethodDecorator;
 }
 
@@ -609,11 +572,20 @@ export interface LifecycleSettings {
  * The test function when called will instantiate MyClass and call the myTest on that instance.
  */
 export interface TestRunner {
-  suite(name: string, callback: () => void, options: SuiteSettings);
-  test(name: string, callback: CallbackOptionallyAsync, options: TestSettings);
+  suite(name: string, callback: () => void, settings: SuiteSettings);
+  test(name: string, callback: CallbackOptionallyAsync, settings: TestSettings);
 
-  beforeAll(callback: CallbackOptionallyAsync, options: LifecycleSettings);
-  beforeEach(callback: CallbackOptionallyAsync, options: LifecycleSettings);
-  afterEach(callback: CallbackOptionallyAsync, options: LifecycleSettings);
-  afterAll(callback: CallbackOptionallyAsync, options: LifecycleSettings);
+  beforeAll(callback: CallbackOptionallyAsync, settings: LifecycleSettings);
+  beforeEach(callback: CallbackOptionallyAsync, settings: LifecycleSettings);
+  afterEach(callback: CallbackOptionallyAsync, settings: LifecycleSettings);
+  afterAll(callback: CallbackOptionallyAsync, settings: LifecycleSettings);
 }
+
+/**
+ * Transfers the base's toString and name to the wrapping function.
+ */
+export function wrap<T extends Function>(wrap: T, base: Function): T {
+  wrap.toString = () => base.toString();
+  Object.defineProperty(wrap, "name", { value: base.name, writable: false });
+  return wrap;
+};

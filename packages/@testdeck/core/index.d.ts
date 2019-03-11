@@ -1,56 +1,179 @@
-export interface DependencyInjectionSystem {
-    handles<T>(cls: Class<T>): boolean;
-    create<T>(cls: Class<T>): T;
+export declare class ClassTestUI {
+    /**
+     * This is supposed to create a `Symbol(key)` but some platforms does not support Symbols yet so fallback to string keys for now.
+     * @param key
+     */
+    protected static MakeSymbol(key: string): symbol | string;
+    private static readonly suiteSymbol;
+    private static readonly nameSymbol;
+    private static readonly parametersSymbol;
+    private static readonly nameForParametersSymbol;
+    private static readonly slowSymbol;
+    private static readonly timeoutSymbol;
+    private static readonly retriesSymbol;
+    private static readonly executionSymbol;
+    private static readonly isDecoratorSymbol;
+    readonly runner: TestRunner;
+    readonly suite: SuiteDecorator;
+    readonly test: TestDecorator;
+    readonly slow: ExecutionOptionDecorator;
+    readonly timeout: ExecutionOptionDecorator;
+    readonly retries: ExecutionOptionDecorator;
+    readonly pending: ExecutionModifierDecorator;
+    readonly only: ExecutionModifierDecorator;
+    readonly skip: ExecutionModifierDecorator;
+    readonly params: ParameterisedTestDecorator;
+    private readonly dependencyInjectionSystems;
+    constructor(runner: TestRunner);
+    /**
+     * Register a dependency injection system to be used when instantiating test classes.
+     * @param instantiator The dependency injection system implementation.
+     */
+    registerDI(instantiator: DependencyInjectionSystem): void;
+    /**
+     * Declares the provided function as decorator.
+     * Used to mark decorators such as `@timeout` that can sometimes be provided as single argument to `@suite(timeout(1000))`.
+     * In those cases the `suite()` overload should be able to distinguish the timeout function from class constructor.
+     */
+    protected markAsDecorator<Arg extends ClassDecorator | SuiteDecorator>(arg: Arg): Arg;
+    private getSettings;
+    private getInstance;
+    private suiteCallbackFromClass;
+    private makeSuiteObject;
+    private makeSuiteFunction;
+    private makeTestObject;
+    private makeTestFunction;
+    private testOverload;
+    private makeParamsFunction;
+    private makeParamsNameFunction;
+    private makeParamsObject;
+    /**
+     * Create execution options such as `@slow`, `@timeout` and `@retries`.
+     */
+    private createExecutionOption;
+    /**
+     * Creates the decorators `@pending`, `@only`, `@skip`.
+     */
+    private createExecutionModifier;
 }
-export interface ConditionalClassAndMethodDecorator extends MethodDecorator, ClassDecorator {
-    (condition: boolean): MethodDecorator | ClassDecorator;
+export declare type Done = (err?: any) => void;
+export declare type CallbackOptionallyAsync = (done?: Done) => void | Promise<void>;
+export interface SuiteDecoratorOrName extends ClassDecorator {
+    /**
+     * Callable with optional name, followed by decorators. Allows:
+     * ```
+     * @suite
+     * @timeout(1000)
+     * @slow(500)
+     * ```
+     * To condensed on a single line:
+     * ```
+     * @suite(timeout(1000), slow(500))
+     * ```
+     * Please note the pit fall in the first case - the `@suite` must be the first decorator.
+     */
+    (name?: string, ...decorators: ClassDecorator[]): ClassDecorator;
+}
+export interface SuiteDecorator extends SuiteDecoratorOrName {
+    only: SuiteDecoratorOrName;
+    skip: SuiteDecoratorOrName;
+    pending: SuiteDecoratorOrName;
+}
+export interface TestDecoratorOrName extends MethodDecorator {
+    /**
+     * Callable with optional name, followed by decorators. Allows:
+     * ```
+     * @test
+     * @timeout(1000)
+     * @slow(500)
+     * ```
+     * To condensed on a single line:
+     * ```
+     * @test(timeout(1000), slow(500))
+     * ```
+     * Please note the pit fall in the first case - the `@test` must be the first decorator.
+     */
+    (name?: string, ...decorator: MethodDecorator[]): MethodDecorator;
+}
+/**
+ * The type of the `@test` decorator.
+ * The decorator can be used as: `@test`, `@test()`, `@test("name")`, `@test.only`, `@test.only()`, `@test.only("name")`, etc.
+ */
+export interface TestDecorator extends TestDecoratorOrName {
+    only: TestDecoratorOrName;
+    skip: TestDecoratorOrName;
+    pending: TestDecoratorOrName;
+}
+/**
+ * After a `@suite` or `@test`,
+ * these decortors can be used as `@slow(1000)`, `@timeout(2000)` and `@retries(3)`.
+ * These can also be used as traits - such as `@suite(timeout(2000))`.
+ */
+export interface ExecutionOptionDecorator {
+    (value: number): ClassDecorator | MethodDecorator;
+}
+/**
+ * An execution modifier decorators. Used to control which tests will be executed on test-run.
+ * Decorators can be used as `@pending`, `@only` and `@skip`.
+ * Or with condition: `@only(isWindows)`.
+ */
+export interface ExecutionModifierDecorator extends ClassDecorator, MethodDecorator {
+    (condition: boolean): ClassDecorator | MethodDecorator;
 }
 export interface ParameterisedTestDecorator {
     (params: any, name?: string): MethodDecorator;
     skip(params: any, name?: string): MethodDecorator;
     only(params: any, name?: string): MethodDecorator;
     pending(params: any, name?: string): MethodDecorator;
-    naming(nameForParameters: (parameters: any) => string): MethodDecorator;
+    naming(nameForParameters: (params: any) => string): MethodDecorator;
 }
-export interface Prototype {
-    [key: string]: any;
+export interface TestInstance {
+    /**
+     * An instance method, that if defined, is executed before every test method.
+     */
+    before?(done?: Done): void | Promise<void>;
+    /**
+     * An instance method, that if defined, is executed after every test method.
+     */
+    after?(done?: Done): void | Promise<void>;
 }
-export interface Class<T extends Prototype> {
+export interface TestClass<T extends TestInstance> {
     new (...args: any[]): T;
-    [key: string]: any;
-    prototype: any;
+    prototype: T;
+    /**
+     * A static method, that if defined, is executed once, before all test methods.
+     */
+    before?(done?: Done): void | Promise<void>;
+    /**
+     * A static method, that if defined, is executed once, after all test methods.
+     */
+    after?(done?: Done): void | Promise<void>;
 }
-export interface SuiteCtor extends Class<SuiteProto>, Function {
-    before?: (done?: Done) => void;
-    after?: (done?: Done) => void;
+export interface DependencyInjectionSystem {
+    handles<T>(cls: TestClass<T>): boolean;
+    create<T>(cls: TestClass<T>): T;
 }
-export interface SuiteProto extends Prototype {
-    before?: (done?: Done) => void;
-    after?: (done?: Done) => void;
+/**
+ * Test or suite execution.
+ * The `undefined` means execute as normal.
+ */
+export declare type Execution = undefined | "pending" | "only" | "skip";
+export interface SuiteSettings {
+    execution?: Execution;
+    timeout?: number;
+    slow?: number;
+    retries?: number;
 }
-export interface SuiteDecorator<RunnerSuiteType> extends SuiteDecoratorOverload<RunnerSuiteType> {
-    only: SuiteDecoratorOverload<RunnerSuiteType>;
-    skip: SuiteDecoratorOverload<RunnerSuiteType>;
-    pending: SuiteDecoratorOverload<RunnerSuiteType>;
+export interface TestSettings {
+    execution?: Execution;
+    timeout?: number;
+    slow?: number;
+    retries?: number;
 }
-export interface TestDecorator<RunnerTestType> extends TestDecoratorOverload<RunnerTestType> {
-    only: TestDecoratorOverload<RunnerTestType>;
-    skip: TestDecoratorOverload<RunnerTestType>;
-    pending: TestDecoratorOverload<RunnerTestType>;
+export interface LifecycleSettings {
+    timeout?: number;
+    slow?: number;
 }
-export declare type SuiteTrait<RunnerSuiteType> = (this: RunnerSuiteType, ctx: RunnerSuiteType, ctor: SuiteCtor) => void;
-export declare type TestTrait<RunnerTestType> = (this: RunnerTestType, ctx: RunnerTestType, instance: SuiteProto, method: Function) => void;
-export declare type NumericDecoratorOrTrait<RunnerSuiteType, RunnerTestType> = (value: number) => PropertyDecorator & MethodDecorator & ClassDecorator & SuiteTrait<RunnerSuiteType> & TestTrait<RunnerTestType>;
-interface SuiteDecoratorOverload<RunnerSuiteType> extends ClassDecorator {
-    (name?: string, ...traits: SuiteTrait<RunnerSuiteType>[]): ClassDecorator;
-    (trait: SuiteTrait<RunnerSuiteType>, ...traits: SuiteTrait<RunnerSuiteType>[]): ClassDecorator;
-}
-interface TestDecoratorOverload<RunnerTestType> extends MethodDecorator {
-    (name?: string, ...traits: TestTrait<RunnerTestType>[]): MethodDecorator;
-    (trait: TestTrait<RunnerTestType>, ...traits: TestTrait<RunnerTestType>[]): MethodDecorator;
-}
-declare type Done = (err?: any) => void;
-export declare type MaybeAsyncCallback = (done?: Done) => void | Promise<void>;
 /**
  * An adapter for a test runner that is used by the class syntax decorators based test ui.
  *
@@ -65,117 +188,15 @@ export declare type MaybeAsyncCallback = (done?: Done) => void | Promise<void>;
  * When that cb is called it will further call declareTest with the "myTest" name and a test function.
  * The test function when called will instantiate MyClass and call the myTest on that instance.
  */
-export interface TestRunner<RunnerSuiteType, RunnerTestType> {
-    /**
-     * Declare a test suite. For example:
-     *  - For mocha and jest call "global.describe".
-     * @param name The name of the suite.
-     * @param cb A callback that will be executed and will declare child suites and tests.
-     */
-    declareSuite(name: string, cb: () => void): any;
-    /**
-     * Declare a test. For example:
-     *  - for mocha and jest call "global.it".
-     * @param name
-     * @param cb
-     */
-    declareTest(name: string, cb: MaybeAsyncCallback): any;
-    /**
-     * Declares a suite, that is the only suite the runner should execute.
-     * For example with the mocha runner these are declared as `describe.only("suite", cb)`.
-     * These are very useful for development, when you want to focus on a single suite and reduce code change to test execution times.
-     */
-    declareSuiteOnly?(name: string, cb: () => void): any;
-    declareSuiteSkip?(name: string, cb: () => void): any;
-    declareSuitePending?(name: string, cb: () => void): any;
-    /**
-     * Declares a test, that is the only test the runner should execute.
-     * For example with the mocha runner these are declared as `it.only("suite", cb)`.
-     * hese are very useful for development, when you want to focus on a single suite and reduce code change to test execution times.
-     */
-    declareTestOnly?(name: string, cb: MaybeAsyncCallback): any;
-    /**
-     * For example:
-     *  - For mocha call "global.it.skip"
-     *  - For jasmine call "global.xit"
-     * @param name The name of the suite.
-     * @param cb A test callback thay may be provided.
-     */
-    declareTestSkip?(name: string, cb: MaybeAsyncCallback): any;
-    /**
-     * For example:
-     *  - For mocha call "global.it" without argument
-     *  - For jasmine call "global.xit"
-     * @param name The name of the suite.
-     * @param cb A test callback thay may be provided.
-     */
-    declareTestPending?(name: string): any;
-    declareBeforeAll?(cb: MaybeAsyncCallback): any;
-    declareBeforeEach?(cb: MaybeAsyncCallback): any;
-    declareAfterAll?(cb: MaybeAsyncCallback): any;
-    declareAfterEach?(cb: MaybeAsyncCallback): any;
-    setSlow?(context: RunnerSuiteType | RunnerTestType, ms: number): any;
-    setTimeout?(context: RunnerSuiteType | RunnerTestType, ms: number): any;
-    setRetries?(context: RunnerSuiteType | RunnerTestType, attempts: number): any;
+export interface TestRunner {
+    suite(name: string, callback: () => void, settings: SuiteSettings): any;
+    test(name: string, callback: CallbackOptionallyAsync, settings: TestSettings): any;
+    beforeAll(callback: CallbackOptionallyAsync, settings: LifecycleSettings): any;
+    beforeEach(callback: CallbackOptionallyAsync, settings: LifecycleSettings): any;
+    afterEach(callback: CallbackOptionallyAsync, settings: LifecycleSettings): any;
+    afterAll(callback: CallbackOptionallyAsync, settings: LifecycleSettings): any;
 }
-export declare class ClassTestUI<RunnerSuiteType, RunnerTestType> implements ClassTestUI<RunnerSuiteType, RunnerTestType> {
-    /**
-     * This is supposed to create a `Symbol(key)` but some platforms does not support Symbols yet so fallback to string keys for now.
-     * @param key
-     */
-    protected static MakeSymbol(key: string): string;
-    private static readonly suiteSymbol;
-    private static readonly testNameSymbol;
-    private static readonly parametersSymbol;
-    private static readonly nameForParametersSymbol;
-    private static readonly slowSymbol;
-    private static readonly timeoutSymbol;
-    private static readonly retriesSymbol;
-    private static readonly onlySymbol;
-    private static readonly pendingSymbol;
-    private static readonly skipSymbol;
-    private static readonly traitsSymbol;
-    private static readonly isTraitSymbol;
-    private static readonly contextSymbol;
-    readonly runner: TestRunner<RunnerSuiteType, RunnerTestType>;
-    readonly suite: SuiteDecorator<RunnerSuiteType>;
-    readonly test: TestDecorator<RunnerTestType>;
-    readonly params: ParameterisedTestDecorator;
-    readonly slow: NumericDecoratorOrTrait<RunnerSuiteType, RunnerTestType>;
-    readonly timeout: NumericDecoratorOrTrait<RunnerSuiteType, RunnerTestType>;
-    readonly retries: NumericDecoratorOrTrait<RunnerSuiteType, RunnerTestType>;
-    readonly pending: ConditionalClassAndMethodDecorator;
-    readonly only: ConditionalClassAndMethodDecorator;
-    readonly skip: ConditionalClassAndMethodDecorator;
-    readonly context: PropertyDecorator;
-    private readonly dependencyInjectionSystems;
-    constructor(runner: TestRunner<RunnerSuiteType, RunnerTestType>);
-    /**
-     * Register a dependency injection system to be used when instantiating test classes.
-     * @param instantiator The dependency injection system implementation.
-     */
-    registerDI(instantiator: DependencyInjectionSystem): void;
-    /**
-     * Declares the provided object as trait.
-     */
-    trait<Arg extends SuiteTrait<RunnerSuiteType> | TestTrait<RunnerTestType>>(arg: Arg): Arg;
-    private wrapNameAndToString;
-    private applyDecorators;
-    private applyTestTraits;
-    private applySuiteTraits;
-    private getInstance;
-    private suiteClassCallback;
-    private makeSuiteObject;
-    private makeSuiteFunction;
-    private suiteFuncCheckingDecorators;
-    private suiteOverload;
-    private makeTestObject;
-    private makeTestFunction;
-    private testOverload;
-    private makeParamsFunction;
-    private makeParamsNameFunction;
-    private makeParamsObject;
-    private createNumericBuiltinTrait;
-    private createExecutionModifier;
-}
-export {};
+/**
+ * Transfers the base's toString and name to the wrapping function.
+ */
+export declare function wrap<T extends Function>(wrap: T, base: Function): T;

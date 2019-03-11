@@ -1,23 +1,21 @@
+import { SuiteFunction } from "mocha";
+
 export class ClassTestUI {
   /**
    * This is supposed to create a `Symbol(key)` but some platforms does not support Symbols yet so fallback to string keys for now.
    * @param key 
    */
-  protected static MakeSymbol(key: string) { return "__testdeck_" + key; }
+  protected static MakeSymbol(key: string): symbol | string { return "__testdeck_" + key; }
 
   private static readonly suiteSymbol = ClassTestUI.MakeSymbol("suite");
-  private static readonly testNameSymbol = ClassTestUI.MakeSymbol("test");
+  private static readonly nameSymbol = ClassTestUI.MakeSymbol("name");
   private static readonly parametersSymbol = ClassTestUI.MakeSymbol("parametersSymbol");
   private static readonly nameForParametersSymbol = ClassTestUI.MakeSymbol("nameForParameters");
   private static readonly slowSymbol = ClassTestUI.MakeSymbol("slow");
   private static readonly timeoutSymbol = ClassTestUI.MakeSymbol("timeout");
   private static readonly retriesSymbol = ClassTestUI.MakeSymbol("retries");
-  private static readonly onlySymbol = ClassTestUI.MakeSymbol("only");
-  private static readonly pendingSymbol = ClassTestUI.MakeSymbol("pending");
-  private static readonly skipSymbol = ClassTestUI.MakeSymbol("skip");
-  private static readonly traitsSymbol = ClassTestUI.MakeSymbol("traits");
-  private static readonly isTraitSymbol = ClassTestUI.MakeSymbol("isTrait");
-  private static readonly contextSymbol = ClassTestUI.MakeSymbol("context");
+  private static readonly executionSymbol = ClassTestUI.MakeSymbol("execution");
+  private static readonly isDecoratorSymbol = ClassTestUI.MakeSymbol("isDecorator");
 
   public readonly runner: TestRunner;
 
@@ -28,13 +26,11 @@ export class ClassTestUI {
   public readonly timeout: ExecutionOption;
   public readonly retries: ExecutionOption;
 
-  public readonly pending: ExecutionModifier;
-  public readonly only: ExecutionModifier;
-  public readonly skip: ExecutionModifier;
+  public readonly pending: ExecutionModifierDecorator;
+  public readonly only: ExecutionModifierDecorator;
+  public readonly skip: ExecutionModifierDecorator;
 
   public readonly params: ParameterisedTestDecorator;
-
-  public readonly context: PropertyDecorator;
 
   private readonly dependencyInjectionSystems: DependencyInjectionSystem[] = [{
     handles() { return true; },
@@ -50,17 +46,13 @@ export class ClassTestUI {
     this.test = this.makeTestObject();
     this.params = this.makeParamsObject();
 
-    this.slow = this.createNumericBuiltinTrait(ClassTestUI.slowSymbol, (context, value) => this.runner.setSlow(context, value));
-    this.timeout = this.createNumericBuiltinTrait(ClassTestUI.timeoutSymbol, (context, value) => this.runner.setTimeout(context, value));
-    this.retries = this.createNumericBuiltinTrait(ClassTestUI.retriesSymbol, (context, value) => this.runner.setRetries(context, value));
+    this.slow = this.createExecutionOption(ClassTestUI.slowSymbol);
+    this.timeout = this.createExecutionOption(ClassTestUI.timeoutSymbol);
+    this.retries = this.createExecutionOption(ClassTestUI.retriesSymbol);
 
-    this.pending = this.createExecutionModifier(ClassTestUI.pendingSymbol);
-    this.only = this.createExecutionModifier(ClassTestUI.onlySymbol);
-    this.skip = this.createExecutionModifier(ClassTestUI.skipSymbol);
-
-    this.context = function context(target: Object, propertyKey: string): void {
-      target[ClassTestUI.contextSymbol] = propertyKey;
-    };
+    this.pending = this.createExecutionModifier("pending");
+    this.only = this.createExecutionModifier("only");
+    this.skip = this.createExecutionModifier("skip");
   }
 
   /**
@@ -76,55 +68,30 @@ export class ClassTestUI {
   }
 
   /**
-   * Declares the provided object as trait.
+   * Declares the provided function as decorator.
+   * Used to mark decorators such as `@timeout` that can sometimes be provided as single argument to `@suite(timeout(1000))`.
+   * In those cases the `suite()` overload should be able to distinguish the timeout function from class constructor.
    */
-  public trait<Arg extends SuiteTrait | TestTrait>(arg: Arg): Arg {
-    arg[ClassTestUI.isTraitSymbol] = true;
+  protected markAsDecorator<Arg extends ClassDecorator | SuiteDecorator>(arg: Arg): Arg {
+    arg[ClassTestUI.isDecoratorSymbol] = true;
     return arg;
   }
 
-  // Things regarding suite, abstract in a separate class...
-  private wrapNameAndToString(cb: (done?: Function) => any, innerFunction: Function): () => any {
-    cb.toString = () => innerFunction.toString();
-    Object.defineProperty(cb, "name", { value: innerFunction.name, writable: false });
-    return cb;
+  /**
+   * Transfers the base's toString and name to the wrapping function.
+   */
+  public wrap<T extends Function>(wrap: T, base: Function): T {
+    wrap.toString = () => base.toString();
+    Object.defineProperty(wrap, "name", { value: base.name, writable: false });
+    return wrap;
   };
 
-  private applyDecorators(context: RunnerSuiteType | RunnerTestType, ctorOrProto, method, instance) {
-    const timeoutValue = method[ClassTestUI.timeoutSymbol];
-    if (typeof timeoutValue === "number") {
-      this.runner.setTimeout(context, timeoutValue);
-    }
-    const slowValue = method[ClassTestUI.slowSymbol];
-    if (typeof slowValue === "number") {
-      this.runner.setSlow(context, slowValue);
-    }
-    const retriesValue = method[ClassTestUI.retriesSymbol];
-    if (typeof retriesValue === "number") {
-      this.runner.setRetries(context, retriesValue);
-    }
-    const contextProperty = ctorOrProto[ClassTestUI.contextSymbol];
-    if (contextProperty) {
-      instance[contextProperty] = context;
-    }
-  }
-
-  private applyTestTraits(context: RunnerTestType, instance: TestInstance, method: Function) {
-    const traits: TestTrait[] = method[ClassTestUI.traitsSymbol];
-    if (traits) {
-      traits.forEach((trait) => {
-        trait.call(context, context, instance, method);
-      });
-    }
-  }
-
-  private applySuiteTraits(context: RunnerSuiteType, target: TestInstance) {
-    const traits: SuiteTrait[] = target[ClassTestUI.traitsSymbol];
-    if (traits) {
-      traits.forEach((trait) => {
-        trait.call(context, context, target);
-      });
-    }
+  private getSettings(obj: any): LifecycleSettings | TestSettings | SuiteSettings {
+    return {
+      slow: obj[ClassTestUI.slowSymbol],
+      timeout: obj[ClassTestUI.timeoutSymbol],
+      retries: obj[ClassTestUI.retriesSymbol],
+    };
   }
 
   private getInstance<T>(testClass: TestClass<T>) {
@@ -133,162 +100,90 @@ export class ClassTestUI {
     return instance;
   }
 
-  private suiteClassCallback<T extends TestInstance>(target: TestClass<T>) {
+  private suiteCallbackFromClass<T extends TestInstance>(target: TestClass<T>): () => void {
     const theTestUI = this;
-    return function()  {
-      theTestUI.applySuiteTraits(this, target);
-      theTestUI.applyDecorators(this, target, target, target);
-      let instance;
+    return function() {
+      // Regsiter the static before method of the class to be called before-all tests.  
       if (target.before) {
         if (isAsync(target.before)) {
-          theTestUI.runner.declareBeforeAll(function(done) {
-            theTestUI.applyDecorators(this, target, target.before, target);
+          theTestUI.runner.beforeAll(theTestUI.wrap(function(done) {
             return target.before(done);
-          });
+          }, target.before), theTestUI.getSettings(target.before));
         } else {
-          theTestUI.runner.declareBeforeAll(function() {
-            theTestUI.applyDecorators(this, target, target.before, target);
+          theTestUI.runner.beforeAll(theTestUI.wrap(function() {
             return target.before();
-          });
+          }, target.before), theTestUI.getSettings(target.before));
         }
       }
+
+      // Register the static after method of the class to be called after-all tests.
       if (target.after) {
         if (isAsync(target.after)) {
-          theTestUI.runner.declareAfterAll(function(done) {
-            theTestUI.applyDecorators(this, target, target.after, target);
+          theTestUI.runner.afterAll(theTestUI.wrap(function(done) {
             return target.after(done);
-          });
+          }, target.after), theTestUI.getSettings(target.before));
         } else {
-          theTestUI.runner.declareAfterAll(function() {
-            theTestUI.applyDecorators(this, target, target.after, target);
+          theTestUI.runner.afterAll(theTestUI.wrap(function() {
             return target.after();
-          });
+          }, target.after), theTestUI.getSettings(target.before));
         }
       }
+
+      let instance;
+
+      // Register the first "before each" callback to be one that will instantiate the class.
+      theTestUI.runner.beforeEach(function() {
+        instance = theTestUI.getInstance(target);
+      }, {});
+      
       const prototype = target.prototype;
-      let beforeEachFunction: (() => any) | ((done: Function) => any);
+
+      // Register the instance before method to be called before-each test method.
       if (prototype.before) {
         if (isAsync(prototype.before)) {
-          beforeEachFunction = theTestUI.wrapNameAndToString(function(this: RunnerTestType, done: Function) {
-            instance = theTestUI.getInstance(target);
-            theTestUI.applyDecorators(this, prototype, prototype.before, instance);
+          theTestUI.runner.beforeEach(theTestUI.wrap(function(done: Function) {
             return prototype.before.call(instance, done);
-          }, prototype.before);
+          }, prototype.before), theTestUI.getSettings(prototype.before));
         } else {
-          beforeEachFunction = theTestUI.wrapNameAndToString(function(this: RunnerTestType) {
-            instance = theTestUI.getInstance(target);
-            theTestUI.applyDecorators(this, prototype, prototype.before, instance);
+          theTestUI.runner.beforeEach(theTestUI.wrap(function() {
             return prototype.before.call(instance);
-          }, prototype.before);
+          }, prototype.before), theTestUI.getSettings(prototype.before));
         }
-      } else {
-        beforeEachFunction = function(this: RunnerTestType) {
-          instance = theTestUI.getInstance(target);
-        };
       }
-      theTestUI.runner.declareBeforeEach(beforeEachFunction);
 
-      let afterEachFunction: (() => any) | ((done: Function) => any);
+      // Register the instance after method to be called after-each test method.
       if (prototype.after) {
         if (isAsync(prototype.after)) {
-          afterEachFunction = theTestUI.wrapNameAndToString(function(this: RunnerTestType, done) {
-            try {
-              theTestUI.applyDecorators(this, prototype, prototype.after, instance);
-              return prototype.after.call(instance, done);
-            } finally {
-              instance = undefined;
-            }
-          }, prototype.after);
+          theTestUI.runner.afterEach(theTestUI.wrap(function(done) {
+            return prototype.after.call(instance, done);
+          }, prototype.after), theTestUI.getSettings(prototype.after));
         } else {
-          afterEachFunction = theTestUI.wrapNameAndToString(function(this: RunnerTestType) {
-            try {
-              theTestUI.applyDecorators(this, prototype, prototype.after, instance);
-              return prototype.after.call(instance);
-            } finally {
-              instance = undefined;
-            }
-          }, prototype.after);
-        }
-      } else {
-        afterEachFunction = function(this: RunnerTestType) {
-          instance = undefined;
-        };
-      }
-      theTestUI.runner.declareAfterEach(afterEachFunction);
-
-      function runTest(prototype: any, method: Function) {
-        const testName = method[ClassTestUI.testNameSymbol];
-        const shouldSkip = method[ClassTestUI.skipSymbol] || prototype.constructor[ClassTestUI.skipSymbol];
-        const shouldOnly = method[ClassTestUI.onlySymbol] || prototype.constructor[ClassTestUI.onlySymbol];
-        const shouldPending = method[ClassTestUI.pendingSymbol];
-        const parameters = method[ClassTestUI.parametersSymbol] as TestParams[];
-
-        // assert testName is truthy
-        if (parameters) {
-          // we make the parameterised test a child suite so we can late bind the parameterised tests
-          theTestUI.runner.declareTest(testName, function() {
-            const nameForParameters = method[ClassTestUI.nameForParametersSymbol];
-            parameters.forEach((parameterOptions, i) => {
-              const { mark, name, params } = parameterOptions;
-
-              let parametersTestName = `${testName}_${i}`;
-              if (name) {
-                parametersTestName = name;
-              } else if (nameForParameters) {
-                parametersTestName = nameForParameters(params);
-              }
-
-              const shouldSkipParam = shouldSkip || (mark === Mark.skip);
-              const shouldOnlyParam = shouldOnly || (mark === Mark.only);
-              const shouldPendingParam = shouldPending || (mark === Mark.pending);
-
-              const testFunc = ((shouldPendingParam || shouldSkipParam) && theTestUI.runner.declareTestSkip)
-                              || (shouldOnlyParam && theTestUI.runner.declareTestOnly)
-                              || theTestUI.runner.declareTest;
-
-              applyTestFunc(testFunc, parametersTestName, method, [params]);
-            });
-          });
-        } else {
-          const testFunc = ((shouldPending || shouldSkip) && theTestUI.runner.declareTestSkip)
-                          || (shouldOnly && theTestUI.runner.declareTestOnly)
-                          || theTestUI.runner.declareTest;
-
-          applyTestFunc(testFunc, testName, method, []);
+          theTestUI.runner.afterEach(theTestUI.wrap(function() {
+            return prototype.after.call(instance);
+          }, prototype.after), theTestUI.getSettings(prototype.after));
         }
       }
+
+      // Register a final after-each method to clear the instance reference.
+      theTestUI.runner.afterEach(function() {
+        instance = null;
+      }, {});
 
       function isAsync(method: Function): boolean {
-
         const isParameterised = method[ClassTestUI.parametersSymbol] !== undefined;
         const length = method.length;
         return (isParameterised && length > 1) || (!isParameterised && length > 0);
       }
 
-      function applyTestFunc(testFunc: Function, testName: string, method: Function, callArgs: any[]) {
-        if (isAsync(method)) {
-          testFunc(testName, theTestUI.wrapNameAndToString(function(this: RunnerTestType, done) {
-            theTestUI.applyDecorators(this, prototype, method, instance);
-            theTestUI.applyTestTraits(this, instance, method);
-            return method.call(instance, done, ...callArgs);
-          }, method));
-        } else {
-          const t = testFunc(testName, theTestUI.wrapNameAndToString(function(this: RunnerTestType) {
-            theTestUI.applyDecorators(this, prototype, method, instance);
-            theTestUI.applyTestTraits(this, instance, method);
-            return method.call(instance, ...callArgs);
-          }, method));
-        }
-      }
-
-      // collect all tests along the inheritance chain, allow overrides
+      // All suite before/after each/all calls and instantiation have been set in place.
+      // Now collect all potential test methods and declare them in the underlying test framework.
       const collectedTests: { [key: string]: any[] } = {};
       let currentPrototype = prototype;
       while (currentPrototype !== Object.prototype) {
         Object.getOwnPropertyNames(currentPrototype).forEach((key) => {
           if (typeof prototype[key] === "function") {
             const method = prototype[key];
-            if (method[ClassTestUI.testNameSymbol] && !collectedTests[key]) {
+            if (method[ClassTestUI.nameSymbol] && !collectedTests[key]) {
               collectedTests[key] = [prototype, method];
             }
           }
@@ -299,114 +194,162 @@ export class ClassTestUI {
         }
       }
 
-      // run all collected tests
-      for (const key in collectedTests) {
-        const value = collectedTests[key];
-        runTest(value[0], value[1]);
-      }
+      // function declareTestMethod(prototype: any, method: Function) {
+      //   const testName = method[ClassTestUI.nameSymbol];
+
+      //   let execution: Execution = method[ClassTestUI.executionSymbol];
+      //   execution = mergeExecution(execution, prototype.constructor[ClassTestUI.executionSymbol]);
+
+      //   const parameters = method[ClassTestUI.parametersSymbol] as TestParams[];
+
+      //   if (parameters) {
+      //     // we make the parameterised test a child suite so we can late bind the parameterised tests
+      //     // theTestUI.runner.suite(testName, function() {
+      //     // }, theTestUI.getSettings());
+      //     theTestUI.runner.declareTest(testName, function() {
+      //       const nameForParameters = method[ClassTestUI.nameForParametersSymbol];
+      //       parameters.forEach((parameterOptions, i) => {
+      //         let { execution: paramExecution, name, params } = parameterOptions;
+              
+      //         paramExecution = mergeExecution(paramExecution, execution);
+
+      //         let parametersTestName = `${testName}_${i}`;
+      //         if (name) {
+      //           parametersTestName = name;
+      //         } else if (nameForParameters) {
+      //           parametersTestName = nameForParameters(params);
+      //         }
+
+      //         applyTestFunc(execution, parametersTestName, method, [params]);
+      //       });
+      //     });
+      //   } else {
+      //     const testFunc = ((shouldPending || shouldSkip) && theTestUI.runner.declareTestSkip)
+      //                     || (shouldOnly && theTestUI.runner.declareTestOnly)
+      //                     || theTestUI.runner.declareTest;
+
+      //     applyTestFunc(testFunc, testName, method, []);
+      //   }
+      // }
+
+      // function applyTestFunc(execution: undefined | Execution, testName: string, method: Function, callArgs: any[]) {
+      //   if (isAsync(method)) {
+      //     testFunc(testName, theTestUI.wrap(function(done) {
+      //       return method.call(instance, done, ...callArgs);
+      //     }, method));
+      //   } else {
+      //     testFunc(testName, theTestUI.wrap(function() {
+      //       return method.call(instance, ...callArgs);
+      //     }, method));
+      //   }
+      // }
+
+      // // collect all tests along the inheritance chain, allow overrides
+      // const collectedTests: { [key: string]: any[] } = {};
+      // let currentPrototype = prototype;
+      // while (currentPrototype !== Object.prototype) {
+      //   Object.getOwnPropertyNames(currentPrototype).forEach((key) => {
+      //     if (typeof prototype[key] === "function") {
+      //       const method = prototype[key];
+      //       if (method[ClassTestUI.nameSymbol] && !collectedTests[key]) {
+      //         collectedTests[key] = [prototype, method];
+      //       }
+      //     }
+      //   });
+      //   currentPrototype = (Object as any).getPrototypeOf(currentPrototype);
+      //   if (currentPrototype !== Object.prototype && currentPrototype.constructor[ClassTestUI.suiteSymbol]) {
+      //     throw new Error(`@suite ${prototype.constructor.name} cannot be a subclass of @suite ${currentPrototype.constructor.name}.`);
+      //   }
+      // }
+
+      // // run all collected tests
+      // for (const key in collectedTests) {
+      //   const value = collectedTests[key];
+      //   declareTestMethod(value[0], value[1]);
+      // }
     };
   }
 
   private makeSuiteObject(): SuiteDecorator {
-    return Object.assign(this.makeSuiteFunction(this.suiteFuncCheckingDecorators()), {
-      skip: this.makeSuiteFunction(() => this.runner.declareSuiteSkip),
-      only: this.makeSuiteFunction(() => this.runner.declareSuiteOnly),
-      pending: this.makeSuiteFunction(() => this.runner.declareSuitePending)
+    return Object.assign(this.makeSuiteFunction(), {
+      skip: this.makeSuiteFunction("skip"),
+      only: this.makeSuiteFunction("only"),
+      pending: this.makeSuiteFunction("pending")
     });
   }
 
-  private makeSuiteFunction<T extends TestInstance>(suiteFunc: (ctor: TestClass<T>) => Function) {
+  private makeSuiteFunction(executionSymbol?: Execution): SuiteDecoratorOrName {
     const theTestUI = this;
-    return this.suiteOverload({
-      suiteCtor(ctor: TestClass<T>): void {
+    const decorator = function() {
+      // Used as `@suite() class MySuite {}`
+      if (arguments.length === 0) {
+        return decorator;
+      }
+
+      // Used as `@suite class MySuite {}`
+      if (arguments.length === 1 && typeof arguments[0] === "function" && !arguments[0][ClassTestUI.isDecoratorSymbol]) {
+        const ctor = arguments[0];
         ctor[ClassTestUI.suiteSymbol] = true;
-        suiteFunc(ctor)(ctor.name, theTestUI.suiteClassCallback(ctor));
-      },
-      suiteDecorator(...traits: SuiteTrait[]): ClassDecorator {
-        return function <TFunction extends Function>(ctor: TFunction): void {
-          ctor[ClassTestUI.suiteSymbol] = true;
-          ctor[ClassTestUI.traitsSymbol] = traits;
-          suiteFunc(ctor as any)(ctor.name, theTestUI.suiteClassCallback(ctor as any));
-        };
-      },
-      suiteDecoratorNamed(name: string, ...traits: SuiteTrait[]): ClassDecorator {
-        return function <TFunction extends Function>(ctor: TFunction): void {
-          ctor[ClassTestUI.suiteSymbol] = true;
-          ctor[ClassTestUI.traitsSymbol] = traits;
-          suiteFunc(ctor as any)(name, theTestUI.suiteClassCallback(ctor as any));
-        };
-      }
-    });
-  }
-
-  private suiteFuncCheckingDecorators() {
-    return <T extends TestInstance>(ctor: TestClass<T>) => {
-      const shouldSkip = ctor[ClassTestUI.skipSymbol];
-      const shouldOnly = ctor[ClassTestUI.onlySymbol];
-      const shouldPending = ctor[ClassTestUI.pendingSymbol];
-      return (shouldOnly && this.runner.declareSuiteOnly)
-            || (shouldSkip && this.runner.declareSuiteSkip)
-            || (shouldPending && this.runner.declareSuitePending)
-            || this.runner.declareSuite;
-    };
-  }
-
-  private suiteOverload<T extends TestInstance>({suiteCtor, suiteDecorator, suiteDecoratorNamed}: {
-    suiteCtor(ctor: TestClass<T>): void;
-    suiteDecorator(...traits: SuiteTrait[]): ClassDecorator;
-    suiteDecoratorNamed(name: string, ...traits: SuiteTrait[]): ClassDecorator;
-  }) {
-    return function() {
-      const args = [];
-      for (let idx = 0; idx < arguments.length; idx++) {
-        args[idx] = arguments[idx];
+        ctor[ClassTestUI.executionSymbol] = mergeExecution(ctor[ClassTestUI.executionSymbol], executionSymbol)
+        theTestUI.runner.suite(ctor.name, theTestUI.suiteCallbackFromClass(ctor), theTestUI.getSettings(ctor));
       }
 
-      if (arguments.length === 1 && typeof arguments[0] === "function" && !arguments[0][ClassTestUI.isTraitSymbol]) {
-        return suiteCtor.apply(this, args);
+      // Used as `@suite("name", timeout(1000))`, return a decorator function,
+      // that when applied to a class will first apply the execution symbol and timeout decorators, and then register the class as suite.
+      let hasName = typeof arguments[0] === "string";
+      let name: string = hasName ? arguments[0] : undefined;
+      let decorators: ClassDecorator[] = [];
+      for(let i = hasName ? 1 : 0; i < arguments.length; i++) {
+        decorators.push(arguments[i]);
       }
-
-      if (arguments.length >= 1 && typeof arguments[0] === "string") {
-        return suiteDecoratorNamed.apply(this, args);
+      
+      return function(ctor) {
+        ctor[ClassTestUI.suiteSymbol] = true;
+        ctor[ClassTestUI.executionSymbol] = mergeExecution(ctor[ClassTestUI.executionSymbol], executionSymbol)
+        for(const decorator of decorators) {
+          decorator(ctor);
+        }
+        theTestUI.runner.suite(hasName ? name : ctor.name, theTestUI.suiteCallbackFromClass(ctor), theTestUI.getSettings(ctor));
       }
+    }
 
-      return suiteDecorator.apply(this, args);
-    };
+    return decorator;
   }
 
   // Things regarding test, abstract in a separate class...
   private makeTestObject(): TestDecorator {
     return Object.assign(this.makeTestFunction(), {
-      skip: this.makeTestFunction(ClassTestUI.skipSymbol),
-      only: this.makeTestFunction(ClassTestUI.onlySymbol),
-      pending: this.makeTestFunction(ClassTestUI.pendingSymbol)
+      skip: this.makeTestFunction("skip"),
+      only: this.makeTestFunction("only"),
+      pending: this.makeTestFunction("pending")
     });
   }
 
-  private makeTestFunction(mark: null | string | symbol = null) {
+  private makeTestFunction(executionSymbol?: Execution) {
     return this.testOverload({
       testProperty(target: Object, propertyKey: string | symbol, descriptor?: PropertyDescriptor): void {
-        target[propertyKey][ClassTestUI.testNameSymbol] = propertyKey.toString();
-        if (mark) {
-          target[propertyKey][mark] = true;
+        target[propertyKey][ClassTestUI.nameSymbol] = propertyKey.toString();
+        target[propertyKey][ClassTestUI.executionSymbol] = mergeExecution(target[propertyKey][ClassTestUI.executionSymbol], executionSymbol);
+        if (executionSymbol) {
+          target[propertyKey][executionSymbol] = true;
         }
       },
-      testDecorator(...traits: TestTrait[]): PropertyDecorator & MethodDecorator {
+      testDecorator(...decorators: MethodDecorator[]): PropertyDecorator & MethodDecorator {
         return function(target: Object, propertyKey: string | symbol, descriptor?: PropertyDescriptor): void {
-          target[propertyKey][ClassTestUI.testNameSymbol] = propertyKey.toString();
-          target[propertyKey][ClassTestUI.traitsSymbol] = traits;
-          if (mark) {
-            target[propertyKey][mark] = true;
+          target[propertyKey][ClassTestUI.nameSymbol] = propertyKey.toString();
+          for(const decorator of decorators) {
+            decorator(target, propertyKey, descriptor);
           }
+          target[propertyKey][ClassTestUI.executionSymbol] = mergeExecution(target[propertyKey][ClassTestUI.executionSymbol], executionSymbol);
         };
       },
-      testDecoratorNamed(name: string, ...traits: TestTrait[]): PropertyDecorator & MethodDecorator {
+      testDecoratorNamed(name: string, ...decorators: MethodDecorator[]): PropertyDecorator & MethodDecorator {
         return function(target: Object, propertyKey: string | symbol, descriptor?: PropertyDescriptor): void {
-          target[propertyKey][ClassTestUI.testNameSymbol] = name;
-          target[propertyKey][ClassTestUI.traitsSymbol] = traits;
-          if (mark) {
-            target[propertyKey][mark] = true;
+          target[propertyKey][ClassTestUI.nameSymbol] = name;
+          for(const decorator of decorators) {
+            decorator(target, propertyKey, descriptor);
           }
+          target[propertyKey][ClassTestUI.executionSymbol] = mergeExecution(target[propertyKey][ClassTestUI.executionSymbol], executionSymbol);
         };
       }
     });
@@ -414,8 +357,8 @@ export class ClassTestUI {
 
   private testOverload({testProperty, testDecorator, testDecoratorNamed}: {
     testProperty(target: Object, propertyKey: string | symbol, descriptor?: PropertyDescriptor): void;
-    testDecorator(...traits: TestTrait[]): PropertyDecorator & MethodDecorator;
-    testDecoratorNamed(name: string, ...traits: TestTrait[]): PropertyDecorator & MethodDecorator;
+    testDecorator(...decorators: MethodDecorator[]): MethodDecorator;
+    testDecoratorNamed(name: string, ...decorators: MethodDecorator[]): MethodDecorator;
   }) {
     return function() {
       const args = [];
@@ -433,12 +376,12 @@ export class ClassTestUI {
     };
   }
 
-  private makeParamsFunction(mark: Mark) {
+  private makeParamsFunction(execution?: Execution) {
     return (params: any, name?: string) => {
       return (target: Object, propertyKey: string) => {
-        target[propertyKey][ClassTestUI.testNameSymbol] = propertyKey.toString();
+        target[propertyKey][ClassTestUI.nameSymbol] = propertyKey.toString();
         target[propertyKey][ClassTestUI.parametersSymbol] = target[propertyKey][ClassTestUI.parametersSymbol] || [];
-        target[propertyKey][ClassTestUI.parametersSymbol].push({ mark, name, params } as TestParams);
+        target[propertyKey][ClassTestUI.parametersSymbol].push({ execution, name, params } as TestParams);
       };
     };
   }
@@ -452,10 +395,10 @@ export class ClassTestUI {
   }
 
   private makeParamsObject() {
-    return Object.assign(this.makeParamsFunction(Mark.test), {
-      skip: this.makeParamsFunction(Mark.skip),
-      only: this.makeParamsFunction(Mark.only),
-      pending: this.makeParamsFunction(Mark.pending),
+    return Object.assign(this.makeParamsFunction(), {
+      skip: this.makeParamsFunction("skip"),
+      only: this.makeParamsFunction("only"),
+      pending: this.makeParamsFunction("pending"),
       naming: this.makeParamsNameFunction()
     });
   }
@@ -463,54 +406,19 @@ export class ClassTestUI {
   /**
    * Create execution options such as `@slow`, `@timeout` and `@retries`.
    */
-  private createNumericBuiltinTrait(key: any, fn: (ctx: RunnerSuiteType | RunnerTestType, value: number) => void): ExecutionOption {
+  private createExecutionOption(key: symbol | string): ExecutionOption {
     const classTestUIInstance = this;
-    return function(value: number): ClassDecorator & MethodDecorator & SuiteTrait & TestTrait {
-      return classTestUIInstance.trait(function() {
+    return function(value: number): ClassDecorator | MethodDecorator {
+      return classTestUIInstance.markAsDecorator(function() {
         if (arguments.length === 1) {
-          // Class decorator
           const target = arguments[0];
           target[key] = value;
-          return;
-        }
-
-        /* istanbul ignore if  */
-        if (arguments.length === 2 && typeof arguments[1] === "string") {
-          // PropertyDecorator, some TSC versions generated property decorators when decorating method
-          const target = arguments[0];
-          const property = arguments[1];
-          target[property][key] = value;
-          return;
-        }
-
-        if (arguments.length === 2) {
-          // Class trait as retries in `@suite(repeat(2)) class X {}`
-          const context: RunnerSuiteType = arguments[0];
-          const ctor = arguments[1];
-          fn(context, value);
-          return;
-        }
-
-        if (arguments.length === 3 && typeof arguments[2] === "function") {
-          // Metod trait as retries in `@suite class { @test(retries(4)) method() {} }`
-          const context: RunnerTestType = arguments[0];
-          const instance = arguments[1];
-          const method = arguments[2];
-          fn(context, value);
-          return;
-        }
-
-        /* istanbul ignore else */
-        if (arguments.length === 3 && typeof arguments[1] === "string") {
-          // MethodDecorator
-          const proto: RunnerTestType = arguments[0];
+        } else {
+          const proto = arguments[0];
           const prop = arguments[1];
           const descriptor = arguments[2];
           proto[prop][key] = value;
-          return;
         }
-
-        // assert unreachable.
       });
     };
   }
@@ -518,7 +426,7 @@ export class ClassTestUI {
   /**
    * Creates the decorators `@pending`, `@only`, `@skip`.
    */
-  private createExecutionModifier(key: Symbol | string): ExecutionModifier {
+  private createExecutionModifier(execution: Execution): ExecutionModifierDecorator {
     const decorator = function(target: Function | boolean, propertyKey?: string | symbol): any {
       if (typeof target === "undefined" || typeof target === "boolean") {
         if (target) {
@@ -528,45 +436,40 @@ export class ClassTestUI {
         }
       }
       if (arguments.length === 1) {
-        target[key as any] = true;
+        target[ClassTestUI.executionSymbol] = mergeExecution(execution, target[ClassTestUI.executionSymbol]);
       } else {
-        target[propertyKey][key] = true;
+        target[propertyKey][ClassTestUI.executionSymbol] = mergeExecution(execution, target[ClassTestUI.executionSymbol]);
       }
     };
     return decorator;
   }
 }
 
-type Done = (err?: any) => void;
-export type MaybeAsyncCallback = (done?: Done) => void | Promise<void>;
-declare type RunnerSuiteType = any;
-declare type RunnerTestType = any;
+function mergeExecution(a: Execution, b: Execution): Execution {
+  if (a === "only" || b === "only") return "only";
+  if (a === "skip" || b === "skip") return "skip";
+  if (a === "pending" || b === "pending") return "pending";
+  return undefined;
+}
 
-/**
- * @deprecated
- */
-export type SuiteTrait = (this: any, ctx: any, ctor: any) => void;
-/**
- * deprecated
- */
-export type TestTrait = (this: any, ctx: any, instance: any, method: any) => void;
+export type Done = (err?: any) => void;
+export type CallbackOptionallyAsync = (done?: Done) => void | Promise<void>;
 
-interface SuiteDecoratorOrName extends ClassDecorator {
-  (name?: string): ClassDecorator;
-
+export interface SuiteDecoratorOrName extends ClassDecorator {
   /**
-   * Traits were introduced to allow external implementations of mocha specific options.
-   * This however increased imensly the complexity of the overload handling and is not applicable for other test runners.
-   * @deprecated
+   * Callable with optional name, followed by decorators. Allows:
+   * ```
+   * @suite
+   * @timeout(1000)
+   * @slow(500)
+   * ```
+   * To condensed on a single line:
+   * ```
+   * @suite(timeout(1000), slow(500))
+   * ```
+   * Please note the pit fall in the first case - the `@suite` must be the first decorator.
    */
-  (name?: SuiteTrait, ...traits: SuiteTrait[]): ClassDecorator;
-
-  /**
-   * Traits were introduced to allow external implementations of mocha specific options.
-   * This however increased imensly the complexity of the overload handling and is not applicable for other test runners.
-   * @deprecated
-   */
-  (trait: SuiteTrait, ...traits: SuiteTrait[]): ClassDecorator;
+  (name?: string, ...decorators: ClassDecorator[]): ClassDecorator;
 }
 
 export interface SuiteDecorator extends SuiteDecoratorOrName {
@@ -576,7 +479,20 @@ export interface SuiteDecorator extends SuiteDecoratorOrName {
 }
 
 export interface TestDecoratorOrName extends MethodDecorator {
-  (name?: string): MethodDecorator;
+  /**
+   * Callable with optional name, followed by decorators. Allows:
+   * ```
+   * @test
+   * @timeout(1000)
+   * @slow(500)
+   * ```
+   * To condensed on a single line:
+   * ```
+   * @test(timeout(1000), slow(500))
+   * ```
+   * Please note the pit fall in the first case - the `@test` must be the first decorator.
+   */
+  (name?: string, ...decorator: MethodDecorator[]): MethodDecorator;
 }
 
 /**
@@ -603,7 +519,7 @@ export interface ExecutionOption {
  * Decorators can be used as `@pending`, `@only` and `@skip`.
  * Or with condition: `@only(isWindows)`.
  */
-export interface ExecutionModifier extends ClassDecorator, MethodDecorator {
+export interface ExecutionModifierDecorator extends ClassDecorator, MethodDecorator {
   (condition: boolean): ClassDecorator | MethodDecorator;
 }
 
@@ -647,12 +563,35 @@ export interface DependencyInjectionSystem {
   create<T>(cls: TestClass<T>): T;
 }
 
-const enum Mark { test, skip, only, pending }
+/**
+ * Test or suite execution.
+ * The `undefined` means execute as normal. 
+ */
+export type Execution = undefined | "pending" | "only" | "skip";
 
 interface TestParams {
-  mark: Mark;
+  execution?: Execution;
   name?: string;
   params: any;
+}
+
+export interface SuiteSettings {
+  execution?: Execution,
+  timeout?: number,
+  slow?: number,
+  retries?: number
+}
+
+export interface TestSettings {
+  execution?: Execution,
+  timeout?: number,
+  slow?: number,
+  retries?: number
+}
+
+export interface LifecycleSettings {
+  timeout?: number,
+  slow?: number
 }
 
 /**
@@ -670,65 +609,11 @@ interface TestParams {
  * The test function when called will instantiate MyClass and call the myTest on that instance.
  */
 export interface TestRunner {
-  /**
-   * Declare a test suite. For example:
-   *  - For mocha and jest call "global.describe".
-   * @param name The name of the suite.
-   * @param cb A callback that will be executed and will declare child suites and tests.
-   */
-  declareSuite(name: string, cb: () => void);
+  suite(name: string, callback: () => void, options: SuiteSettings);
+  test(name: string, callback: CallbackOptionallyAsync, options: TestSettings);
 
-  /**
-   * Declare a test. For example:
-   *  - for mocha and jest call "global.it".
-   * @param name 
-   * @param cb 
-   */
-  declareTest(name: string, cb: MaybeAsyncCallback);
-
-  /**
-   * Declares a suite, that is the only suite the runner should execute.
-   * For example with the mocha runner these are declared as `describe.only("suite", cb)`.
-   * These are very useful for development, when you want to focus on a single suite and reduce code change to test execution times.
-   */
-  declareSuiteOnly?(name: string, cb: () => void);
-
-  declareSuiteSkip?(name: string, cb: () => void);
-
-  declareSuitePending?(name: string, cb: () => void);
-
-  /**
-   * Declares a test, that is the only test the runner should execute.
-   * For example with the mocha runner these are declared as `it.only("suite", cb)`.
-   * hese are very useful for development, when you want to focus on a single suite and reduce code change to test execution times.
-   */
-  declareTestOnly?(name: string, cb: MaybeAsyncCallback);
-
-  /**
-   * For example:
-   *  - For mocha call "global.it.skip"
-   *  - For jasmine call "global.xit"
-   * @param name The name of the suite.
-   * @param cb A test callback thay may be provided.
-   */
-  declareTestSkip?(name: string, cb: MaybeAsyncCallback);
-
-  /**
-   * For example:
-   *  - For mocha call "global.it" without argument
-   *  - For jasmine call "global.xit"
-   * @param name The name of the suite.
-   * @param cb A test callback thay may be provided.
-   */
-  declareTestPending?(name: string);
-
-  declareBeforeAll?(cb: MaybeAsyncCallback);
-  declareBeforeEach?(cb: MaybeAsyncCallback);
-  declareAfterAll?(cb: MaybeAsyncCallback);
-  declareAfterEach?(cb: MaybeAsyncCallback);
-
-  // TODO: I am sloppy here, before merge split on "setSuiteSlow" and "setTestSlow" pairs
-  setSlow?(context: any, ms: number);
-  setTimeout?(context: any, ms: number);
-  setRetries?(context: any, attempts: number);
+  beforeAll(callback: CallbackOptionallyAsync, options: LifecycleSettings);
+  beforeEach(callback: CallbackOptionallyAsync, options: LifecycleSettings);
+  afterEach(callback: CallbackOptionallyAsync, options: LifecycleSettings);
+  afterAll(callback: CallbackOptionallyAsync, options: LifecycleSettings);
 }

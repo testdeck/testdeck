@@ -19,7 +19,7 @@
   },
   "scripts": {
     "prepare": "tsc",
-    "test": "tsc && nyc mocha && tslint --project .",
+    "test-ignore": "tsc && nyc mocha && tslint --project .",
     "tslint": "tslint --project .",
     "tslint:fix": "tslint --fix --project ."
   },

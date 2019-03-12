@@ -25,7 +25,7 @@
     "coverage:run": "nyc mocha test/it/*SuiteIT.ts --opts test/mocha.opts",
     "lint": "tslint --project .",
     "lint:fix": "tslint --fix --project .",
-    "test": "npm run it:suite",
+    "test-ignore": "npm run it:suite",
     "test:ci": "npm run build && npm run coverage:run",
     "it:suite": "npm run build && npm run it:suite:run",
     "it:suite:run": "mocha test/it/*SuiteIT.ts --opts test/mocha.opts"

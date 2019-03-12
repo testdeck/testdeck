@@ -27,7 +27,7 @@
     "lint": "tslint --project .",
     "lint:fix": "tslint --fix --project .",
     "test:ci": "npm run build && npm run lint && npm run coverage:run",
-    "test": "npm run build && npm run lint && npm run it:suite:run",
+    "test-ignore": "npm run build && npm run lint && npm run it:suite:run",
     "it:suite": "npm run build && npm run it:suite:run",
     "it:suite:run": "jest --testRegex '^.*.suite.ts$'"
   },

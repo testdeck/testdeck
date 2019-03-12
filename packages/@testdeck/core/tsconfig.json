@@ -10,7 +10,8 @@
         "declaration": true,
         "lib": [
           "es5", "es6"
-        ]
+        ],
+        "outDir": "dist"
     },
     "compileOnSave": false
 }

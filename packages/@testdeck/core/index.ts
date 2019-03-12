@@ -78,12 +78,12 @@ export abstract class ClassTestUI {
   }
 
   private getSettings(obj: any): LifecycleSettings | TestSettings | SuiteSettings {
-    return {
-      slow: obj[ClassTestUI.slowSymbol],
-      timeout: obj[ClassTestUI.timeoutSymbol],
-      retries: obj[ClassTestUI.retriesSymbol],
-      execution: obj[ClassTestUI.executionSymbol]
-    };
+    let settings = undefined;
+    if (ClassTestUI.slowSymbol in obj) (settings || (settings = {})).slow = obj[ClassTestUI.slowSymbol];
+    if (ClassTestUI.timeoutSymbol in obj) (settings || (settings = {})).slow = obj[ClassTestUI.timeoutSymbol];
+    if (ClassTestUI.retriesSymbol in obj) (settings || (settings = {})).slow = obj[ClassTestUI.retriesSymbol];
+    if (ClassTestUI.executionSymbol in obj) (settings || (settings = {})).slow = obj[ClassTestUI.executionSymbol];
+    return settings;
   }
 
   private getInstance<T>(testClass: TestClass<T>) {
@@ -570,13 +570,13 @@ export interface LifecycleSettings {
  * The test function when called will instantiate MyClass and call the myTest on that instance.
  */
 export interface TestRunner {
-  suite(name: string, callback: () => void, settings: SuiteSettings);
-  test(name: string, callback: CallbackOptionallyAsync, settings: TestSettings);
+  suite(name: string, callback: () => void, settings?: SuiteSettings);
+  test(name: string, callback: CallbackOptionallyAsync, settings?: TestSettings);
 
-  beforeAll(callback: CallbackOptionallyAsync, settings: LifecycleSettings);
-  beforeEach(callback: CallbackOptionallyAsync, settings: LifecycleSettings);
-  afterEach(callback: CallbackOptionallyAsync, settings: LifecycleSettings);
-  afterAll(callback: CallbackOptionallyAsync, settings: LifecycleSettings);
+  beforeAll(callback: CallbackOptionallyAsync, settings?: LifecycleSettings);
+  beforeEach(callback: CallbackOptionallyAsync, settings?: LifecycleSettings);
+  afterEach(callback: CallbackOptionallyAsync, settings?: LifecycleSettings);
+  afterAll(callback: CallbackOptionallyAsync, settings?: LifecycleSettings);
 }
 
 /**

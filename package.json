@@ -16,8 +16,13 @@
     "url": "https://github.com/testdeck"
   },
   "devDependencies": {
+    "@types/chai": "^4.1.7",
+    "chai": "^4.2.0",
     "lerna": "latest",
-    "tsc": "latest"
+    "nyc": "latest",
+    "tsc": "latest",
+    "tslint": "latest",
+    "typescript": "latest"
   },
   "scripts": {
     "prepare": "lerna bootstrap --no-ci",

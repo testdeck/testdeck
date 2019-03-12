@@ -15,15 +15,16 @@
     "url": "https://github.com/testdeck"
   },
   "main": "dist/index.js",
-  "types": "typings/index.d.ts",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "prepare": "tsc"
+    "prepare": "tsc",
+    "pretest": "tsc",
+    "test": "nyc mocha dist/test.js && tslint --project ."
   },
   "dependencies": {
   },
   "files": [
-    "index.js",
-    "index.d.ts",
-    "index.js.map"
+    "dist/index.js",
+    "dist/index.d.ts"
   ]
 }

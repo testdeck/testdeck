@@ -80,9 +80,9 @@ export abstract class ClassTestUI {
   private getSettings(obj: any): LifecycleSettings | TestSettings | SuiteSettings {
     let settings = undefined;
     if (ClassTestUI.slowSymbol in obj) (settings || (settings = {})).slow = obj[ClassTestUI.slowSymbol];
-    if (ClassTestUI.timeoutSymbol in obj) (settings || (settings = {})).slow = obj[ClassTestUI.timeoutSymbol];
-    if (ClassTestUI.retriesSymbol in obj) (settings || (settings = {})).slow = obj[ClassTestUI.retriesSymbol];
-    if (ClassTestUI.executionSymbol in obj) (settings || (settings = {})).slow = obj[ClassTestUI.executionSymbol];
+    if (ClassTestUI.timeoutSymbol in obj) (settings || (settings = {})).timeout = obj[ClassTestUI.timeoutSymbol];
+    if (ClassTestUI.retriesSymbol in obj) (settings || (settings = {})).retries = obj[ClassTestUI.retriesSymbol];
+    if (ClassTestUI.executionSymbol in obj) (settings || (settings = {})).execution = obj[ClassTestUI.executionSymbol];
     return settings;
   }
 
@@ -376,7 +376,7 @@ export abstract class ClassTestUI {
    */
   private createExecutionOption(key: symbol | string): ExecutionOptionDecorator {
     const classTestUIInstance = this;
-    return function(value: number): ClassDecorator | MethodDecorator {
+    return function(value: number): ClassDecorator & MethodDecorator {
       return classTestUIInstance.markAsDecorator(function() {
         if (arguments.length === 1) {
           const target = arguments[0];
@@ -430,7 +430,14 @@ export interface SuiteDecoratorOrName extends ClassDecorator {
    * ```
    * Please note the pit fall in the first case - the `@suite` must be the first decorator.
    */
-  (name?: string, ...decorators: ClassDecorator[]): ClassDecorator;
+  (name: string, ...decorators: ClassDecorator[]): ClassDecorator;
+  /**
+   * Called with decorators only, such as:
+   * ```
+   * @suite(timeout(1000), slow(500))
+   * ```
+   */
+  (...decorator: ClassDecorator[]): ClassDecorator;
 }
 
 export interface SuiteDecorator extends SuiteDecoratorOrName {
@@ -453,7 +460,14 @@ export interface TestDecoratorOrName extends MethodDecorator {
    * ```
    * Please note the pit fall in the first case - the `@test` must be the first decorator.
    */
-  (name?: string, ...decorator: MethodDecorator[]): MethodDecorator;
+  (name: string, ...decorator: MethodDecorator[]): MethodDecorator;
+  /**
+   * Called as:
+   * ```
+   * @test(timeout(1000), slow(500))
+   * ```
+   */
+  (...decorator: MethodDecorator[]): MethodDecorator;
 }
 
 /**
@@ -472,7 +486,7 @@ export interface TestDecorator extends TestDecoratorOrName {
  * These can also be used as traits - such as `@suite(timeout(2000))`.
  */
 export interface ExecutionOptionDecorator {
-  (value: number): ClassDecorator | MethodDecorator;
+  (value: number): ClassDecorator & MethodDecorator;
 }
 
 /**
@@ -481,7 +495,7 @@ export interface ExecutionOptionDecorator {
  * Or with condition: `@only(isWindows)`.
  */
 export interface ExecutionModifierDecorator extends ClassDecorator, MethodDecorator {
-  (condition: boolean): ClassDecorator | MethodDecorator;
+  (condition: boolean): ClassDecorator & MethodDecorator;
 }
 
 export interface ParameterisedTestDecorator {

@@ -4,42 +4,58 @@ import {
     SuiteSettings,
     CallbackOptionallyAsync,
     TestSettings,
-    LifecycleSettings
+    LifecycleSettings,
+    Done
 } from "./index";
 
 class LoggingClassTestUI extends ClassTestUI {
+    public log: LoggingClassTestUI.Log;
     private readonly logger: LoggingClassTestUI.LoggingRunner;
     constructor() {
         const runner = new LoggingClassTestUI.LoggingRunner();
         super(runner);
+        this.log = LoggingClassTestUI.Log.Default;
+        runner.ui = this;
         this.logger = runner;
     }
-    get root(): (LoggingClassTestUI.SuiteInfo | LoggingClassTestUI.TestInfo)[] { return this.logger.peek; }
+    get root(): LoggingClassTestUI.ChildInfo[] { return this.logger.peek; }
 }
 
 module LoggingClassTestUI {
+    export interface LifecycleInfo {
+        type: "beforeAll" | "afterAll" | "beforeEach" | "afterEach";
+        name: string;
+        callback?: CallbackOptionallyAsync;
+        settings?: LifecycleSettings;
+    }
+
     export interface TestInfo {
-        type: "test",
-        name: string,
+        type: "test";
+        name: string;
+        callback?: CallbackOptionallyAsync;
         settings?: TestSettings;
     }
 
     export interface SuiteInfo {
         type: "suite";
         name: string;
+        callback?: () => void;
         settings?: SuiteSettings;
-        children: (SuiteInfo | TestInfo)[];
+        children: ChildInfo[];
     }
+
+    export type ChildInfo = SuiteInfo | TestInfo | LifecycleInfo;
 
     export class LoggingRunner {
         public ui: LoggingClassTestUI;
-        public stack: (SuiteInfo | TestInfo)[][] = [[]];
+        public stack: ChildInfo[][] = [[]];
 
-        get peek(): (SuiteInfo | TestInfo)[] { return this.stack[this.stack.length - 1]; }
+        get peek(): ChildInfo[] { return this.stack[this.stack.length - 1]; }
 
         suite(name: string, callback: () => void, settings?: SuiteSettings) {
-            const suite: (SuiteInfo | TestInfo) = { type: "suite", name, children: [] };
+            const suite: SuiteInfo = { type: "suite", name, children: [] };
             if (settings) suite.settings = settings;
+            if (this.ui.log & LoggingClassTestUI.Log.Callback) suite.callback = callback;
             this.peek.push(suite);
             this.stack.push(suite.children);
             try {
@@ -49,22 +65,48 @@ module LoggingClassTestUI {
             }
         }
         test(name: string, callback: CallbackOptionallyAsync, settings?: TestSettings) {
-            const test: (SuiteInfo | TestInfo) = { type: "test", name };
+            const test: TestInfo = { type: "test", name };
             if (settings) test.settings = settings;
+            if (this.ui.log & LoggingClassTestUI.Log.Callback) test.callback = callback;
             this.peek.push(test);
             try {
                 callback();
             } finally {
             }
         }
-        beforeAll(callback: CallbackOptionallyAsync, settings: LifecycleSettings) {
+        beforeAll(name: string, callback: CallbackOptionallyAsync, settings: LifecycleSettings) {
+            const before: ChildInfo = { type: "beforeAll", name };
+            if (settings) before.settings = settings;
+            if (this.ui.log & LoggingClassTestUI.Log.Callback) before.callback = callback;
+            this.peek.push(before);
         }
-        beforeEach(callback: CallbackOptionallyAsync, settings: LifecycleSettings) {
+        beforeEach(name: string, callback: CallbackOptionallyAsync, settings: LifecycleSettings) {
+            if (name == "setup instance" && !(this.ui.log & LoggingClassTestUI.Log.SetupTeardown)) return;
+            const before: ChildInfo = { type: "beforeEach", name };
+            if (settings) before.settings = settings;
+            if (this.ui.log & LoggingClassTestUI.Log.Callback) before.callback = callback;
+            this.peek.push(before);
         }
-        afterEach(callback: CallbackOptionallyAsync, settings: LifecycleSettings) {
+        afterEach(name: string, callback: CallbackOptionallyAsync, settings: LifecycleSettings) {
+            if (name == "teardown instance" && !(this.ui.log & LoggingClassTestUI.Log.SetupTeardown)) return;
+            const after: ChildInfo = { type: "afterEach", name };
+            if (settings) after.settings = settings;
+            if (this.ui.log & LoggingClassTestUI.Log.Callback) after.callback = callback;
+            this.peek.push(after);
         }
-        afterAll(callback: CallbackOptionallyAsync, settings: LifecycleSettings) {
+        afterAll(name: string, callback: CallbackOptionallyAsync, settings: LifecycleSettings) {
+            const after: ChildInfo = { type: "afterAll", name };
+            if (settings) after.settings = settings;
+            if (this.ui.log & LoggingClassTestUI.Log.Callback) after.callback = callback;
+            this.peek.push(after);
         }
+    }
+
+    export const enum Log {
+        Default = 0,
+        SetupTeardown = 1,
+        Callback = 2,
+        All = SetupTeardown | Callback
     }
 }
 
@@ -203,6 +245,82 @@ describe("decorators", function() {
             }]
         }]);
     });
+
+    it("before and after", function() {
+
+        ui.log = LoggingClassTestUI.Log.SetupTeardown;
+
+        @ui.suite class SomeSuite {
+            static before() {}
+            before() {}
+            after() {}
+            static after() {}
+        }
+
+        assert.deepEqual(ui.root,[{
+            "type": "suite",
+            "name": "SomeSuite",
+            "children": [{
+                "type": "beforeAll",
+                "name": "static before"
+            }, {
+                "type": "beforeEach",
+                "name": "setup instance"
+            }, {
+                "type": "beforeEach",
+                "name": "before"
+            }, {
+                "type": "afterEach",
+                "name": "after"
+            }, {
+                "type": "afterEach",
+                "name": "teardown instance"
+            }, {
+                "type": "afterAll",
+                "name": "static after"
+            }]
+        }]);
+    });
+
+    it("async done callbacks", function() {
+        
+        ui.log = LoggingClassTestUI.Log.Callback;
+
+        @ui.suite class AllSync {
+            static before() {}
+            before() {}
+            @ui.test test() {}
+            after() {}
+            static after() {}
+        }
+
+        @ui.suite class AllAsync {
+            static before(done: Done) {}
+            before(done: Done) {}
+            @ui.test test(done: Done) {}
+            after(done: Done) {}
+            static after(done: Done) {}
+        }
+
+        assert.equal(ui.root.length, 2);
+        const syncSuite = (ui.root[0] as LoggingClassTestUI.SuiteInfo);
+        const asyncSuite = (ui.root[1] as LoggingClassTestUI.SuiteInfo);
+        assert.equal(syncSuite.children.length, 5);
+        assert.equal(asyncSuite.children.length, 5);
+        syncSuite.children.forEach(child => assert.equal(child.callback.length, 0));
+        asyncSuite.children.forEach(child => assert.equal(child.callback.length, 1));
+
+
+        console.log(JSON.stringify(ui.root, null, "  "));
+    });
+
+    it("named suites and tests");
+    it("params");
+});
+
+describe("lifecycle hooks", function() {
+    it("instantiate on ctor and clean-up on dtor");
+    it("instantiate through DI A/B");
 });
 
 declare var console;

@@ -86,7 +86,7 @@ export abstract class ClassTestUI {
     return settings;
   }
 
-  private getInstance<T>(testClass: TestClass<T>) {
+  private createInstance<T>(testClass: TestClass<T>) {
     const di = this.dependencyInjectionSystems.find((di) => di.handles(testClass));
     const instance = di.create(testClass);
     return instance;
@@ -99,68 +99,37 @@ export abstract class ClassTestUI {
       if (target.before) {
         const settings = theTestUI.getSettings(target.before);
         if (isAsync(target.before)) {
-          theTestUI.runner.beforeAll(wrap(function(done) {
+          theTestUI.runner.beforeAll("static before", wrap(function(done) {
             return target.before(done);
           }, target.before), settings);
         } else {
-          theTestUI.runner.beforeAll(wrap(function() {
+          theTestUI.runner.beforeAll("static before", wrap(function() {
             return target.before();
           }, target.before), settings);
-        }
-      }
-
-      // Register the static after method of the class to be called after-all tests.
-      if (target.after) {
-        if (isAsync(target.after)) {
-          theTestUI.runner.afterAll(wrap(function(done) {
-            return target.after(done);
-          }, target.after), theTestUI.getSettings(target.before));
-        } else {
-          theTestUI.runner.afterAll(wrap(function() {
-            return target.after();
-          }, target.after), theTestUI.getSettings(target.before));
         }
       }
 
       let instance;
 
       // Register the first "before each" callback to be one that will instantiate the class.
-      theTestUI.runner.beforeEach(function() {
-        instance = theTestUI.getInstance(target);
-      }, {});
+      theTestUI.runner.beforeEach("setup instance", function() {
+        instance = theTestUI.createInstance(target);
+      });
       
       const prototype = target.prototype;
 
       // Register the instance before method to be called before-each test method.
       if (prototype.before) {
         if (isAsync(prototype.before)) {
-          theTestUI.runner.beforeEach(wrap(function(done: Function) {
+          theTestUI.runner.beforeEach("before", wrap(function(done: Function) {
             return prototype.before.call(instance, done);
           }, prototype.before), theTestUI.getSettings(prototype.before));
         } else {
-          theTestUI.runner.beforeEach(wrap(function() {
+          theTestUI.runner.beforeEach("before", wrap(function() {
             return prototype.before.call(instance);
           }, prototype.before), theTestUI.getSettings(prototype.before));
         }
       }
-
-      // Register the instance after method to be called after-each test method.
-      if (prototype.after) {
-        if (isAsync(prototype.after)) {
-          theTestUI.runner.afterEach(wrap(function(done) {
-            return prototype.after.call(instance, done);
-          }, prototype.after), theTestUI.getSettings(prototype.after));
-        } else {
-          theTestUI.runner.afterEach(wrap(function() {
-            return prototype.after.call(instance);
-          }, prototype.after), theTestUI.getSettings(prototype.after));
-        }
-      }
-
-      // Register a final after-each method to clear the instance reference.
-      theTestUI.runner.afterEach(function() {
-        instance = null;
-      }, {});
 
       function isAsync(method: Function): boolean {
         const isParameterised = method[ClassTestUI.parametersSymbol] !== undefined;
@@ -227,6 +196,37 @@ export abstract class ClassTestUI {
       for (const key in collectedTests) {
         const value = collectedTests[key];
         declareTestMethod(value[0], value[1]);
+      }
+
+      // Register the instance after method to be called after-each test method.
+      if (prototype.after) {
+        if (isAsync(prototype.after)) {
+          theTestUI.runner.afterEach("after", wrap(function(done) {
+            return prototype.after.call(instance, done);
+          }, prototype.after), theTestUI.getSettings(prototype.after));
+        } else {
+          theTestUI.runner.afterEach("after", wrap(function() {
+            return prototype.after.call(instance);
+          }, prototype.after), theTestUI.getSettings(prototype.after));
+        }
+      }
+
+      // Register a final after-each method to clear the instance reference.
+      theTestUI.runner.afterEach("teardown instance", function() {
+        instance = null;
+      });
+
+      // Register the static after method of the class to be called after-all tests.
+      if (target.after) {
+        if (isAsync(target.after)) {
+          theTestUI.runner.afterAll("static after", wrap(function(done) {
+            return target.after(done);
+          }, target.after), theTestUI.getSettings(target.before));
+        } else {
+          theTestUI.runner.afterAll("static after", wrap(function() {
+            return target.after();
+          }, target.after), theTestUI.getSettings(target.before));
+        }
       }
     };
   }
@@ -587,10 +587,10 @@ export interface TestRunner {
   suite(name: string, callback: () => void, settings?: SuiteSettings);
   test(name: string, callback: CallbackOptionallyAsync, settings?: TestSettings);
 
-  beforeAll(callback: CallbackOptionallyAsync, settings?: LifecycleSettings);
-  beforeEach(callback: CallbackOptionallyAsync, settings?: LifecycleSettings);
-  afterEach(callback: CallbackOptionallyAsync, settings?: LifecycleSettings);
-  afterAll(callback: CallbackOptionallyAsync, settings?: LifecycleSettings);
+  beforeAll(name: string, callback: CallbackOptionallyAsync, settings?: LifecycleSettings);
+  beforeEach(name: string, callback: CallbackOptionallyAsync, settings?: LifecycleSettings);
+  afterEach(name: string, callback: CallbackOptionallyAsync, settings?: LifecycleSettings);
+  afterAll(name: string, callback: CallbackOptionallyAsync, settings?: LifecycleSettings);
 }
 
 /**

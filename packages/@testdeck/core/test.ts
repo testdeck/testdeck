@@ -182,6 +182,18 @@ describe("decorators", function() {
         class SuiteOnlyThis {
             @ui.test
             test1() {}
+
+            @ui.test.skip
+            test2() {}
+
+            @ui.test.pending()
+            test3() {}
+
+            @ui.test.only("testXX")
+            test4() {}
+
+            @ui.test("testYY", ui.only)
+            test5() {}
         }
 
         assert.deepEqual(ui.root, [{
@@ -248,6 +260,30 @@ describe("decorators", function() {
             "children": [{
                 "type": "test",
                 "name": "test1"
+            }, {
+                "type": "test",
+                "name": "test2",
+                "settings": {
+                    "execution": "skip"
+                }
+            }, {
+                "type": "test",
+                "name": "test3",
+                "settings": {
+                    "execution": "pending"
+                }
+            }, {
+                "type": "test",
+                "name": "testXX",
+                "settings": {
+                    "execution": "only"
+                }
+            }, {
+                "type": "test",
+                "name": "testYY",
+                "settings": {
+                    "execution": "only"
+                }
             }]
         }]);
     });

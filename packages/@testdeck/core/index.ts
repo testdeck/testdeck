@@ -261,7 +261,6 @@ export abstract class ClassTestUI {
         decorators.push(arguments[i]);
       }
       
-      // Incorrectly returned...
       return function(ctor) {
         for(const decorator of decorators) {
           decorator(ctor);

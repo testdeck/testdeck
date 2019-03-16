@@ -129,6 +129,10 @@ describe("decorators", function() {
             @ui.test simpleTest() {}
         }
 
+        @ui.suite() class SimpleSuite2 {
+            @ui.test() simpleTest2() {}
+        }
+
         assert.deepEqual(ui.root, [{
             "type": "suite",
             "name": "SimpleSuite",
@@ -136,8 +140,14 @@ describe("decorators", function() {
                 "type": "test",
                 "name": "simpleTest",
             }]
+        }, {
+            "type": "suite",
+            "name": "SimpleSuite2",
+            "children": [{
+                "type": "test",
+                "name": "simpleTest2",
+            }]
         }]);
-
     });
 
     it("execution modifier and settings combo", function() {
@@ -309,12 +319,62 @@ describe("decorators", function() {
         assert.equal(asyncSuite.children.length, 5);
         syncSuite.children.forEach(child => assert.equal(child.callback.length, 0));
         asyncSuite.children.forEach(child => assert.equal(child.callback.length, 1));
-
-
-        console.log(JSON.stringify(ui.root, null, "  "));
     });
 
-    it("named suites and tests");
+    it("named suites and tests", function() {
+
+        @ui.suite("My Special Named Suite")
+        class Suite {
+            @ui.test("My Special Named Test")
+            test() {}
+        }
+
+        assert.deepEqual(ui.root, [{
+            "type": "suite",
+            "name": "My Special Named Suite",
+            "children": [{
+                "type": "test",
+                "name": "My Special Named Test"
+            }]
+        }]);
+    });
+
+    it("suite can inherit abstract base class, but not another suite", function() {
+        @ui.suite class Base1 {
+            @ui.test test1() {}
+        }
+        abstract class Base2 {
+            @ui.test test2() {}
+        }
+        assert.throw(function() {
+            @ui.suite class Derived1 extends Base1 {
+                @ui.test test3() {}
+            }
+        });
+        @ui.suite class Derived2 extends Base2 {
+            @ui.test test4() {}
+        }
+
+        assert.deepEqual(ui.root, [{
+            "type": "suite",
+            "name": "Base1",
+            "children": [{
+                "type": "test",
+                "name": "test1"
+            }]
+        }, {
+            "type": "suite",
+            "name": "Derived2",
+            "children": [{
+                "type": "test",
+                "name": "test4"
+            }, {
+                "type": "test",
+                "name": "test2"
+            }]
+        }]);
+    });
+
     it("params");
 });
 

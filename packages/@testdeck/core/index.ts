@@ -161,15 +161,16 @@ export abstract class ClassTestUI {
           const settings = theTestUI.getSettings(method);
           theTestUI.runner.suite(testName, function() {
             const nameForParameters = method[ClassTestUI.nameForParametersSymbol];
-            parameters.forEach((parameterOptions, i) => {
+            parameters.reverse().forEach((parameterOptions, i) => {
               const { execution, name, params } = parameterOptions;
-              let parametersTestName = `${testName}_${i}`;
+              let parametersTestName = `${testName} ${i}`;
               if (name) {
                 parametersTestName = name;
               } else if (nameForParameters) {
                 parametersTestName = nameForParameters(params);
               }
-              applyTestFunc(parametersTestName, method, [params], { execution });
+              const settings: TestSettings = execution ? { execution } : undefined;
+              applyTestFunc(parametersTestName, method, [params], settings);
             });
           }, theTestUI.getSettings(method));
         } else {
@@ -347,8 +348,8 @@ export abstract class ClassTestUI {
   }
 
   private makeParamsFunction(execution?: Execution) {
-    return (params: any, name?: string) => {
-      return (target: Object, propertyKey: string) => {
+    return function(params: any, name?: string) {
+      return function(target: Object, propertyKey: string) {
         target[propertyKey][ClassTestUI.nameSymbol] = propertyKey.toString();
         target[propertyKey][ClassTestUI.parametersSymbol] = target[propertyKey][ClassTestUI.parametersSymbol] || [];
         target[propertyKey][ClassTestUI.parametersSymbol].push({ execution, name, params } as TestParams);

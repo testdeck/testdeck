@@ -69,10 +69,6 @@ module LoggingClassTestUI {
             if (settings) test.settings = settings;
             if (this.ui.log & LoggingClassTestUI.Log.Callback) test.callback = callback;
             this.peek.push(test);
-            try {
-                callback();
-            } finally {
-            }
         }
         beforeAll(name: string, callback: CallbackOptionallyAsync, settings: LifecycleSettings) {
             const before: ChildInfo = { type: "beforeAll", name };
@@ -375,7 +371,66 @@ describe("decorators", function() {
         }]);
     });
 
-    it("params");
+    it("params", function() {
+        @ui.suite
+        class TestSuite {
+            @ui.params({ a: 1, b: 2, c: 3 })
+            @ui.params({ a: 4, b: 5, c: 9 }, "three")
+            @ui.params.skip({ a: 4, b: 5, c: 6 }, "one")
+            @ui.params.pending({ a: 4, b: 5, c: 6 }, "two")
+            @ui.params.only({ a: 4, b: 5, c: 6 })
+            test1({ a, b, c }) {}
+
+            @ui.params({ a: 1, b: 2, c: 3 })
+            @ui.params({ a: 4, b: 5, c: 9 })
+            @ui.params.naming(({ a, b, c }) => `adding ${a} and ${b} must equal ${c}`)
+            test2({ a, b, c }) {}
+        }
+
+        assert.deepEqual(ui.root, [{
+            "type": "suite",
+            "name": "TestSuite",
+            "children": [{
+                "type": "suite",
+                "name": "test1",
+                "children": [{
+                    "type": "test",
+                    "name": "test1 0"
+                }, {
+                    "type": "test",
+                    "name": "three"
+                }, {
+                    "type": "test",
+                    "name": "one",
+                    "settings": {
+                      "execution": "skip"
+                    }
+                }, {
+                    "type": "test",
+                    "name": "two",
+                    "settings": {
+                      "execution": "pending"
+                    }
+                }, {
+                    "type": "test",
+                    "name": "test1 4",
+                    "settings": {
+                      "execution": "only"
+                    }
+                }]
+            }, {
+                "type": "suite",
+                "name": "test2",
+                "children": [{
+                    "type": "test",
+                    "name": "adding 1 and 2 must equal 3"
+                }, {
+                    "type": "test",
+                    "name": "adding 4 and 5 must equal 9"
+                }]
+            }]
+        }]);
+    });
 });
 
 describe("lifecycle hooks", function() {

@@ -92,20 +92,20 @@ export abstract class ClassTestUI {
     return instance;
   }
 
-  private suiteCallbackFromClass<T extends TestInstance>(target: TestClass<T>): () => void {
+  private suiteCallbackFromClass<T extends TestInstance>(constructor: TestClass<T>): () => void {
     const theTestUI = this;
     return function() {
       // Regsiter the static before method of the class to be called before-all tests.  
-      if (target.before) {
-        const settings = theTestUI.getSettings(target.before);
-        if (isAsync(target.before)) {
+      if (constructor.before) {
+        const settings = theTestUI.getSettings(constructor.before);
+        if (isAsync(constructor.before)) {
           theTestUI.runner.beforeAll("static before", wrap(function(done) {
-            return target.before(done);
-          }, target.before), settings);
+            return constructor.before(done);
+          }, constructor.before), settings);
         } else {
           theTestUI.runner.beforeAll("static before", wrap(function() {
-            return target.before();
-          }, target.before), settings);
+            return constructor.before();
+          }, constructor.before), settings);
         }
       }
 
@@ -113,10 +113,10 @@ export abstract class ClassTestUI {
 
       // Register the first "before each" callback to be one that will instantiate the class.
       theTestUI.runner.beforeEach("setup instance", function() {
-        instance = theTestUI.createInstance(target);
+        instance = theTestUI.createInstance(constructor);
       });
       
-      const prototype = target.prototype;
+      const prototype = constructor.prototype;
 
       // Register the instance before method to be called before-each test method.
       if (prototype.before) {
@@ -151,9 +151,6 @@ export abstract class ClassTestUI {
           }
         });
         currentPrototype = (Object as any).getPrototypeOf(currentPrototype);
-        if (currentPrototype !== Object.prototype && currentPrototype.constructor[ClassTestUI.suiteSymbol]) {
-          throw new Error(`@suite ${prototype.constructor.name} cannot be a subclass of @suite ${currentPrototype.constructor.name}.`);
-        }
       }
 
       function declareTestMethod(prototype: any, method: Function) {
@@ -217,15 +214,15 @@ export abstract class ClassTestUI {
       });
 
       // Register the static after method of the class to be called after-all tests.
-      if (target.after) {
-        if (isAsync(target.after)) {
+      if (constructor.after) {
+        if (isAsync(constructor.after)) {
           theTestUI.runner.afterAll("static after", wrap(function(done) {
-            return target.after(done);
-          }, target.after), theTestUI.getSettings(target.before));
+            return constructor.after(done);
+          }, constructor.after), theTestUI.getSettings(constructor.before));
         } else {
           theTestUI.runner.afterAll("static after", wrap(function() {
-            return target.after();
-          }, target.after), theTestUI.getSettings(target.before));
+            return constructor.after();
+          }, constructor.after), theTestUI.getSettings(constructor.before));
         }
       }
     };
@@ -250,11 +247,8 @@ export abstract class ClassTestUI {
       // Used as `@suite class MySuite {}`
       if (arguments.length === 1 && typeof arguments[0] === "function" && !arguments[0][ClassTestUI.isDecoratorSymbol]) {
         const ctor = arguments[0];
-        ctor[ClassTestUI.suiteSymbol] = true;
-        if (execution) {
-          ctor[ClassTestUI.executionSymbol] = execution;
-        }
-        theTestUI.runner.suite(ctor.name, theTestUI.suiteCallbackFromClass(ctor), theTestUI.getSettings(ctor));
+        applySuiteDecorator(ctor.name, ctor);
+        return;
       }
 
       // Used as `@suite("name", timeout(1000))`, return a decorator function,
@@ -266,15 +260,23 @@ export abstract class ClassTestUI {
         decorators.push(arguments[i]);
       }
       
+      // Incorrectly returned...
       return function(ctor) {
+        for(const decorator of decorators) {
+          decorator(ctor);
+        }
+        applySuiteDecorator(hasName ? name : ctor.name, ctor);
+      }
+
+      function applySuiteDecorator(name: string, ctor) {
+        if (ctor[ClassTestUI.suiteSymbol]) {
+          throw new Error(`@suite ${ctor.name} can not subclass another @suite class, use abstract base class instead.`);
+        }
         ctor[ClassTestUI.suiteSymbol] = true;
         if (execution) {
           ctor[ClassTestUI.executionSymbol] = execution;
         }
-        for(const decorator of decorators) {
-          decorator(ctor);
-        }
-        theTestUI.runner.suite(hasName ? name : ctor.name, theTestUI.suiteCallbackFromClass(ctor), theTestUI.getSettings(ctor));
+        theTestUI.runner.suite(name, theTestUI.suiteCallbackFromClass(ctor), theTestUI.getSettings(ctor));
       }
     }
 
@@ -601,3 +603,5 @@ export function wrap<T extends Function>(wrap: T, base: Function): T {
   Object.defineProperty(wrap, "name", { value: base.name, writable: false });
   return wrap;
 };
+
+declare var console;

@@ -112,7 +112,7 @@ export abstract class ClassTestUI {
       let instance;
 
       // Register the first "before each" callback to be one that will instantiate the class.
-      theTestUI.runner.beforeEach("setup instance", function() {
+      theTestUI.runner.beforeEach("setup instance", function setupInstance() {
         instance = theTestUI.createInstance(constructor);
       });
       
@@ -180,13 +180,13 @@ export abstract class ClassTestUI {
 
       function applyTestFunc(testName: string, method: Function, callArgs: any[], testSettings: TestSettings) {
         if (isAsync(method)) {
-          theTestUI.runner.test(testName, function(done) {
+          theTestUI.runner.test(testName, wrap(function(done) {
             return method.call(instance, done, ...callArgs);
-          }, testSettings);
+          }, method), testSettings);
         } else {
-          theTestUI.runner.test(testName, function() {
+          theTestUI.runner.test(testName, wrap(function() {
             return method.call(instance, ...callArgs);
-          }, testSettings);
+          }, method), testSettings);
         }
       }
 
@@ -210,7 +210,7 @@ export abstract class ClassTestUI {
       }
 
       // Register a final after-each method to clear the instance reference.
-      theTestUI.runner.afterEach("teardown instance", function() {
+      theTestUI.runner.afterEach("teardown instance", function teardownInstance() {
         instance = null;
       });
 

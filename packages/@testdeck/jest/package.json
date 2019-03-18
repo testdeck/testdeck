@@ -23,13 +23,13 @@
     "changelog": "conventional-changelog --infile CHANGELOG.md --same-file --preset angular --append --release-count 1 --verbose",
     "clean": "rm -Rf coverage dist *.tgz src/*.js.map src/*.js bin/*.js* test/it/*.js* test/it/fixtures/*.js* test/it/fixtures/packages/*/node_modules",
     "coverage": "npm run build && npm run coverage:run",
-    "coverage:run": "jest --coverage --testRegex '^.*.suite.ts'",
+    "coverage:run": "jest --coverage --testPathPattern 'test/.*suite.ts'",
     "lint": "tslint --project .",
     "lint:fix": "tslint --fix --project .",
     "test:ci": "npm run build && npm run lint && npm run coverage:run",
     "test": "npm run build && npm run lint && npm run it:suite:run",
     "it:suite": "npm run build && npm run it:suite:run",
-    "it:suite:run": "jest --testRegex '^.*.suite.ts$'"
+    "it:suite:run": "jest --testPathPattern 'test/.*suite.ts'"
   },
   "dependencies": {},
   "devDependencies": {

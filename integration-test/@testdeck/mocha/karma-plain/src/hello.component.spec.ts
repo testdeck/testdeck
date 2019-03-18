@@ -1,5 +1,5 @@
 // example taken from karma-typescript
-import { suite, test } from "mocha-typescript";
+import { suite, test } from "@testdeck/mocha";
 import { HelloService } from "./hello-service.interface";
 import { HelloComponent } from "./hello.component";
 

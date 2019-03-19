@@ -1,12 +1,17 @@
 import { assert } from "chai";
+import * as chai from "chai";
+import * as chaiAsPromised from "chai-as-promised";
 import {
     ClassTestUI,
     SuiteSettings,
     CallbackOptionallyAsync,
     TestSettings,
     LifecycleSettings,
-    Done
+    Done,
+    TestClass
 } from "./index";
+
+chai.use(chaiAsPromised);
 
 class LoggingClassTestUI extends ClassTestUI {
     public log: LoggingClassTestUI.Log;
@@ -195,6 +200,12 @@ describe("testdeck", function() {
                 @ui.test("testYY", ui.only)
                 test5() {}
             }
+
+            @ui.suite.skip
+            class SkipSuite {}
+
+            @ui.suite.pending
+            class PendingSuite {}
     
             assert.deepEqual(ui.root, [{
                 "type": "suite",
@@ -285,6 +296,20 @@ describe("testdeck", function() {
                         "execution": "only"
                     }
                 }]
+            }, {
+                "type": "suite",
+                "name": "SkipSuite",
+                "settings": {
+                    "execution": "skip"
+                },
+                "children": []
+            }, {
+                "type": "suite",
+                "name": "PendingSuite",
+                "settings": {
+                    "execution": "pending"
+                },
+                "children": []
             }]);
         });
     
@@ -688,11 +713,166 @@ describe("testdeck", function() {
             // TODO: Call GC, check if a weak ref to the MyClass will be cleared!
         });
 
-        it("throwing tests");
-        it("throwing async promise");
-        it("throwing async callback");
+        it("throwing tests", function() {
 
-        it("instantiate through DI A/B");
+            ui.log = LoggingClassTestUI.Log.All;
+
+            @ui.suite class Suite {
+                static before() { assert.fail(); }
+                before() { assert.fail(); }
+                @ui.test test() { assert.fail(); }
+                after() { assert.fail(); }
+                static after() { assert.fail(); }
+            }
+
+            var suite = ui.root[0] as LoggingClassTestUI.SuiteInfo;
+
+            assert.throws(suite.children[0].callback);
+            suite.children[1].callback();
+            assert.throws(suite.children[2].callback);
+            assert.throws(suite.children[3].callback);
+            assert.throws(suite.children[4].callback);
+            suite.children[5].callback();
+            assert.throws(suite.children[6].callback);
+        });
+        it("throwing async promise", async function() {
+
+            ui.log = LoggingClassTestUI.Log.All;
+
+            @ui.suite class Suite {
+                static before(done) {
+                    setTimeout(function() {
+                        done(new Error("Force fail."));
+                    }, 0);
+                }
+                before(done) {
+                    setTimeout(function() {
+                        done(new Error("Force fail."));
+                    }, 0);
+                }
+                @ui.test test(done) {
+                    setTimeout(function() {
+                        done(new Error("Force fail."));
+                    }, 0);
+                }
+                after(done) {
+                    setTimeout(function() {
+                        done(new Error("Force fail."));
+                    }, 0);
+                }
+                static after(done) {
+                    setTimeout(function() {
+                        done(new Error("Force fail."));
+                    }, 0);
+                }
+            }
+
+            var suite = ui.root[0] as LoggingClassTestUI.SuiteInfo;
+
+            await assert.isRejected(new Promise((resolve, reject) => {
+                suite.children[0].callback((err?) => err ? reject(err) : resolve());
+            }));
+            suite.children[1].callback();
+            await assert.isRejected(new Promise((resolve, reject) => {
+                suite.children[2].callback((err?) => err ? reject(err) : resolve());
+            }));
+            await assert.isRejected(new Promise((resolve, reject) => {
+                suite.children[3].callback((err?) => err ? reject(err) : resolve());
+            }));
+            await assert.isRejected(new Promise((resolve, reject) => {
+                suite.children[4].callback((err?) => err ? reject(err) : resolve());
+            }));
+            suite.children[5].callback();
+            await assert.isRejected(new Promise((resolve, reject) => {
+                suite.children[6].callback((err?) => err ? reject(err) : resolve());
+            }));
+        });
+        it.only("throwing async callback", async function() {
+
+            ui.log = LoggingClassTestUI.Log.All;
+
+            @ui.suite class Suite {
+                static async before() {
+                    assert.fail();
+                }
+                async before() {
+                    assert.fail();
+                }
+                @ui.test async test(done) {
+                    assert.fail();
+                }
+                async after(done) {
+                    assert.fail();
+                }
+                static async after(done) {
+                    assert.fail();
+                }
+            }
+
+            var suite = ui.root[0] as LoggingClassTestUI.SuiteInfo;
+
+            await assert.isRejected(suite.children[0].callback() as PromiseLike<void>);
+            suite.children[1].callback();
+            await assert.isRejected(suite.children[2].callback() as PromiseLike<void>);
+            await assert.isRejected(suite.children[3].callback() as PromiseLike<void>);
+            await assert.isRejected(suite.children[4].callback() as PromiseLike<void>);
+            suite.children[5].callback();
+            await assert.isRejected(suite.children[6].callback() as PromiseLike<void>);
+        });
+
+        it("instantiate through dependency injection", function() {
+
+            ui.log = LoggingClassTestUI.Log.All;
+
+            var x, y, z;
+
+            @ui.suite class XClass {
+                @ui.test test() {
+                    assert.equal(this, x);
+                }
+            }
+
+            @ui.suite class YClass {
+                @ui.test test() {
+                    assert.equal(this, y);
+                }
+            }
+
+            @ui.suite class ZClass {
+                constructor() {
+                    z = this;
+                }
+                @ui.test test() {
+                    assert.equal(this, z);
+                }
+            }
+
+            x = new XClass();
+            y = new YClass();
+
+            ui.registerDI({
+                handles<T>(cls: TestClass<T>): boolean {
+                    return cls.name.startsWith("X")
+                },
+                create<T>(cls: TestClass<T>): T {
+                    return x;
+                }
+            });
+            ui.registerDI({
+                handles<T>(cls: TestClass<T>): boolean {
+                    return cls.name.startsWith("Y")
+                },
+                create<T>(cls: TestClass<T>): T {
+                    return y;
+                }
+            });
+
+            ui.root
+                .forEach(suite => (suite as LoggingClassTestUI.SuiteInfo)
+                    .children
+                    .forEach(c => c.callback())
+            );
+        });
     });
 });
 

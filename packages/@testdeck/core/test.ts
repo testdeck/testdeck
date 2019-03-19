@@ -787,7 +787,7 @@ describe("testdeck", function() {
                 suite.children[6].callback((err?) => err ? reject(err) : resolve());
             }));
         });
-        it.only("throwing async callback", async function() {
+        it("throwing async callback", async function() {
 
             ui.log = LoggingClassTestUI.Log.All;
 

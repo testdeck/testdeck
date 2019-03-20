@@ -121,6 +121,7 @@ describe("testdeck", function() {
     });
 
     describe("decorators", function() {
+
         // TODO: `suite("s", () => { it("t", () => {})});`
         it("functional usage");
 
@@ -735,6 +736,7 @@ describe("testdeck", function() {
             suite.children[5].callback();
             assert.throws(suite.children[6].callback);
         });
+
         it("throwing async promise", async function() {
 
             ui.log = LoggingClassTestUI.Log.All;
@@ -787,6 +789,7 @@ describe("testdeck", function() {
                 suite.children[6].callback((err?) => err ? reject(err) : resolve());
             }));
         });
+
         it("throwing async callback", async function() {
 
             ui.log = LoggingClassTestUI.Log.All;

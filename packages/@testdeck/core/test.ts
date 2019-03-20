@@ -2,13 +2,13 @@ import { assert } from "chai";
 import * as chai from "chai";
 import * as chaiAsPromised from "chai-as-promised";
 import {
-    ClassTestUI,
-    SuiteSettings,
     CallbackOptionallyAsync,
-    TestSettings,
-    LifecycleSettings,
+    ClassTestUI,
     Done,
-    TestClass
+    LifecycleSettings,
+    SuiteSettings,
+    TestClass,
+    TestSettings
 } from "./index";
 
 chai.use(chaiAsPromised);
@@ -26,7 +26,7 @@ class LoggingClassTestUI extends ClassTestUI {
     get root(): LoggingClassTestUI.ChildInfo[] { return this.logger.peek; }
 }
 
-module LoggingClassTestUI {
+namespace LoggingClassTestUI {
     export interface LifecycleInfo {
         type: "beforeAll" | "afterAll" | "beforeEach" | "afterEach";
         name: string;
@@ -57,10 +57,10 @@ module LoggingClassTestUI {
 
         get peek(): ChildInfo[] { return this.stack[this.stack.length - 1]; }
 
-        suite(name: string, callback: () => void, settings?: SuiteSettings) {
+        public suite(name: string, callback: () => void, settings?: SuiteSettings) {
             const suite: SuiteInfo = { type: "suite", name, children: [] };
-            if (settings) suite.settings = settings;
-            if (this.ui.log & LoggingClassTestUI.Log.Callback) suite.callback = callback;
+            if (settings) { suite.settings = settings; }
+            if (this.ui.log & LoggingClassTestUI.Log.Callback) { suite.callback = callback; }
             this.peek.push(suite);
             this.stack.push(suite.children);
             try {
@@ -69,36 +69,36 @@ module LoggingClassTestUI {
                 this.stack.pop();
             }
         }
-        test(name: string, callback: CallbackOptionallyAsync, settings?: TestSettings) {
+        public test(name: string, callback: CallbackOptionallyAsync, settings?: TestSettings) {
             const test: TestInfo = { type: "test", name };
-            if (settings) test.settings = settings;
-            if (this.ui.log & LoggingClassTestUI.Log.Callback) test.callback = callback;
+            if (settings) { test.settings = settings; }
+            if (this.ui.log & LoggingClassTestUI.Log.Callback) { test.callback = callback; }
             this.peek.push(test);
         }
-        beforeAll(name: string, callback: CallbackOptionallyAsync, settings: LifecycleSettings) {
+        public beforeAll(name: string, callback: CallbackOptionallyAsync, settings: LifecycleSettings) {
             const before: ChildInfo = { type: "beforeAll", name };
-            if (settings) before.settings = settings;
-            if (this.ui.log & LoggingClassTestUI.Log.Callback) before.callback = callback;
+            if (settings) { before.settings = settings; }
+            if (this.ui.log & LoggingClassTestUI.Log.Callback) { before.callback = callback; }
             this.peek.push(before);
         }
-        beforeEach(name: string, callback: CallbackOptionallyAsync, settings: LifecycleSettings) {
-            if (name == "setup instance" && !(this.ui.log & LoggingClassTestUI.Log.SetupTeardown)) return;
+        public beforeEach(name: string, callback: CallbackOptionallyAsync, settings: LifecycleSettings) {
+            if (name === "setup instance" && !(this.ui.log & LoggingClassTestUI.Log.SetupTeardown)) { return; }
             const before: ChildInfo = { type: "beforeEach", name };
-            if (settings) before.settings = settings;
-            if (this.ui.log & LoggingClassTestUI.Log.Callback) before.callback = callback;
+            if (settings) { before.settings = settings; }
+            if (this.ui.log & LoggingClassTestUI.Log.Callback) { before.callback = callback; }
             this.peek.push(before);
         }
-        afterEach(name: string, callback: CallbackOptionallyAsync, settings: LifecycleSettings) {
-            if (name == "teardown instance" && !(this.ui.log & LoggingClassTestUI.Log.SetupTeardown)) return;
+        public afterEach(name: string, callback: CallbackOptionallyAsync, settings: LifecycleSettings) {
+            if (name === "teardown instance" && !(this.ui.log & LoggingClassTestUI.Log.SetupTeardown)) { return; }
             const after: ChildInfo = { type: "afterEach", name };
-            if (settings) after.settings = settings;
-            if (this.ui.log & LoggingClassTestUI.Log.Callback) after.callback = callback;
+            if (settings) { after.settings = settings; }
+            if (this.ui.log & LoggingClassTestUI.Log.Callback) { after.callback = callback; }
             this.peek.push(after);
         }
-        afterAll(name: string, callback: CallbackOptionallyAsync, settings: LifecycleSettings) {
+        public afterAll(name: string, callback: CallbackOptionallyAsync, settings: LifecycleSettings) {
             const after: ChildInfo = { type: "afterAll", name };
-            if (settings) after.settings = settings;
-            if (this.ui.log & LoggingClassTestUI.Log.Callback) after.callback = callback;
+            if (settings) { after.settings = settings; }
+            if (this.ui.log & LoggingClassTestUI.Log.Callback) { after.callback = callback; }
             this.peek.push(after);
         }
     }
@@ -126,44 +126,44 @@ describe("testdeck", function() {
         it("functional usage");
 
         it("plain @suite and @test", function() {
-    
+
             @ui.suite class SimpleSuite {
-                @ui.test simpleTest() {}
+                @ui.test public simpleTest() {}
             }
-    
+
             @ui.suite() class SimpleSuite2 {
-                @ui.test() simpleTest2() {}
+                @ui.test() public simpleTest2() {}
             }
-    
+
             assert.deepEqual(ui.root, [{
-                "type": "suite",
-                "name": "SimpleSuite",
-                "children": [{
-                    "type": "test",
-                    "name": "simpleTest",
+                type: "suite",
+                name: "SimpleSuite",
+                children: [{
+                    type: "test",
+                    name: "simpleTest",
                 }]
             }, {
-                "type": "suite",
-                "name": "SimpleSuite2",
-                "children": [{
-                    "type": "test",
-                    "name": "simpleTest2",
+                type: "suite",
+                name: "SimpleSuite2",
+                children: [{
+                    type: "test",
+                    name: "simpleTest2",
                 }]
             }]);
         });
-    
+
         it("execution modifier and settings combo", function() {
-    
+
             @ui.suite(ui.slow(10), ui.timeout(20), ui.retries(3))
             class SuiteWithTimeouts {
                 @ui.test(ui.slow(20), ui.timeout(40), ui.retries(5))
-                test1() {}
+                public test1() {}
                 @ui.test
-                test2() {}
+                public test2() {}
                 @ui.test(ui.skip)
-                test3() {}
+                public test3() {}
             }
-    
+
             @ui.suite
             @ui.slow(10)
             @ui.timeout(20)
@@ -172,34 +172,34 @@ describe("testdeck", function() {
                 @ui.test
                 @ui.slow(5)
                 @ui.skip
-                test1() {}
-    
+                public test1() {}
+
                 @ui.test(ui.timeout(10))
                 @ui.skip(true)
-                test2() {}
-    
+                public test2() {}
+
                 @ui.test(ui.retries(2))
                 @ui.skip(false)
-                test3() {}
+                public test3() {}
             }
-    
+
             @ui.suite
             @ui.only
             class SuiteOnlyThis {
                 @ui.test
-                test1() {}
-    
+                public test1() {}
+
                 @ui.test.skip
-                test2() {}
-    
+                public test2() {}
+
                 @ui.test.pending()
-                test3() {}
-    
+                public test3() {}
+
                 @ui.test.only("testXX")
-                test4() {}
-    
+                public test4() {}
+
                 @ui.test("testYY", ui.only)
-                test5() {}
+                public test5() {}
             }
 
             @ui.suite.skip
@@ -207,232 +207,232 @@ describe("testdeck", function() {
 
             @ui.suite.pending
             class PendingSuite {}
-    
+
             assert.deepEqual(ui.root, [{
-                "type": "suite",
-                "name": "SuiteWithTimeouts",
-                "settings": {
-                    "slow": 10,
-                    "timeout": 20,
-                    "retries": 3
+                type: "suite",
+                name: "SuiteWithTimeouts",
+                settings: {
+                    slow: 10,
+                    timeout: 20,
+                    retries: 3
                 },
-                "children": [{
-                    "type": "test",
-                    "name": "test1",
-                    "settings": {
-                        "slow": 20,
-                        "timeout": 40,
-                        "retries": 5
+                children: [{
+                    type: "test",
+                    name: "test1",
+                    settings: {
+                        slow: 20,
+                        timeout: 40,
+                        retries: 5
                     }
                 }, {
-                    "type": "test",
-                    "name": "test2"
+                    type: "test",
+                    name: "test2"
                 }, {
-                    "type": "test",
-                    "name": "test3",
-                    "settings": {
-                        "execution": "skip"
+                    type: "test",
+                    name: "test3",
+                    settings: {
+                        execution: "skip"
                     }
                 }]
             }, {
-                "type": "suite",
-                "name": "SuiteWithTimeoutsAsDecorators",
-                "settings": {
-                    "slow": 10,
-                    "timeout": 20,
-                    "retries": 3
+                type: "suite",
+                name: "SuiteWithTimeoutsAsDecorators",
+                settings: {
+                    slow: 10,
+                    timeout: 20,
+                    retries: 3
                 },
-                "children": [{
-                    "type": "test",
-                    "name": "test1",
-                    "settings": {
-                        "slow": 5,
-                        "execution": "skip"
+                children: [{
+                    type: "test",
+                    name: "test1",
+                    settings: {
+                        slow: 5,
+                        execution: "skip"
                     }
                 }, {
-                    "type": "test",
-                    "name": "test2",
-                    "settings": {
-                        "timeout": 10,
-                        "execution": "skip"
+                    type: "test",
+                    name: "test2",
+                    settings: {
+                        timeout: 10,
+                        execution: "skip"
                     }
                 }, {
-                    "type": "test",
-                    "name": "test3",
-                    "settings": {
-                        "retries": 2
+                    type: "test",
+                    name: "test3",
+                    settings: {
+                        retries: 2
                     }
                 }]
             }, {
-                "type": "suite",
-                "name": "SuiteOnlyThis",
-                "settings": {
-                    "execution": "only"
+                type: "suite",
+                name: "SuiteOnlyThis",
+                settings: {
+                    execution: "only"
                 },
-                "children": [{
-                    "type": "test",
-                    "name": "test1"
+                children: [{
+                    type: "test",
+                    name: "test1"
                 }, {
-                    "type": "test",
-                    "name": "test2",
-                    "settings": {
-                        "execution": "skip"
+                    type: "test",
+                    name: "test2",
+                    settings: {
+                        execution: "skip"
                     }
                 }, {
-                    "type": "test",
-                    "name": "test3",
-                    "settings": {
-                        "execution": "pending"
+                    type: "test",
+                    name: "test3",
+                    settings: {
+                        execution: "pending"
                     }
                 }, {
-                    "type": "test",
-                    "name": "testXX",
-                    "settings": {
-                        "execution": "only"
+                    type: "test",
+                    name: "testXX",
+                    settings: {
+                        execution: "only"
                     }
                 }, {
-                    "type": "test",
-                    "name": "testYY",
-                    "settings": {
-                        "execution": "only"
+                    type: "test",
+                    name: "testYY",
+                    settings: {
+                        execution: "only"
                     }
                 }]
             }, {
-                "type": "suite",
-                "name": "SkipSuite",
-                "settings": {
-                    "execution": "skip"
+                type: "suite",
+                name: "SkipSuite",
+                settings: {
+                    execution: "skip"
                 },
-                "children": []
+                children: []
             }, {
-                "type": "suite",
-                "name": "PendingSuite",
-                "settings": {
-                    "execution": "pending"
+                type: "suite",
+                name: "PendingSuite",
+                settings: {
+                    execution: "pending"
                 },
-                "children": []
+                children: []
             }]);
         });
-    
+
         it("before and after", function() {
-    
+
             ui.log = LoggingClassTestUI.Log.SetupTeardown;
-    
+
             @ui.suite class SomeSuite {
-                static before() {}
-                before() {}
-                after() {}
-                static after() {}
+                public static before() {}
+                public before() {}
+                public after() {}
+                public static after() {}
             }
-    
-            assert.deepEqual(ui.root,[{
-                "type": "suite",
-                "name": "SomeSuite",
-                "children": [{
-                    "type": "beforeAll",
-                    "name": "static before"
+
+            assert.deepEqual(ui.root, [{
+                type: "suite",
+                name: "SomeSuite",
+                children: [{
+                    type: "beforeAll",
+                    name: "static before"
                 }, {
-                    "type": "beforeEach",
-                    "name": "setup instance"
+                    type: "beforeEach",
+                    name: "setup instance"
                 }, {
-                    "type": "beforeEach",
-                    "name": "before"
+                    type: "beforeEach",
+                    name: "before"
                 }, {
-                    "type": "afterEach",
-                    "name": "after"
+                    type: "afterEach",
+                    name: "after"
                 }, {
-                    "type": "afterEach",
-                    "name": "teardown instance"
+                    type: "afterEach",
+                    name: "teardown instance"
                 }, {
-                    "type": "afterAll",
-                    "name": "static after"
+                    type: "afterAll",
+                    name: "static after"
                 }]
             }]);
         });
-    
+
         it("async done callbacks", function() {
-            
+
             ui.log = LoggingClassTestUI.Log.Callback;
-    
+
             @ui.suite class AllSync {
-                static before() {}
-                before() {}
-                @ui.test test() {}
-                after() {}
-                static after() {}
+                public static before() {}
+                public before() {}
+                @ui.test public test() {}
+                public after() {}
+                public static after() {}
             }
-    
+
             @ui.suite class AllAsync {
-                static before(done: Done) {}
-                before(done: Done) {}
-                @ui.test test(done: Done) {}
-                after(done: Done) {}
-                static after(done: Done) {}
+                public static before(done: Done) {}
+                public before(done: Done) {}
+                @ui.test public test(done: Done) {}
+                public after(done: Done) {}
+                public static after(done: Done) {}
             }
-    
+
             assert.equal(ui.root.length, 2);
             const syncSuite = (ui.root[0] as LoggingClassTestUI.SuiteInfo);
             const asyncSuite = (ui.root[1] as LoggingClassTestUI.SuiteInfo);
             assert.equal(syncSuite.children.length, 5);
             assert.equal(asyncSuite.children.length, 5);
-            syncSuite.children.forEach(child => assert.equal(child.callback.length, 0));
-            asyncSuite.children.forEach(child => assert.equal(child.callback.length, 1));
+            syncSuite.children.forEach((child) => assert.equal(child.callback.length, 0));
+            asyncSuite.children.forEach((child) => assert.equal(child.callback.length, 1));
         });
-    
+
         it("named suites and tests", function() {
-    
+
             @ui.suite("My Special Named Suite")
             class Suite {
                 @ui.test("My Special Named Test")
-                test() {}
+                public test() {}
             }
-    
+
             assert.deepEqual(ui.root, [{
-                "type": "suite",
-                "name": "My Special Named Suite",
-                "children": [{
-                    "type": "test",
-                    "name": "My Special Named Test"
+                type: "suite",
+                name: "My Special Named Suite",
+                children: [{
+                    type: "test",
+                    name: "My Special Named Test"
                 }]
             }]);
         });
-    
+
         it("suite can inherit abstract base class, but not another suite", function() {
             @ui.suite class Base1 {
-                @ui.test test1() {}
+                @ui.test public test1() {}
             }
             abstract class Base2 {
-                @ui.test test2() {}
+                @ui.test public test2() {}
             }
             assert.throw(function() {
                 @ui.suite class Derived1 extends Base1 {
-                    @ui.test test3() {}
+                    @ui.test public test3() {}
                 }
             });
             @ui.suite class Derived2 extends Base2 {
-                @ui.test test4() {}
+                @ui.test public test4() {}
             }
-    
+
             assert.deepEqual(ui.root, [{
-                "type": "suite",
-                "name": "Base1",
-                "children": [{
-                    "type": "test",
-                    "name": "test1"
+                type: "suite",
+                name: "Base1",
+                children: [{
+                    type: "test",
+                    name: "test1"
                 }]
             }, {
-                "type": "suite",
-                "name": "Derived2",
-                "children": [{
-                    "type": "test",
-                    "name": "test4"
+                type: "suite",
+                name: "Derived2",
+                children: [{
+                    type: "test",
+                    name: "test4"
                 }, {
-                    "type": "test",
-                    "name": "test2"
+                    type: "test",
+                    name: "test2"
                 }]
             }]);
         });
-    
+
         it("params", function() {
             @ui.suite
             class TestSuite {
@@ -441,54 +441,54 @@ describe("testdeck", function() {
                 @ui.params.skip({ a: 4, b: 5, c: 6 }, "one")
                 @ui.params.pending({ a: 4, b: 5, c: 6 }, "two")
                 @ui.params.only({ a: 4, b: 5, c: 6 })
-                test1({ a, b, c }) {}
-    
+                public test1({ a, b, c }) {}
+
                 @ui.params({ a: 1, b: 2, c: 3 })
                 @ui.params({ a: 4, b: 5, c: 9 })
                 @ui.params.naming(({ a, b, c }) => `adding ${a} and ${b} must equal ${c}`)
-                test2({ a, b, c }) {}
+                public test2({ a, b, c }) {}
             }
-    
+
             assert.deepEqual(ui.root, [{
-                "type": "suite",
-                "name": "TestSuite",
-                "children": [{
-                    "type": "suite",
-                    "name": "test1",
-                    "children": [{
-                        "type": "test",
-                        "name": "test1 0"
+                type: "suite",
+                name: "TestSuite",
+                children: [{
+                    type: "suite",
+                    name: "test1",
+                    children: [{
+                        type: "test",
+                        name: "test1 0"
                     }, {
-                        "type": "test",
-                        "name": "three"
+                        type: "test",
+                        name: "three"
                     }, {
-                        "type": "test",
-                        "name": "one",
-                        "settings": {
-                          "execution": "skip"
+                        type: "test",
+                        name: "one",
+                        settings: {
+                          execution: "skip"
                         }
                     }, {
-                        "type": "test",
-                        "name": "two",
-                        "settings": {
-                          "execution": "pending"
+                        type: "test",
+                        name: "two",
+                        settings: {
+                          execution: "pending"
                         }
                     }, {
-                        "type": "test",
-                        "name": "test1 4",
-                        "settings": {
-                          "execution": "only"
+                        type: "test",
+                        name: "test1 4",
+                        settings: {
+                          execution: "only"
                         }
                     }]
                 }, {
-                    "type": "suite",
-                    "name": "test2",
-                    "children": [{
-                        "type": "test",
-                        "name": "adding 1 and 2 must equal 3"
+                    type: "suite",
+                    name: "test2",
+                    children: [{
+                        type: "test",
+                        name: "adding 1 and 2 must equal 3"
                     }, {
-                        "type": "test",
-                        "name": "adding 4 and 5 must equal 9"
+                        type: "test",
+                        name: "adding 4 and 5 must equal 9"
                     }]
                 }]
             }]);
@@ -505,22 +505,22 @@ describe("testdeck", function() {
 
             @ui.suite class MyClass {
                 constructor() { cycle.push("Constructor"); }
-                static before() { cycle.push("Before All"); }
-                before() { cycle.push("Before Each"); }
-                @ui.test myTest() { cycle.push("Test"); }
-                after() { cycle.push("After Each"); }
-                static after() { cycle.push("After All"); }
+                public static before() { cycle.push("Before All"); }
+                public before() { cycle.push("Before Each"); }
+                @ui.test public myTest() { cycle.push("Test"); }
+                public after() { cycle.push("After Each"); }
+                public static after() { cycle.push("After All"); }
             }
 
-            var suite = ui.root[0] as LoggingClassTestUI.SuiteInfo;
+            const suite = ui.root[0] as LoggingClassTestUI.SuiteInfo;
 
-            var callbacks = suite.children.map(c => c.callback);
+            const callbacks = suite.children.map((c) => c.callback);
 
             assert.equal(callbacks[0].name, "before");
             assert.equal(callbacks[0].toString(), 'before() { cycle.push("Before All"); }');
 
             assert.equal(callbacks[1].name, "setupInstance");
-            assert.equal(callbacks[1].toString(), 'function setupInstance(){cov_r11ocdey9.f[14]++;cov_r11ocdey9.s[44]++;instance=theTestUI.createInstance(constructor);}');
+            assert.equal(callbacks[1].toString(), "function setupInstance(){cov_r11ocdey9.f[14]++;cov_r11ocdey9.s[44]++;instance=theTestUI.createInstance(constructor);}");
 
             assert.equal(callbacks[2].name, "before");
             assert.equal(callbacks[2].toString(), 'before() { cycle.push("Before Each"); }');
@@ -532,7 +532,7 @@ describe("testdeck", function() {
             assert.equal(callbacks[4].toString(), 'after() { cycle.push("After Each"); }');
 
             assert.equal(callbacks[5].name, "teardownInstance");
-            assert.equal(callbacks[5].toString(), 'function teardownInstance(){cov_r11ocdey9.f[27]++;cov_r11ocdey9.s[95]++;instance=null;}');
+            assert.equal(callbacks[5].toString(), "function teardownInstance(){cov_r11ocdey9.f[27]++;cov_r11ocdey9.s[95]++;instance=null;}");
 
             assert.equal(callbacks[6].name, "after");
             assert.equal(callbacks[6].toString(), 'after() { cycle.push("After All"); }');
@@ -571,36 +571,36 @@ describe("testdeck", function() {
                 constructor() {
                     cycle.push("Constructor");
                 }
-                static async before() {
+                public static async before() {
                     cycle.push("Before All");
                     await ping();
                     cycle.push("post Before All");
                 }
-                async before() {
+                public async before() {
                     cycle.push("Before Each");
                     await ping();
                     cycle.push("post Before Each");
                 }
-                @ui.test async myTest() {
+                @ui.test public async myTest() {
                     cycle.push("Test");
                     await ping();
                     cycle.push("post Test");
                 }
-                async after() {
+                public async after() {
                     cycle.push("After Each");
                     await ping();
                     cycle.push("post After Each");
                 }
-                static async after() {
+                public static async after() {
                     cycle.push("After All");
                     await ping();
                     cycle.push("post After All");
                 }
             }
 
-            var suite = ui.root[0] as LoggingClassTestUI.SuiteInfo;
+            const suite = ui.root[0] as LoggingClassTestUI.SuiteInfo;
 
-            var promise;
+            let promise;
             promise = suite.children[0].callback();
             assert(promise instanceof Promise);
             await promise;
@@ -635,7 +635,7 @@ describe("testdeck", function() {
 
             // TODO: Call GC, check if a weak ref to the MyClass will be cleared!
         });
-        
+
         it("callback async lifecycle", async function() {
 
             ui.log = LoggingClassTestUI.Log.All;
@@ -650,35 +650,35 @@ describe("testdeck", function() {
                 constructor() {
                     cycle.push("Constructor");
                 }
-                static before(done) {
+                public static before(done) {
                     cycle.push("Before All");
                     setTimeout(() => {
                         cycle.push("post Before All");
                         done();
                     }, 0);
                 }
-                before(done) {
+                public before(done) {
                     cycle.push("Before Each");
                     setTimeout(() => {
                         cycle.push("post Before Each");
                         done();
                     }, 0);
                 }
-                @ui.test myTest(done) {
+                @ui.test public myTest(done) {
                     cycle.push("Test");
                     setTimeout(() => {
                         cycle.push("post Test");
                         done();
                     }, 0);
                 }
-                after(done) {
+                public after(done) {
                     cycle.push("After Each");
                     setTimeout(() => {
                         cycle.push("post After Each");
                         done();
                     }, 0);
                 }
-                static after(done) {
+                public static after(done) {
                     cycle.push("After All");
                     setTimeout(() => {
                         cycle.push("post After All");
@@ -687,16 +687,16 @@ describe("testdeck", function() {
                 }
             }
 
-            var suite = ui.root[0] as LoggingClassTestUI.SuiteInfo;
+            const suite = ui.root[0] as LoggingClassTestUI.SuiteInfo;
 
-            await new Promise(done => suite.children[0].callback(done));
+            await new Promise((done) => suite.children[0].callback(done));
             suite.children[1].callback();
-            await new Promise(done => suite.children[2].callback(done));
-            await new Promise(done => suite.children[3].callback(done));
-            await new Promise(done => suite.children[4].callback(done));
+            await new Promise((done) => suite.children[2].callback(done));
+            await new Promise((done) => suite.children[3].callback(done));
+            await new Promise((done) => suite.children[4].callback(done));
             suite.children[5].callback();
-            await new Promise(done => suite.children[6].callback(done));
-            
+            await new Promise((done) => suite.children[6].callback(done));
+
             assert.deepEqual(cycle, [
               "Before All",
               "post Before All",
@@ -719,14 +719,14 @@ describe("testdeck", function() {
             ui.log = LoggingClassTestUI.Log.All;
 
             @ui.suite class Suite {
-                static before() { assert.fail(); }
-                before() { assert.fail(); }
-                @ui.test test() { assert.fail(); }
-                after() { assert.fail(); }
-                static after() { assert.fail(); }
+                public static before() { assert.fail(); }
+                public before() { assert.fail(); }
+                @ui.test public test() { assert.fail(); }
+                public after() { assert.fail(); }
+                public static after() { assert.fail(); }
             }
 
-            var suite = ui.root[0] as LoggingClassTestUI.SuiteInfo;
+            const suite = ui.root[0] as LoggingClassTestUI.SuiteInfo;
 
             assert.throws(suite.children[0].callback);
             suite.children[1].callback();
@@ -742,34 +742,34 @@ describe("testdeck", function() {
             ui.log = LoggingClassTestUI.Log.All;
 
             @ui.suite class Suite {
-                static before(done) {
+                public static before(done) {
                     setTimeout(function() {
                         done(new Error("Force fail."));
                     }, 0);
                 }
-                before(done) {
+                public before(done) {
                     setTimeout(function() {
                         done(new Error("Force fail."));
                     }, 0);
                 }
-                @ui.test test(done) {
+                @ui.test public test(done) {
                     setTimeout(function() {
                         done(new Error("Force fail."));
                     }, 0);
                 }
-                after(done) {
+                public after(done) {
                     setTimeout(function() {
                         done(new Error("Force fail."));
                     }, 0);
                 }
-                static after(done) {
+                public static after(done) {
                     setTimeout(function() {
                         done(new Error("Force fail."));
                     }, 0);
                 }
             }
 
-            var suite = ui.root[0] as LoggingClassTestUI.SuiteInfo;
+            const suite = ui.root[0] as LoggingClassTestUI.SuiteInfo;
 
             await assert.isRejected(new Promise((resolve, reject) => {
                 suite.children[0].callback((err?) => err ? reject(err) : resolve());
@@ -795,24 +795,24 @@ describe("testdeck", function() {
             ui.log = LoggingClassTestUI.Log.All;
 
             @ui.suite class Suite {
-                static async before() {
+                public static async before() {
                     assert.fail();
                 }
-                async before() {
+                public async before() {
                     assert.fail();
                 }
-                @ui.test async test(done) {
+                @ui.test public async test(done) {
                     assert.fail();
                 }
-                async after(done) {
+                public async after(done) {
                     assert.fail();
                 }
-                static async after(done) {
+                public static async after(done) {
                     assert.fail();
                 }
             }
 
-            var suite = ui.root[0] as LoggingClassTestUI.SuiteInfo;
+            const suite = ui.root[0] as LoggingClassTestUI.SuiteInfo;
 
             await assert.isRejected(suite.children[0].callback() as PromiseLike<void>);
             suite.children[1].callback();
@@ -827,16 +827,18 @@ describe("testdeck", function() {
 
             ui.log = LoggingClassTestUI.Log.All;
 
-            var x, y, z;
+            let x;
+            let y;
+            let z;
 
             @ui.suite class XClass {
-                @ui.test test() {
+                @ui.test public test() {
                     assert.equal(this, x);
                 }
             }
 
             @ui.suite class YClass {
-                @ui.test test() {
+                @ui.test public test() {
                     assert.equal(this, y);
                 }
             }
@@ -845,7 +847,7 @@ describe("testdeck", function() {
                 constructor() {
                     z = this;
                 }
-                @ui.test test() {
+                @ui.test public test() {
                     assert.equal(this, z);
                 }
             }
@@ -855,7 +857,7 @@ describe("testdeck", function() {
 
             ui.registerDI({
                 handles<T>(cls: TestClass<T>): boolean {
-                    return cls.name.startsWith("X")
+                    return cls.name.startsWith("X");
                 },
                 create<T>(cls: TestClass<T>): T {
                     return x;
@@ -863,7 +865,7 @@ describe("testdeck", function() {
             });
             ui.registerDI({
                 handles<T>(cls: TestClass<T>): boolean {
-                    return cls.name.startsWith("Y")
+                    return cls.name.startsWith("Y");
                 },
                 create<T>(cls: TestClass<T>): T {
                     return y;
@@ -871,9 +873,9 @@ describe("testdeck", function() {
             });
 
             ui.root
-                .forEach(suite => (suite as LoggingClassTestUI.SuiteInfo)
+                .forEach((suite) => (suite as LoggingClassTestUI.SuiteInfo)
                     .children
-                    .forEach(c => c.callback())
+                    .forEach((c) => c.callback())
             );
         });
     });

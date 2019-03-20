@@ -28,6 +28,7 @@
   },
   "scripts": {
     "prepare": "lerna bootstrap --no-ci",
-    "test": "lerna run --stream test"
+    "test": "lerna run --stream test",
+    "tslint-fix": "lerna run --stream tslint-fix"
   }
 }

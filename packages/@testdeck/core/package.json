@@ -19,7 +19,8 @@
   "scripts": {
     "prepare": "tsc",
     "pretest": "tsc",
-    "test": "nyc mocha dist/test.js && tslint --project ."
+    "test": "nyc mocha dist/test.js && tslint --project .",
+    "tslint-fix": "tslint --project . --fix"
   },
   "dependencies": {
   },

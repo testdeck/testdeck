@@ -592,13 +592,13 @@ export interface LifecycleSettings {
  * The test function when called will instantiate MyClass and call the myTest on that instance.
  */
 export interface TestRunner {
-  suite(name: string, callback: () => void, settings?: SuiteSettings);
-  test(name: string, callback: CallbackOptionallyAsync, settings?: TestSettings);
+  suite(name: string, callback: () => void, settings?: SuiteSettings): void;
+  test(name: string, callback: CallbackOptionallyAsync, settings?: TestSettings): void;
 
-  beforeAll(name: string, callback: CallbackOptionallyAsync, settings?: LifecycleSettings);
-  beforeEach(name: string, callback: CallbackOptionallyAsync, settings?: LifecycleSettings);
-  afterEach(name: string, callback: CallbackOptionallyAsync, settings?: LifecycleSettings);
-  afterAll(name: string, callback: CallbackOptionallyAsync, settings?: LifecycleSettings);
+  beforeAll(name: string, callback: CallbackOptionallyAsync, settings?: LifecycleSettings): void;
+  beforeEach(name: string, callback: CallbackOptionallyAsync, settings?: LifecycleSettings): void;
+  afterEach(name: string, callback: CallbackOptionallyAsync, settings?: LifecycleSettings): void;
+  afterAll(name: string, callback: CallbackOptionallyAsync, settings?: LifecycleSettings): void;
 }
 
 /**

@@ -3,7 +3,7 @@ import { SuiteFunction } from "mocha";
 export abstract class ClassTestUI {
   /**
    * This is supposed to create a `Symbol(key)` but some platforms does not support Symbols yet so fallback to string keys for now.
-   * @param key 
+   * @param key
    */
   protected static MakeSymbol(key: string): symbol | string { return "__testdeck_" + key; }
 
@@ -78,11 +78,19 @@ export abstract class ClassTestUI {
   }
 
   private getSettings(obj: any): LifecycleSettings | TestSettings | SuiteSettings {
-    let settings = undefined;
-    if (ClassTestUI.slowSymbol in obj) (settings || (settings = {})).slow = obj[ClassTestUI.slowSymbol];
-    if (ClassTestUI.timeoutSymbol in obj) (settings || (settings = {})).timeout = obj[ClassTestUI.timeoutSymbol];
-    if (ClassTestUI.retriesSymbol in obj) (settings || (settings = {})).retries = obj[ClassTestUI.retriesSymbol];
-    if (ClassTestUI.executionSymbol in obj) (settings || (settings = {})).execution = obj[ClassTestUI.executionSymbol];
+    let settings;
+    if (ClassTestUI.slowSymbol in obj) {
+      (settings || (settings = {})).slow = obj[ClassTestUI.slowSymbol];
+    }
+    if (ClassTestUI.timeoutSymbol in obj) {
+      (settings || (settings = {})).timeout = obj[ClassTestUI.timeoutSymbol];
+    }
+    if (ClassTestUI.retriesSymbol in obj) {
+      (settings || (settings = {})).retries = obj[ClassTestUI.retriesSymbol];
+    }
+    if (ClassTestUI.executionSymbol in obj) {
+      (settings || (settings = {})).execution = obj[ClassTestUI.executionSymbol];
+    }
     return settings;
   }
 
@@ -95,7 +103,7 @@ export abstract class ClassTestUI {
   private suiteCallbackFromClass<T extends TestInstance>(constructor: TestClass<T>): () => void {
     const theTestUI = this;
     return function() {
-      // Regsiter the static before method of the class to be called before-all tests.  
+      // Regsiter the static before method of the class to be called before-all tests.
       if (constructor.before) {
         const settings = theTestUI.getSettings(constructor.before);
         if (isAsync(constructor.before)) {
@@ -115,7 +123,7 @@ export abstract class ClassTestUI {
       theTestUI.runner.beforeEach("setup instance", function setupInstance() {
         instance = theTestUI.createInstance(constructor);
       });
-      
+
       const prototype = constructor.prototype;
 
       // Register the instance before method to be called before-each test method.
@@ -254,19 +262,19 @@ export abstract class ClassTestUI {
 
       // Used as `@suite("name", timeout(1000))`, return a decorator function,
       // that when applied to a class will first apply the execution symbol and timeout decorators, and then register the class as suite.
-      let hasName = typeof arguments[0] === "string";
-      let name: string = hasName ? arguments[0] : undefined;
-      let decorators: ClassDecorator[] = [];
-      for(let i = hasName ? 1 : 0; i < arguments.length; i++) {
+      const hasName = typeof arguments[0] === "string";
+      const name: string = hasName ? arguments[0] : undefined;
+      const decorators: ClassDecorator[] = [];
+      for (let i = hasName ? 1 : 0; i < arguments.length; i++) {
         decorators.push(arguments[i]);
       }
-      
+
       return function(ctor) {
-        for(const decorator of decorators) {
+        for (const decorator of decorators) {
           decorator(ctor);
         }
         applySuiteDecorator(hasName ? name : ctor.name, ctor);
-      }
+      };
 
       function applySuiteDecorator(name: string, ctor) {
         if (ctor[ClassTestUI.suiteSymbol]) {
@@ -278,7 +286,7 @@ export abstract class ClassTestUI {
         }
         theTestUI.runner.suite(name, theTestUI.suiteCallbackFromClass(ctor), theTestUI.getSettings(ctor));
       }
-    }
+    };
 
     return decorator;
   }
@@ -303,7 +311,7 @@ export abstract class ClassTestUI {
       testDecorator(...decorators: MethodDecorator[]): PropertyDecorator & MethodDecorator {
         return function(target: Object, propertyKey: string | symbol, descriptor?: PropertyDescriptor): void {
           target[propertyKey][ClassTestUI.nameSymbol] = propertyKey.toString();
-          for(const decorator of decorators) {
+          for (const decorator of decorators) {
             decorator(target, propertyKey, descriptor);
           }
           if (execution) {
@@ -314,7 +322,7 @@ export abstract class ClassTestUI {
       testDecoratorNamed(name: string, ...decorators: MethodDecorator[]): PropertyDecorator & MethodDecorator {
         return function(target: Object, propertyKey: string | symbol, descriptor?: PropertyDescriptor): void {
           target[propertyKey][ClassTestUI.nameSymbol] = name;
-          for(const decorator of decorators) {
+          for (const decorator of decorators) {
             decorator(target, propertyKey, descriptor);
           }
           if (execution) {
@@ -487,9 +495,7 @@ export interface TestDecorator extends TestDecoratorOrName {
  * these decortors can be used as `@slow(1000)`, `@timeout(2000)` and `@retries(3)`.
  * These can also be used as traits - such as `@suite(timeout(2000))`.
  */
-export interface ExecutionOptionDecorator {
-  (value: number): ClassDecorator & MethodDecorator;
-}
+export type ExecutionOptionDecorator = (value: number) => ClassDecorator & MethodDecorator;
 
 /**
  * An execution modifier decorators. Used to control which tests will be executed on test-run.
@@ -525,7 +531,7 @@ export interface TestClass<T extends TestInstance> {
   prototype: T;
 
   /**
-   * A static method, that if defined, is executed once, before all test methods. 
+   * A static method, that if defined, is executed once, before all test methods.
    */
   before?(done?: Done): void | Promise<void>;
 
@@ -542,7 +548,7 @@ export interface DependencyInjectionSystem {
 
 /**
  * Test or suite execution.
- * The `undefined` means execute as normal. 
+ * The `undefined` means execute as normal.
  */
 export type Execution = undefined | "pending" | "only" | "skip";
 
@@ -553,34 +559,34 @@ interface TestParams {
 }
 
 export interface SuiteSettings {
-  execution?: Execution,
-  timeout?: number,
-  slow?: number,
-  retries?: number
+  execution?: Execution;
+  timeout?: number;
+  slow?: number;
+  retries?: number;
 }
 
 export interface TestSettings {
-  execution?: Execution,
-  timeout?: number,
-  slow?: number,
-  retries?: number
+  execution?: Execution;
+  timeout?: number;
+  slow?: number;
+  retries?: number;
 }
 
 export interface LifecycleSettings {
-  timeout?: number,
-  slow?: number
+  timeout?: number;
+  slow?: number;
 }
 
 /**
  * An adapter for a test runner that is used by the class syntax decorators based test ui.
- * 
+ *
  * For example the test:
  * ```TypeScript
-   @suite class MyClass {
-       @test myTest() {
-       }
-   }
-   ```
+ * @suite class MyClass {
+ *     @test myTest() {
+ *     }
+ * }
+ * ```
  * Will call declareSuite with the name "MyClass" and a cb.
  * When that cb is called it will further call declareTest with the "myTest" name and a test function.
  * The test function when called will instantiate MyClass and call the myTest on that instance.
@@ -602,6 +608,6 @@ export function wrap<T extends Function>(wrap: T, base: Function): T {
   wrap.toString = () => base.toString();
   Object.defineProperty(wrap, "name", { value: base.name, writable: false });
   return wrap;
-};
+}
 
 declare var console;

@@ -520,7 +520,7 @@ describe("testdeck", function() {
             assert.equal(callbacks[0].toString(), 'before() { cycle.push("Before All"); }');
 
             assert.equal(callbacks[1].name, "setupInstance");
-            assert.equal(callbacks[1].toString(), "function setupInstance(){cov_r11ocdey9.f[14]++;cov_r11ocdey9.s[44]++;instance=theTestUI.createInstance(constructor);}");
+            assert.equal(callbacks[1].toString(), "function setupInstance(){cov_r11ocdey9.f[14]++;cov_r11ocdey9.s[43]++;instance=theTestUI.createInstance(constructor);}");
 
             assert.equal(callbacks[2].name, "before");
             assert.equal(callbacks[2].toString(), 'before() { cycle.push("Before Each"); }');
@@ -532,7 +532,7 @@ describe("testdeck", function() {
             assert.equal(callbacks[4].toString(), 'after() { cycle.push("After Each"); }');
 
             assert.equal(callbacks[5].name, "teardownInstance");
-            assert.equal(callbacks[5].toString(), "function teardownInstance(){cov_r11ocdey9.f[27]++;cov_r11ocdey9.s[95]++;instance=null;}");
+            assert.equal(callbacks[5].toString(), "function teardownInstance(){cov_r11ocdey9.f[27]++;cov_r11ocdey9.s[94]++;instance=null;}");
 
             assert.equal(callbacks[6].name, "after");
             assert.equal(callbacks[6].toString(), 'after() { cycle.push("After All"); }');

@@ -23,7 +23,7 @@ function applyTimings(fn: any, settings: any): any {
 }
 
 const mochaRunner: core.TestRunner = {
-  suite(name: string, callback: () => void, settings?: core.SuiteSettings) {
+  suite(name: string, callback: () => void, settings?: core.SuiteSettings): void {
     switch(settings && settings.execution) {
       case "only":
         describe.only(name, applyTimings(callback, settings));
@@ -32,13 +32,14 @@ const mochaRunner: core.TestRunner = {
         describe.skip(name, applyTimings(callback, settings));
         break;
       case "pending":
-        describe(name);
+        // `describe(name);` will not generate pending suite, intentionally skip.
+        describe.skip(name, applyTimings(callback, settings));
         break;
       default:
         describe(name, applyTimings(callback, settings));
     }
   },
-  test(name: string, callback: core.CallbackOptionallyAsync, settings?: core.TestSettings) {
+  test(name: string, callback: core.CallbackOptionallyAsync, settings?: core.TestSettings): void {
     switch(settings && settings.execution) {
       case "only":
         it.only(name, applyTimings(callback, settings));
@@ -54,16 +55,16 @@ const mochaRunner: core.TestRunner = {
     }
   },
 
-  beforeAll(callback: core.CallbackOptionallyAsync, settings?: core.LifecycleSettings) {
+  beforeAll(name: string, callback: core.CallbackOptionallyAsync, settings?: core.LifecycleSettings): void {
     before(applyTimings(callback, settings));
   },
-  beforeEach(callback: core.CallbackOptionallyAsync, settings?: core.LifecycleSettings) {
+  beforeEach(name: string, callback: core.CallbackOptionallyAsync, settings?: core.LifecycleSettings): void {
     beforeEach(applyTimings(callback, settings));
   },
-  afterEach(callback: core.CallbackOptionallyAsync, settings?: core.LifecycleSettings) {
+  afterEach(name: string, callback: core.CallbackOptionallyAsync, settings?: core.LifecycleSettings): void {
     afterEach(applyTimings(callback, settings));
   },
-  afterAll(callback: core.CallbackOptionallyAsync, settings?: core.LifecycleSettings) {
+  afterAll(name: string, callback: core.CallbackOptionallyAsync, settings?: core.LifecycleSettings): void {
     after(applyTimings(callback, settings));
   }
 };

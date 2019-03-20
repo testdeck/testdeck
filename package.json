@@ -29,6 +29,7 @@
   "scripts": {
     "prepare": "lerna bootstrap --no-ci",
     "test": "lerna run --stream test",
+    "tslint": "lerna run --stream tslint",
     "tslint-fix": "lerna run --stream tslint-fix"
   }
 }

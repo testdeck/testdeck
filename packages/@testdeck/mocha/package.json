@@ -19,30 +19,27 @@
   },
   "scripts": {
     "prepare": "tsc",
-    "test-ignore": "tsc && nyc mocha && tslint --project .",
+    "pretest": "tsc",
+    "test": "nyc mocha dist/test.js && tslint --project .",
     "tslint": "tslint --project .",
-    "tslint:fix": "tslint --fix --project ."
+    "tslint-fix": "tslint --project . --fix"
   },
   "dependencies": {
     "@testdeck/core": "0.0.1"
   },
   "files": [
     "bin/watch",
-    "index.js",
-    "index.d.ts"
+    "dist/index.js",
+    "dist/index.d.ts"
   ],
   "nyc": {
     "check-coverage": true,
-    "lines": 95,
-    "statements": 85,
-    "functions": 95,
-    "branches": 95,
+    "lines": 100,
+    "statements": 100,
+    "functions": 100,
+    "branches": 100,
     "include": [
-      "index.js"
-    ],
-    "exclude": [
-      "bin",
-      "coverage"
+      "dist/index.js"
     ],
     "reporter": [
       "lcov",

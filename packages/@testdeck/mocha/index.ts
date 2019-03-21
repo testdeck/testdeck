@@ -4,16 +4,16 @@ function applyTimings(fn: any, settings: any): any {
   if (settings) {
     if (fn.length === 1) {
       return core.wrap(function(done) {
-        if (settings.retries !== undefined) this.retries(settings.retries);
-        if (settings.slow !== undefined) this.slow(settings.slow);
-        if (settings.timeout !== undefined) this.timeout(settings.timeout);
+        if (settings.retries !== undefined) { this.retries(settings.retries); }
+        if (settings.slow !== undefined) { this.slow(settings.slow); }
+        if (settings.timeout !== undefined) { this.timeout(settings.timeout); }
         return fn.call(this, done);
       }, fn);
     } else {
       return core.wrap(function() {
-        if (settings.retries !== undefined) this.retries(settings.retries);
-        if (settings.slow !== undefined) this.slow(settings.slow);
-        if (settings.timeout !== undefined) this.timeout(settings.timeout);
+        if (settings.retries !== undefined) { this.retries(settings.retries); }
+        if (settings.slow !== undefined) { this.slow(settings.slow); }
+        if (settings.timeout !== undefined) { this.timeout(settings.timeout); }
         return fn.call(this);
       }, fn);
     }
@@ -24,7 +24,7 @@ function applyTimings(fn: any, settings: any): any {
 
 const mochaRunner: core.TestRunner = {
   suite(name: string, callback: () => void, settings?: core.SuiteSettings): void {
-    switch(settings && settings.execution) {
+    switch (settings && settings.execution) {
       case "only":
         describe.only(name, applyTimings(callback, settings));
         break;
@@ -40,7 +40,7 @@ const mochaRunner: core.TestRunner = {
     }
   },
   test(name: string, callback: core.CallbackOptionallyAsync, settings?: core.TestSettings): void {
-    switch(settings && settings.execution) {
+    switch (settings && settings.execution) {
       case "only":
         it.only(name, applyTimings(callback, settings));
         break;

@@ -19,7 +19,7 @@
   "scripts": {
     "prepare": "tsc",
     "pretest": "tsc",
-    "test": "jest --testRegex '^.*.suite.ts$' && tslint --project .",
+    "test": "jest dist/test.js && tslint --project .",
     "tslint": "tslint --project .",
     "tslint-fix": "tslint --project . --fix"
   },
@@ -27,6 +27,8 @@
     "@testdeck/core": "0.0.1"
   },
   "devDependencies": {
+    "@types/jest": "^24.0.11",
+    "ts-jest": "^24.0.0"
   },
   "files": [
     "dist/*",

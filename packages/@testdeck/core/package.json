@@ -1,6 +1,6 @@
 {
   "name": "@testdeck/core",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "ES6 class syntax testing through decorators interface.",
   "author": "Panayot Cankov",
   "contributors": [
@@ -23,7 +23,6 @@
     "tslint": "tslint --project .",
     "tslint-fix": "tslint --project . --fix"
   },
-  "dependencies": {},
   "files": [
     "dist/index.js",
     "dist/index.d.ts"

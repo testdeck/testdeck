@@ -20,10 +20,12 @@
     "@types/chai-as-promised": "^7.1.0",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
+    "jest": "^24.5.0",
     "lerna": "latest",
+    "mocha": "^6.0.2",
     "nyc": "latest",
     "tsc": "latest",
-    "tslint": "latest",
+    "tslint": "^5.14.0",
     "typescript": "latest"
   },
   "scripts": {

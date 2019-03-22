@@ -33,6 +33,6 @@
     "test": "lerna run --stream test",
     "tslint": "lerna run --stream tslint",
     "tslint-fix": "lerna run --stream tslint-fix",
-    "publish": "lerna publish"
+    "lerna-publish": "lerna publish"
   }
 }

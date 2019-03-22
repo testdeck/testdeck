@@ -123,7 +123,8 @@ describe("tests", function() {
             "CallbacksSuite before",
             "CallbacksSuite test3",
             "CallbacksSuite after",
-            "CallbacksSuite static after"
+            "CallbacksSuite static after",
+            "FAIL PLEASE!!!"
         ]);
         events = undefined;
     });

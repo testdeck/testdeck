@@ -46,5 +46,8 @@
       "text-summary"
     ],
     "all": true
+  },
+  "devDependencies": {
+    "@types/mocha": "^5.2.6"
   }
 }

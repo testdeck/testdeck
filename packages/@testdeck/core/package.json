@@ -23,8 +23,7 @@
     "tslint": "tslint --project .",
     "tslint-fix": "tslint --project . --fix"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "files": [
     "dist/index.js",
     "dist/index.d.ts"
@@ -43,5 +42,8 @@
       "text-summary"
     ],
     "all": true
+  },
+  "devDependencies": {
+    "@types/mocha": "^5.2.6"
   }
 }

@@ -72,5 +72,8 @@
       "text-summary"
     ],
     "all": true
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

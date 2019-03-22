@@ -1,6 +1,6 @@
 {
   "name": "@testdeck/di-typedi",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "testdeck-mocha dependency injection support for typedi",
   "author": "Panayot Cankov",
   "contributors": [
@@ -35,6 +35,7 @@
     "typedi": "^0.8.0"
   },
   "devDependencies": {
+    "@testdeck/mocha": "^0.0.2",
     "@types/chai": "^4.1.7",
     "@types/mocha": "^5.2.5",
     "@types/node": "^10.12.24",
@@ -43,7 +44,6 @@
     "contributor-faces": "^1.0.2",
     "conventional-changelog-cli": "^2.0.11",
     "mocha": "^5.2.0",
-    "@testdeck/mocha": "*",
     "nyc": "^13.2.0",
     "source-map-support": "^0.5.10",
     "ts-node": "^8.0.2",

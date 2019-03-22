@@ -1,6 +1,6 @@
 {
   "name": "@testdeck/mocha",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "TypeScript decorators based wrapper over mocha's interface",
   "author": "Panayot Cankov",
   "contributors": [
@@ -25,7 +25,7 @@
     "tslint-fix": "tslint --project . --fix"
   },
   "dependencies": {
-    "@testdeck/core": "0.0.1"
+    "@testdeck/core": "^0.0.2"
   },
   "files": [
     "bin/watch",

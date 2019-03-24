@@ -31,8 +31,7 @@
     "ts-jest": "^24.0.0"
   },
   "files": [
-    "dist/*",
-    "typings/*"
+    "dist/*"
   ],
   "publishConfig": {
     "access": "public"

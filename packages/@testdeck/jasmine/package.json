@@ -31,8 +31,7 @@
     "jasmine": "^3.3.1"
   },
   "files": [
-    "dist/*",
-    "typings/*"
+    "dist/*"
   ],
   "publishConfig": {
     "access": "public"

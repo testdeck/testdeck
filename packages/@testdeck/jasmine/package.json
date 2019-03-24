@@ -19,7 +19,7 @@
   "scripts": {
     "prepare": "tsc",
     "pretest": "tsc",
-    "test": "jasmine dist/test.js && tslint --project .",
+    "test": "jasmine dist/test.js JASMINE_CONFIG_PATH=jasmine.json && tslint --project .",
     "tslint": "tslint --project .",
     "tslint-fix": "tslint --project . --fix"
   },

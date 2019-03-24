@@ -7,7 +7,7 @@ describe("tests", function() {
 
     @suite class Suite {
         public static before() {
-            events.push("Suite statc before");
+            events.push("Suite static before");
         }
 
         public before() {
@@ -32,13 +32,13 @@ describe("tests", function() {
         }
 
         public static after() {
-            events.push("Suite statc after");
+            events.push("Suite static after");
         }
     }
 
     @suite class CallbacksSuite {
         public static before(done) {
-            events.push("CallbacksSuite statc before");
+            events.push("CallbacksSuite static before");
             setTimeout(done, 0);
         }
 
@@ -108,12 +108,12 @@ describe("tests", function() {
 
     after(function() {
         assert.deepEqual(events, [
-            "Suite statc before",
+            "Suite static before",
             "Suite before",
             "Suite test",
             "Suite after",
-            "Suite statc after",
-            "CallbacksSuite statc before",
+            "Suite static after",
+            "CallbacksSuite static before",
             "CallbacksSuite before",
             "CallbacksSuite test",
             "CallbacksSuite after",

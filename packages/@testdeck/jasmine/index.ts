@@ -43,7 +43,7 @@ const jestRunner: core.TestRunner = {
     afterEach(callback, settings && settings.timeout);
   },
   afterAll(name: string, callback: core.CallbackOptionallyAsync, settings?: core.LifecycleSettings): void {
-    beforeAll(callback, settings && settings.timeout);
+    afterAll(callback, settings && settings.timeout);
   }
 };
 

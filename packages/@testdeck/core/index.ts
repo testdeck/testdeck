@@ -609,5 +609,3 @@ export function wrap<T extends Function>(wrap: T, base: Function): T {
   Object.defineProperty(wrap, "name", { value: base.name, writable: false });
   return wrap;
 }
-
-declare var console;

@@ -5,14 +5,14 @@ const jestRunner: core.TestRunner = {
     // TODO: Push settings.timeout on the stack and pass it to each child test...
     switch (settings && settings.execution) {
       case "only":
-        describe.only(name, callback);
+        fdescribe(name, callback);
         break;
       case "skip":
-        describe.skip(name, callback);
+        xdescribe(name, callback);
         break;
       case "pending":
-        // No `describe(name);` nor `describe.todo`... Use skip.
-        describe.skip(name, callback);
+        // No `describe(name);` nor `describe.peding`... Use skip.
+        xdescribe(name, callback);
         break;
       default:
         describe(name, callback);
@@ -21,13 +21,13 @@ const jestRunner: core.TestRunner = {
   test(name: string, callback: core.CallbackOptionallyAsync, settings?: core.TestSettings): void {
     switch (settings && settings.execution) {
       case "only":
-        it.only(name, callback, settings && settings.timeout);
+        fit(name, callback, settings && settings.timeout);
         break;
       case "skip":
-        it.skip(name, callback, settings && settings.timeout);
+        xit(name, callback, settings && settings.timeout);
         break;
       case "pending":
-        it.todo(name);
+        xit(name);
         break;
       default:
         it(name, callback, settings && settings.timeout);

@@ -27,6 +27,7 @@
     "dist/index.js",
     "dist/index.d.ts"
   ],
+  "typings": "dist/index.d.ts",
   "nyc": {
     "check-coverage": true,
     "lines": 100,

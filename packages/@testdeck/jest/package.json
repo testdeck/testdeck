@@ -33,6 +33,7 @@
   "files": [
     "dist/*"
   ],
+  "typings": "dist/index.d.ts",
   "publishConfig": {
     "access": "public"
   }

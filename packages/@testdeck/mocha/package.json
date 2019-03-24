@@ -49,6 +49,7 @@
     "dist/*",
     "bin/watch"
   ],
+  "typings": "dist/index.d.ts",
   "publishConfig": {
     "access": "public"
   }

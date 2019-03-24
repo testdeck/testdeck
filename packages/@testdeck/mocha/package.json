@@ -27,11 +27,6 @@
   "dependencies": {
     "@testdeck/core": "^0.0.2"
   },
-  "files": [
-    "bin/watch",
-    "dist/index.js",
-    "dist/index.d.ts"
-  ],
   "nyc": {
     "check-coverage": true,
     "lines": 80,
@@ -50,6 +45,10 @@
   "devDependencies": {
     "@types/mocha": "^5.2.6"
   },
+  "files": [
+    "dist/*",
+    "bin/watch"
+  ],
   "publishConfig": {
     "access": "public"
   }

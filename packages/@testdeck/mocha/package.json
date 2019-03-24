@@ -17,6 +17,8 @@
   "bin": {
     "testdeck-watch": "./bin/watch"
   },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "prepare": "tsc",
     "pretest": "tsc",
@@ -49,7 +51,6 @@
     "dist/*",
     "bin/watch"
   ],
-  "typings": "dist/index.d.ts",
   "publishConfig": {
     "access": "public"
   }

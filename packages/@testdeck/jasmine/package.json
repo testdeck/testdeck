@@ -15,7 +15,7 @@
     "url": "https://github.com/pana-cc/mocha-typescript"
   },
   "main": "dist/index.js",
-  "types": "typings/index.d.ts",
+  "types": "dist/index.d.ts",
   "scripts": {
     "prepare": "tsc",
     "pretest": "tsc",
@@ -33,7 +33,6 @@
   "files": [
     "dist/*"
   ],
-  "typings": "dist/index.d.ts",
   "publishConfig": {
     "access": "public"
   }

@@ -1,0 +1,40 @@
+{
+  "name": "@testdeck/jasmine",
+  "version": "0.0.2",
+  "description": "TypeScript decorators based wrapper over jest's interface",
+  "author": "Panayot Cankov",
+  "contributors": [
+    {
+      "name": "silkentrance",
+      "url": "https://github.com/silkentrance"
+    }
+  ],
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pana-cc/mocha-typescript"
+  },
+  "main": "dist/index.js",
+  "types": "typings/index.d.ts",
+  "scripts": {
+    "prepare": "tsc",
+    "pretest": "tsc",
+    "test": "jasmine dist/test.js && tslint --project .",
+    "tslint": "tslint --project .",
+    "tslint-fix": "tslint --project . --fix"
+  },
+  "dependencies": {
+    "@testdeck/core": "^0.0.2"
+  },
+  "devDependencies": {
+    "@types/jasmine": "^3.3.12",
+    "jasmine": "^3.3.1"
+  },
+  "files": [
+    "dist/*",
+    "typings/*"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}

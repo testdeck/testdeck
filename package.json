@@ -24,7 +24,6 @@
     "lerna": "latest",
     "mocha": "^6.0.2",
     "nyc": "latest",
-    "tsc": "latest",
     "tslint": "^5.14.0",
     "typescript": "latest"
   },

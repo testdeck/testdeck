@@ -11,9 +11,9 @@ cache:
 install:
   - npm install -g npm
   - test -d node_modules && npm prune || true
-  - npm run setup
+  - npm install 
 script:
-  - npm run test:ci
+  - npm test
 #branches:
 #  except:
 #    - /^gh-.*$/

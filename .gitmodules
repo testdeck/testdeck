@@ -1,9 +1,0 @@
-[submodule "seeds/testdeck-jest-seed"]
-	path = seeds/testdeck-jest-seed
-	url = https://github.com/testdeck/testdeck-jest-seed.git
-[submodule "seeds/testdeck-mocha-seed"]
-	path = seeds/testdeck-mocha-seed
-	url = https://github.com/testdeck/testdeck-mocha-seed.git
-[submodule "seeds/testdeck-jasmine-seed"]
-	path = seeds/testdeck-jasmine-seed
-	url = https://github.com/testdeck/testdeck-jasmine-seed.git

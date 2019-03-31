@@ -11,11 +11,6 @@ cache:
 install:
   - npm install -g npm
   - test -d node_modules && npm prune || true
-# yeah, travis does this by default
-  - git submodule init
-  - git submodule update
-# force update all submodules
-  - git submodule foreach git pull origin master
   - npm install 
 script:
   - npm test

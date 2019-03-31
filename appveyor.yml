@@ -10,10 +10,6 @@ environment:
 install:
   - ps: Install-Product node $env:nodejs_version
   - npm install -g npm
-  - git submodule init
-  - git submodule update
-# force update all submodules
-  - git submodule foreach git pull origin master
   - npm install
 
 test_script:

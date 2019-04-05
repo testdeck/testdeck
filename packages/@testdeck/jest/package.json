@@ -27,8 +27,7 @@
     "@testdeck/core": "^0.0.3"
   },
   "devDependencies": {
-    "@types/jest": "^24.0.11",
-    "ts-jest": "^24.0.0"
+    "@types/jest": "^24.0.11"
   },
   "files": [
     "dist/*"

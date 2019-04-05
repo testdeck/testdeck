@@ -1,6 +1,6 @@
 {
   "name": "@testdeck/jasmine",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "TypeScript decorators based wrapper over jest's interface",
   "author": "Panayot Cankov",
   "contributors": [
@@ -24,7 +24,7 @@
     "tslint-fix": "tslint --project . --fix"
   },
   "dependencies": {
-    "@testdeck/core": "^0.0.3"
+    "@testdeck/core": "^0.0.4"
   },
   "devDependencies": {
     "@types/jasmine": "^3.3.12"

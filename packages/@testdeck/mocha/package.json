@@ -48,7 +48,8 @@
     "@types/mocha": "^5.2.6"
   },
   "files": [
-    "dist/*",
+    "dist/index.d.ts",
+    "dist/index.js*",
     "bin/watch"
   ],
   "publishConfig": {

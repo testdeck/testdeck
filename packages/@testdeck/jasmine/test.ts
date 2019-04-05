@@ -128,3 +128,5 @@ describe("tests", function() {
         events = undefined;
     });
 });
+
+declare var setTimeout;

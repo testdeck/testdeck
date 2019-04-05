@@ -887,4 +887,3 @@ describe("testdeck", function() {
 });
 
 declare var setTimeout;
-declare var console;

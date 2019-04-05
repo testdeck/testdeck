@@ -27,11 +27,11 @@
     "@testdeck/core": "^0.0.3"
   },
   "devDependencies": {
-    "@types/jasmine": "^3.3.12",
-    "jasmine": "^3.3.1"
+    "@types/jasmine": "^3.3.12"
   },
   "files": [
-    "dist/*"
+    "dist/index.d.ts",
+    "dist/index.js*"
   ],
   "publishConfig": {
     "access": "public"

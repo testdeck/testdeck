@@ -44,7 +44,7 @@ namespace LoggingClassTestUI {
     export interface SuiteInfo {
         type: "suite";
         name: string;
-        callback?: () => void;
+        callback?: (done?: Done) => void;
         settings?: SuiteSettings;
         children: ChildInfo[];
     }
@@ -140,7 +140,7 @@ describe("testdeck", function() {
                 @ui.test() public simpleTest2() {}
             }
 
-            assert.deepEqual(ui.root, [{
+            assert.deepEqual(ui.root as any, [{
                 type: "suite",
                 name: "SimpleSuite",
                 children: [{
@@ -213,7 +213,7 @@ describe("testdeck", function() {
             @ui.suite.pending
             class PendingSuite {}
 
-            assert.deepEqual(ui.root, [{
+            assert.deepEqual(ui.root as any, [{
                 type: "suite",
                 name: "SuiteWithTimeouts",
                 settings: {
@@ -330,7 +330,7 @@ describe("testdeck", function() {
                 public static after() {}
             }
 
-            assert.deepEqual(ui.root, [{
+            assert.deepEqual(ui.root as any, [{
                 type: "suite",
                 name: "SomeSuite",
                 children: [{
@@ -392,7 +392,7 @@ describe("testdeck", function() {
                 public test() {}
             }
 
-            assert.deepEqual(ui.root, [{
+            assert.deepEqual(ui.root as any, [{
                 type: "suite",
                 name: "My Special Named Suite",
                 children: [{
@@ -406,7 +406,8 @@ describe("testdeck", function() {
             @ui.suite class Base1 {
                 @ui.test public test1() {}
             }
-            abstract class Base2 {
+            /* abstract */
+            class Base2 {
                 @ui.test public test2() {}
             }
             assert.throw(function() {
@@ -418,7 +419,7 @@ describe("testdeck", function() {
                 @ui.test public test4() {}
             }
 
-            assert.deepEqual(ui.root, [{
+            assert.deepEqual(ui.root as any, [{
                 type: "suite",
                 name: "Base1",
                 children: [{
@@ -454,7 +455,7 @@ describe("testdeck", function() {
                 public test2({ a, b, c }) {}
             }
 
-            assert.deepEqual(ui.root, [{
+            assert.deepEqual(ui.root as any, [{
                 type: "suite",
                 name: "TestSuite",
                 children: [{
@@ -569,7 +570,8 @@ describe("testdeck", function() {
             const cycle: string[] = [];
 
             function ping(): Promise<void> {
-                return new Promise<void>((done, err) => setTimeout(done, 0));
+
+                return Promise.resolve() as Promise<void>;
             }
 
             @ui.suite class MyClass {
@@ -648,7 +650,7 @@ describe("testdeck", function() {
             const cycle: string[] = [];
 
             function ping(): Promise<void> {
-                return new Promise<void>((done, err) => setTimeout(done, 0));
+                return new Promise<void>((done, err) => setTimeout(done, 0)) as Promise<void>;
             }
 
             @ui.suite class MyClass {
@@ -778,21 +780,21 @@ describe("testdeck", function() {
 
             await assert.isRejected(new Promise((resolve, reject) => {
                 suite.children[0].callback((err?) => err ? reject(err) : resolve());
-            }));
+            }) as PromiseLike<any>);
             suite.children[1].callback();
             await assert.isRejected(new Promise((resolve, reject) => {
                 suite.children[2].callback((err?) => err ? reject(err) : resolve());
-            }));
+            }) as PromiseLike<any>);
             await assert.isRejected(new Promise((resolve, reject) => {
                 suite.children[3].callback((err?) => err ? reject(err) : resolve());
-            }));
+            }) as PromiseLike<any>);
             await assert.isRejected(new Promise((resolve, reject) => {
                 suite.children[4].callback((err?) => err ? reject(err) : resolve());
-            }));
+            }) as PromiseLike<any>);
             suite.children[5].callback();
             await assert.isRejected(new Promise((resolve, reject) => {
                 suite.children[6].callback((err?) => err ? reject(err) : resolve());
-            }));
+            }) as PromiseLike<any>);
         });
 
         it("throwing async callback", async function() {
@@ -838,13 +840,13 @@ describe("testdeck", function() {
 
             @ui.suite class XClass {
                 @ui.test public test() {
-                    assert.equal(this, x);
+                    assert.equal(this as XClass, x);
                 }
             }
 
             @ui.suite class YClass {
                 @ui.test public test() {
-                    assert.equal(this, y);
+                    assert.equal(this as YClass, y);
                 }
             }
 
@@ -853,7 +855,7 @@ describe("testdeck", function() {
                     z = this;
                 }
                 @ui.test public test() {
-                    assert.equal(this, z);
+                    assert.equal(this as ZClass, z);
                 }
             }
 

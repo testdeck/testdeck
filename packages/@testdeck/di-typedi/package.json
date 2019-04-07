@@ -16,21 +16,11 @@
   },
   "main": "dist/index.js",
   "scripts": {
+    "postinstall": "tsc",
     "pretest": "tsc",
-    "test": "nyc mocha dist/test.js",
-    "build": "npm run clean && npm run lint && npm run build:cjs && npm run build:test",
-    "build:cjs": "tsc",
-    "build:test": "tsc -p tsconfig.test.json",
-    "changelog": "conventional-changelog --infile CHANGELOG.md --same-file --preset angular --append --release-count 1 --verbose",
-    "clean": "rm -Rf .nyc_output coverage dist *.tgz src/*.js.map src/*.js bin/*.js* test/it/*.js* test/it/fixtures/*.js*",
-    "coverage": "npm run build && npm run coverage:run",
-    "coverage:run": "nyc mocha test/it/*SuiteIT.ts --opts test/mocha.opts",
-    "lint": "tslint --project .",
-    "lint:fix": "tslint --fix --project .",
-    "test-ignore": "npm run it:suite",
-    "test:ci": "npm run build && npm run coverage:run",
-    "it:suite": "npm run build && npm run it:suite:run",
-    "it:suite:run": "mocha test/it/*SuiteIT.ts --opts test/mocha.opts"
+    "test": "nyc mocha dist/test.js && tslint --project .",
+    "tslint": "tslint --project .",
+    "tslint-fix": "tslint --project . --fix"
   },
   "devDependencies": {
     "@testdeck/mocha": "^0.0.5",

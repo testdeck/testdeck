@@ -1,7 +1,7 @@
 {
   "name": "@testdeck/core",
   "version": "0.0.5",
-  "description": "ES6 class syntax testing through decorators interface.",
+  "description": "Core framework for decorator based object oriented testing",
   "author": "Panayot Cankov",
   "contributors": [
     {
@@ -9,10 +9,11 @@
       "url": "https://github.com/silkentrance"
     }
   ],
+  "homepage": "https://testdeck.org/",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/testdeck"
+    "url": "https://github.com/testdeck/testdeck.git"
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

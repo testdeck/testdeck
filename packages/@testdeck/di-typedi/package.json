@@ -1,7 +1,7 @@
 {
   "name": "@testdeck/di-typedi",
   "version": "0.0.5",
-  "description": "testdeck-mocha dependency injection support for typedi",
+  "description": "TypeDI IOC integration for testdeck",
   "author": "Panayot Cankov",
   "contributors": [
     {
@@ -9,10 +9,11 @@
       "url": "https://github.com/silkentrance"
     }
   ],
+  "homepage": "https://testdeck.org/",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/pana-cc/mocha-typescript"
+    "url": "https://github.com/testdeck/testdeck.git"
   },
   "main": "dist/index.js",
   "scripts": {

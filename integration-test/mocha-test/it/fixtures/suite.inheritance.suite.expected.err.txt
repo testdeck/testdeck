@@ -1,2 +1,0 @@
-
-Error: @suite CompleteTest cannot be a subclass of @suite PartialTest.

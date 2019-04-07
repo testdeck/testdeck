@@ -16,6 +16,8 @@
   },
   "main": "dist/index.js",
   "scripts": {
+    "pretest": "tsc",
+    "test": "nyc mocha dist/test.js",
     "build": "npm run clean && npm run lint && npm run build:cjs && npm run build:test",
     "build:cjs": "tsc",
     "build:test": "tsc -p tsconfig.test.json",
@@ -30,25 +32,10 @@
     "it:suite": "npm run build && npm run it:suite:run",
     "it:suite:run": "mocha test/it/*SuiteIT.ts --opts test/mocha.opts"
   },
-  "dependencies": {
-    "reflect-metadata": "^0.1.12",
-    "typedi": "^0.8.0"
-  },
   "devDependencies": {
     "@testdeck/mocha": "^0.0.5",
-    "@types/chai": "^4.1.7",
-    "@types/mocha": "^5.2.5",
-    "@types/node": "^10.12.24",
-    "chai": "^4.2.0",
-    "chalk": "^2.4.2",
-    "contributor-faces": "^1.0.2",
-    "conventional-changelog-cli": "^2.0.11",
-    "mocha": "^5.2.0",
-    "nyc": "^13.2.0",
-    "source-map-support": "^0.5.10",
-    "ts-node": "^8.0.2",
-    "tslint": "^5.12.1",
-    "typescript": "^3.3.3"
+    "typedi": "^0.8.0",
+    "reflect-metadata": "^0.1.13"
   },
   "files": [
     "dist/index.js",

@@ -1,25 +1,17 @@
 {
     "compilerOptions": {
-        "target": "es5",
+        "target": "es6",
         "module": "commonjs",
         "removeComments": false,
         "preserveConstEnums": true,
         "sourceMap": true,
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
-        "declaration": false,
-        "outDir": "dist",
-        "listFiles": false,
+        "declaration": true,
         "lib": [
-          "es5", "es6"
-        ]
+            "es5", "es6"
+        ],
+        "outDir": "dist"
     },
-    "compileOnSave": false,
-    "include": [
-      "src/**/*.ts"
-    ],
-    "exclude": [
-        "node_modules",
-        "test"
-    ]
+    "compileOnSave": false
 }

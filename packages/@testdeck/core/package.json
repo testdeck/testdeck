@@ -25,7 +25,10 @@
   },
   "files": [
     "dist/index.js",
-    "dist/index.d.ts"
+    "dist/index.d.ts",
+    "dist/index.js.map",
+    "README.md",
+    "LICENSE"
   ],
   "typings": "dist/index.d.ts",
   "nyc": {

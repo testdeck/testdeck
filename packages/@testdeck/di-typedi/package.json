@@ -51,7 +51,10 @@
     "typescript": "^3.3.3"
   },
   "files": [
-    "dist/*"
+    "dist/index.js",
+    "dist/index.js.map",
+    "README.md",
+    "LICENSE"
   ],
   "nyc": {
     "check-coverage": true,

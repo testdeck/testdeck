@@ -48,9 +48,12 @@
     "@types/mocha": "^5.2.6"
   },
   "files": [
+    "bin/watch",
     "dist/index.d.ts",
-    "dist/index.js*",
-    "bin/watch"
+    "dist/index.js",
+    "dist/index.js.map",
+    "README.md",
+    "LICENSE"
   ],
   "publishConfig": {
     "access": "public"

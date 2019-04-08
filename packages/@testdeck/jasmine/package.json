@@ -1,7 +1,7 @@
 {
   "name": "@testdeck/jasmine",
   "version": "0.0.5",
-  "description": "TypeScript decorators based wrapper over jest's interface",
+  "description": "Object oriented testing for the Jasmine test framework",
   "author": "Panayot Cankov",
   "contributors": [
     {
@@ -9,10 +9,11 @@
       "url": "https://github.com/silkentrance"
     }
   ],
+  "homepage": "https://testdeck.org/",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/pana-cc/mocha-typescript"
+    "url": "https://github.com/testdeck/testdeck.git"
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

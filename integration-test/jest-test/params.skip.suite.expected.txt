@@ -1,8 +1,0 @@
-
-  ParamsSkipSuite
-    parameterised test skipping individual params
-      ✓ not skipped
-      - skipped
-
-  1 passing
-  1 pending

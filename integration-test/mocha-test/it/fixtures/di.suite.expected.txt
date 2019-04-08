@@ -1,8 +1,0 @@
-
-  KnownDependencyInjectionTest
-    ✓ injected
-
-  DefaultHandledDependencyInjectionTest
-    ✓ injected
-
-  2 passing

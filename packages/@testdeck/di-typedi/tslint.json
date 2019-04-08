@@ -18,7 +18,8 @@
         "member-ordering": false,
         "deprecation": true,
         "no-reference": false,
-        "trailing-comma": false
+        "trailing-comma": false,
+        "no-unused-expression": false
     },
     "rulesDirectory": []
 }

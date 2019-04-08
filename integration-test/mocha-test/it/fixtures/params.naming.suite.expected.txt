@@ -1,7 +1,0 @@
-
-  ParamsNamingSuite
-    parameterised test with parameterised naming
-      ✓ parameterized test with params { a: a, b: b}
-      ✓ naming override
-
-  2 passing

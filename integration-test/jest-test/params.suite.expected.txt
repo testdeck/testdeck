@@ -1,7 +1,0 @@
-
-  ParamsSuite
-    parameterised test with custom name
-      ✓ custom test name
-      ✓ parameterised test with custom name_1
-
-  2 passing

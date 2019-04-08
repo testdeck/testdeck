@@ -16,7 +16,7 @@
   },
   "main": "dist/index.js",
   "scripts": {
-    "postinstall": "tsc",
+    "prepare": "tsc",
     "pretest": "tsc",
     "test": "nyc mocha dist/test.js && tslint --project .",
     "tslint": "tslint --project .",

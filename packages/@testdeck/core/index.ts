@@ -33,13 +33,6 @@ export abstract class ClassTestUI {
 
   public readonly params: ParameterisedTestDecorator;
 
-  private readonly dependencyInjectionSystems: DependencyInjectionSystem[] = [{
-    handles() { return true; },
-    create<T>(cls: TestClass<T>) {
-      return new cls();
-    }
-  }];
-
   public constructor(runner: TestRunner) {
     this.runner = runner;
 
@@ -54,18 +47,6 @@ export abstract class ClassTestUI {
     this.pending = this.createExecutionModifier("pending");
     this.only = this.createExecutionModifier("only");
     this.skip = this.createExecutionModifier("skip");
-  }
-
-  /**
-   * Register a dependency injection system to be used when instantiating test classes.
-   * @param instantiator The dependency injection system implementation.
-   */
-  public registerDI(instantiator: DependencyInjectionSystem) {
-    // Maybe check if it is not already added?
-    /* istanbul ignore else */
-    if (!this.dependencyInjectionSystems.some((di) => di === instantiator)) {
-      this.dependencyInjectionSystems.unshift(instantiator);
-    }
   }
 
   /**
@@ -96,7 +77,7 @@ export abstract class ClassTestUI {
   }
 
   private createInstance<T>(testClass: TestClass<T>) {
-    const di = this.dependencyInjectionSystems.find((di) => di.handles(testClass));
+    const di = dependencyInjectionSystems.find((di) => di.handles(testClass));
     const instance = di.create(testClass);
     return instance;
   }
@@ -609,4 +590,26 @@ export function wrap<T extends Function>(wrap: T, base: Function): T {
   wrap.toString = () => base.toString();
   Object.defineProperty(wrap, "name", { value: base.name, writable: false });
   return wrap;
+}
+
+/**
+ * Core dependency injection support.
+ */
+const dependencyInjectionSystems: DependencyInjectionSystem[] = [{
+  handles() { return true; },
+  create<T>(cls: TestClass<T>) {
+    return new cls();
+  }
+}];
+
+/**
+ * Register a dependency injection system to be used when instantiating test classes.
+ * @param instantiator The dependency injection system implementation.
+ */
+export function registerDI(instantiator: DependencyInjectionSystem) {
+  // Maybe check if it is not already added?
+  /* istanbul ignore else */
+  if (!dependencyInjectionSystems.some((di) => di === instantiator)) {
+    dependencyInjectionSystems.unshift(instantiator);
+  }
 }

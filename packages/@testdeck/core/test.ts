@@ -6,6 +6,7 @@ import {
     ClassTestUI,
     Done,
     LifecycleSettings,
+    registerDI,
     SuiteSettings,
     TestClass,
     TestSettings
@@ -862,7 +863,7 @@ describe("testdeck", function() {
             x = new XClass();
             y = new YClass();
 
-            ui.registerDI({
+            registerDI({
                 handles<T>(cls: TestClass<T>): boolean {
                     return cls.name.startsWith("X");
                 },
@@ -870,7 +871,7 @@ describe("testdeck", function() {
                     return x;
                 }
             });
-            ui.registerDI({
+            registerDI({
                 handles<T>(cls: TestClass<T>): boolean {
                     return cls.name.startsWith("Y");
                 },

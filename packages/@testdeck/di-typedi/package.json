@@ -24,6 +24,7 @@
     "tslint-fix": "tslint --project . --fix"
   },
   "devDependencies": {
+    "@testdeck/core": "^0.0.5",
     "@testdeck/mocha": "^0.0.5",
     "typedi": "^0.8.0",
     "reflect-metadata": "^0.1.13"

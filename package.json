@@ -44,7 +44,8 @@
       "breaking": ":boom: Breaking Change",
       "internal": ":house: Internal",
       "bug": ":bug: Bug Fix",
-      "enhancement": ":rocket: New Feature"
+      "enhancement": ":rocket: New Feature",
+      "documentation": ":memo: Documentation"
     }
   }
 }

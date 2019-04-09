@@ -16,6 +16,21 @@
 * `@testdeck/core`, `@testdeck/di-typedi`, `@testdeck/jasmine`, `@testdeck/jest`, `@testdeck/mocha`
   * [#216](https://github.com/testdeck/testdeck/pull/216) chore #210: files must include relevant files only ([@silkentrance](https://github.com/silkentrance))
 
+#### :memo: Documentation
+* `@testdeck/core`, `@testdeck/di-typedi`, `@testdeck/jasmine`, `@testdeck/jest`, `@testdeck/mocha`
+  * [#225](https://github.com/testdeck/testdeck/pull/225) chore #224: fix package.json links and descriptions ([@silkentrance](https://github.com/silkentrance))
+  * [#215](https://github.com/testdeck/testdeck/pull/215) chore #209: add missing LICENSE ([@silkentrance](https://github.com/silkentrance))
+* `@testdeck/di-typedi`
+  * [#218](https://github.com/testdeck/testdeck/pull/218) chore #204: add/revise README ([@silkentrance](https://github.com/silkentrance))
+* `@testdeck/core`
+  * [#212](https://github.com/testdeck/testdeck/pull/212) chore #200: add readme ([@silkentrance](https://github.com/silkentrance))
+* `@testdeck/jasmine`
+  * [#213](https://github.com/testdeck/testdeck/pull/213) chore #202: add/revise readme ([@silkentrance](https://github.com/silkentrance))
+* `@testdeck/mocha`
+  * [#211](https://github.com/testdeck/testdeck/pull/211) chore #201: add/revise readme ([@silkentrance](https://github.com/silkentrance))
+* `@testdeck/jest`
+  * [#214](https://github.com/testdeck/testdeck/pull/214) chore #203: add/revise readme ([@silkentrance](https://github.com/silkentrance))
+
 #### Committers: 1
 - Carsten Klein ([@silkentrance](https://github.com/silkentrance))
 

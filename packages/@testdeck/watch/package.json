@@ -1,7 +1,8 @@
 {
-  "name": "@testdeck/mocha",
+  "name": "@testdeck/watcher",
   "version": "0.0.6",
-  "description": "Object oriented testing for the Mocha test framework",
+  "private": true,
+  "description": "Watcher for testdeck",
   "author": "Panayot Cankov",
   "contributors": [
     {
@@ -15,24 +16,29 @@
     "type": "git",
     "url": "https://github.com/testdeck/testdeck.git"
   },
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "bin": {
+    "testdeck-watch": "bin/testdeck-watch"
+  },
   "scripts": {
     "prepare": "tsc",
     "pretest": "tsc",
-    "test": "nyc mocha dist/test.js && tslint --project .",
+    "test": "npm run watch",
     "tslint": "tslint --project .",
-    "tslint-fix": "tslint --project . --fix"
+    "tslint-fix": "tslint --project . --fix",
+    "watch": "node ./bin/testdeck-watch ./src/watcher.js -n 1 dist/test.js"
   },
-  "dependencies": {
-    "@testdeck/core": "^0.0.6"
-  },
+  "files": [
+    "bin/testdeck-watch",
+    "src/watcher.js",
+    "README.md",
+    "LICENSE"
+  ],
   "nyc": {
     "check-coverage": true,
-    "lines": 80,
-    "statements": 80,
-    "functions": 80,
-    "branches": 80,
+    "lines": 100,
+    "statements": 100,
+    "functions": 100,
+    "branches": 100,
     "include": [
       "dist/index.js"
     ],
@@ -42,17 +48,16 @@
     ],
     "all": true
   },
-  "devDependencies": {
-    "@types/mocha": "^5.2.6"
+  "dependencies": {
+    "chalk": "^2.4.2",
+    "yargs": "^13.2.2",
+    "cross-spawn": "^6.0.5",
+    "findup-sync": "^3.0.0"
   },
-  "files": [
-    "bin/watch",
-    "dist/index.d.ts",
-    "dist/index.js",
-    "dist/index.js.map",
-    "README.md",
-    "LICENSE"
-  ],
+  "devDependencies": {
+    "@types/mocha": "^5.2.6",
+    "@testdeck/mocha": "0.0.6"
+  },
   "publishConfig": {
     "access": "public"
   }

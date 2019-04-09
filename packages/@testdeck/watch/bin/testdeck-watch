@@ -1,0 +1,248 @@
+#!/usr/bin/env node
+// Run "tsc" with watch, upon successful compilation run tests.
+
+let findup = require("findup-sync");
+let chalk = require("chalk");
+let spawn = require("cross-spawn");
+let readline = require("readline");
+let yargs = require("yargs");
+let fs = require("fs");
+
+let argv = yargs
+	.options({
+		p: {
+			alias: "project",
+			demand: false,
+			default: ".",
+			describe: "Path to tsconfig file or directory containing tsconfig, passed to `tsc -p <value>`.",
+			type: "string",
+		},
+		t: {
+			alias: "tsc",
+			demand: false,
+			default: "./node_modules/typescript/bin/tsc",
+			describe: "Path to typescript compiler 'tsc', by default points to typescript installed as a dependency. Set to 'tsc' for global tsc installation.",
+			type: "string",
+		},
+		o: {
+			alias: "opts",
+			demand: false,
+			default: undefined,
+			describe: "Optional path to test runner options file.",
+			type: "string",
+		},
+		r: {
+			alias: "runner",
+			demand: false,
+			default: undefined,
+			describe: "Path to test runner, e.g. mocha, jasmine or jest. By default the watcher will try to infer the test runner from the dependencies configured in package.json.",
+			type: "string",
+		},
+		n: {
+			alias: "times",
+			demand: false,
+			default: undefined,
+			describe: "Number of iterations before the watcher process quits. For testing purposes only.",
+			type: "number",
+		},
+		g: {
+			alias: "grep",
+			demand: false,
+			default: undefined,
+			describe: "Passed down to the test runner: only run tests matching <pattern>",
+			type: "string",
+		},
+		f: {
+			alias: "fgrep",
+			demand: false,
+			default: undefined,
+			describe: "Passed down to the test runner: only run tests containing <string>",
+			type: "string",
+		},
+	})
+	.help("h")
+	.alias("h", "help")
+	.argv;
+
+let stdl = readline.createInterface({ input: process.stdin });
+stdl.on("line", (line) => {
+	// TODO: handle "g <pattern>" or "f <pattern>" to run mocha with pattern
+	// Ctrl + R may restart mocha test run?
+});
+
+let testRunner = determineTestRunner(argv);
+let testRunnerExecutable = determineTestRunnerExecutable(testRunner, argv);
+let testRunnerOptions = buildTestRunnerOptions(testRunner, argv);
+
+let testRunnerProcess = null;
+let errors = 0;
+
+function compilationStarted() {
+	if (testRunnerProcess) {
+		testRunnerProcess.kill("SIGINT");
+	}
+	testRunnerProcess = null;
+	errors = 0;
+}
+function foundErrors() {
+	errors ++;
+}
+function compilationComplete() {
+	if (errors) {
+		console.log(chalk.red("TS errors!"));
+		return;
+	} else {
+		console.log(chalk.gray("Running tests."));
+	}
+
+	testRunnerProcess = spawn(testRunnerExecutable, testRunnerOptions);
+	testRunnerProcess.on("close", (code) => {
+		if (testRunnerProcess) {
+			if (code) {
+				console.log(chalk.red("Exited with " + code));
+			} else {
+			}
+			if (argv.times && (times >= argv.times)) {
+				tscp.kill("SIGINT");
+			}
+			testRunnerProcess = null;
+		}
+	});
+	testRunnerProcess.stdout.on("data", (chunk) => {
+		// Ensure old processes won't interfere tsc, .pipe here may be good enough.
+		if (testRunnerProcess) {
+			process.stdout.write(chunk);
+		}
+	});
+	testRunnerProcess.stderr.on("data", (chunk) => {
+		// Ensure old processes won't interfere tsc, .pipe here may be good enough.
+		if (testRunnerProcess) {
+			process.stderr.write(chunk);
+		}
+	});
+}
+
+let tscExecutable = determineTscExecutable(argv);
+
+let tscp = spawn(tscExecutable, ["-p", argv.project, "-w"]);
+let tscl = readline.createInterface({ input: tscp.stdout });
+let times = 0;
+tscl.on("line", (line) => {
+	if (line.indexOf("Compilation complete.") >= 0 || line.indexOf("Found ") >= 0) {
+		console.log(line);
+		times++;
+		compilationComplete();
+	} else if (line.indexOf("File change detected.") >= 0) {
+		compilationStarted();
+		console.log(line);
+	} else if (line.indexOf(": error TS") >= 0) {
+		console.log(line);
+		foundErrors();
+	}
+});
+
+tscl.on("close", () => {
+	stdl.close();
+	tscl.close();
+});
+
+function findTestRunner(cwd) {
+
+	let lookup = {
+
+		"@testdeck/mocha": "mocha",
+		"@testdeck/jasmine": "jasmine",
+		"@testdeck/jest": "jest"
+	};
+
+	let packageJson = JSON.parse(fs.readFileSync(findup("package.json", {cdw: cwd || process.cwd()})));
+	let mapped = Object.keys(packageJson.devDependencies || {})
+		.concat(Object.keys(packageJson.dependencies || {}))
+		.map(key => lookup[key])
+		.filter(key => !!key);
+	if (mapped[0]) {
+
+		return mapped[0];
+	}
+
+	return null;
+}
+
+function determineTestRunner(argv) {
+
+	if (argv.runner) {
+
+		let matches = /(mocha|jest|jasmine)/.exec(argv.runner);
+		if (matches) {
+
+			return matches[0];
+		}
+	}
+
+	let result = findTestRunner() || findTestRunner("../");
+	if (!result) {
+
+		throw new Error("no @testdeck/(mocha|jasmine|jest|...) integration dependency found");
+	}
+
+	return result;
+}
+
+// TODO: jasmine/jest specific options
+function buildTestRunnerOptions(testRunner, argv) {
+
+	let result = [];
+
+	switch (testRunner) {
+
+		case "mocha":
+
+			// TODO: does the user really want colors? -- why not let the user decide via mocha opts or additional arguments?
+			result.push("--colors");
+
+			if (argv.opts) {
+
+				result.push("--opts", argv.opts);
+			}
+
+			if (argv.g) {
+
+				result.push("-g", argv.g);
+			}
+
+			if (argv.f) {
+
+				result.push("-f", argv.f);
+			}
+			break;
+		case "jasmine":
+			throw new Error("not implemented yet");
+			// break;
+		case "jest":
+			throw new Error("not implemented yet");
+			// break;
+		default:
+			throw new Error("unsupported test runner " + testRunner);
+	}
+
+	// let's pass all extra arguments to the test runner
+	result = result.concat(argv._);
+
+	return result;
+}
+
+function determineTestRunnerExecutable(testRunner, argv) {
+
+	let lookup = {
+		"mocha": "./node_modules/.bin/mocha",
+		"jasmine": "./node_modules/.bin/jasmine",
+		"jest": "./node_modules/.bin/jest"
+	};
+
+	return argv.runner || findup(lookup[testRunner]);
+}
+
+function determineTscExecutable(argv) {
+
+	return findup(argv.tsc);
+}

@@ -24,6 +24,7 @@
     "jasmine": "^3.3.1",
     "jest": "^24.5.0",
     "lerna": "latest",
+    "lerna-changelog": "^0.8.2",
     "mocha": "^6.0.2",
     "nyc": "latest",
     "tslint": "^5.14.0",
@@ -34,6 +35,16 @@
     "test": "lerna run --stream test",
     "tslint": "lerna run --stream tslint",
     "tslint-fix": "lerna run --stream tslint-fix",
-    "lerna-publish": "lerna publish"
+    "lerna-publish": "lerna publish",
+    "changelog": "lerna-changelog"
+  },
+  "changelog": {
+    "repo": "testdeck/testdeck",
+    "labels": {
+      "breaking": ":boom: Breaking Change",
+      "internal": ":house: Internal",
+      "bug": ":bug: Bug Fix",
+      "enhancement": ":rocket: New Feature"
+    }
   }
 }

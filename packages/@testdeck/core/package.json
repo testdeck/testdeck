@@ -1,6 +1,6 @@
 {
   "name": "@testdeck/core",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Core framework for decorator based object oriented testing",
   "author": "Panayot Cankov",
   "contributors": [

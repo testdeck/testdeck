@@ -1,4 +1,24 @@
 
+## v0.0.6 (2019-04-09)
+
+#### :house: Internal
+* Other
+  * [#232](https://github.com/testdeck/testdeck/pull/232) chore #231: add changelog ([@silkentrance](https://github.com/silkentrance))
+  * [#230](https://github.com/testdeck/testdeck/pull/230) Update issue templates ([@silkentrance](https://github.com/silkentrance))
+* `@testdeck/di-typedi`, `@testdeck/jest`
+  * [#217](https://github.com/testdeck/testdeck/pull/217) chore #207: remove unused code ([@silkentrance](https://github.com/silkentrance))
+
+#### :bug: Bug Fix
+* `@testdeck/core`, `@testdeck/di-typedi`
+  * [#228](https://github.com/testdeck/testdeck/pull/228) Closes [#226](https://github.com/testdeck/testdeck/issues/226): make registerDI a separate export ([@silkentrance](https://github.com/silkentrance))
+* `@testdeck/di-typedi`
+  * [#223](https://github.com/testdeck/testdeck/pull/223) chore #222: add missing tests to di-typedi ([@silkentrance](https://github.com/silkentrance))
+* `@testdeck/core`, `@testdeck/di-typedi`, `@testdeck/jasmine`, `@testdeck/jest`, `@testdeck/mocha`
+  * [#216](https://github.com/testdeck/testdeck/pull/216) chore #210: files must include relevant files only ([@silkentrance](https://github.com/silkentrance))
+
+#### Committers: 1
+- Carsten Klein ([@silkentrance](https://github.com/silkentrance))
+
 ## v0.0.5 (2019-04-07)
 
 #### :bug: Bug Fixes

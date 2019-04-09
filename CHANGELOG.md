@@ -54,7 +54,7 @@
 
 ## v0.0.3 - v0.0.1
 
-#### :breaking: Breaking Change
+#### :boom: Breaking Change
 * [#181](https://github.com/testdeck/testdeck/pull/181) Major rewrite ([@pana-cc](https://github.com/pana-cc))
 * move TypeDI support to separate package
 

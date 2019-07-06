@@ -106,26 +106,28 @@ describe("tests", function() {
         events = [];
     });
 
-    after(function() {
-        assert.deepEqual(events, [
-            "Suite static before",
-            "Suite before",
-            "Suite test",
-            "Suite after",
-            "Suite static after",
-            "CallbacksSuite static before",
-            "CallbacksSuite before",
-            "CallbacksSuite test",
-            "CallbacksSuite after",
-            "CallbacksSuite before",
-            "CallbacksSuite test2",
-            "CallbacksSuite after",
-            "CallbacksSuite before",
-            "CallbacksSuite test3",
-            "CallbacksSuite after",
-            "CallbacksSuite static after"
-        ]);
-        events = undefined;
+    // must put this into a separate suite as mocha will run the outer suite's tests first
+    describe("order of", function() {
+        it("execution", function() {
+            assert.sameOrderedMembers(events, [
+                "Suite static before",
+                "Suite before",
+                "Suite test",
+                "Suite after",
+                "Suite static after",
+                "CallbacksSuite static before",
+                "CallbacksSuite before",
+                "CallbacksSuite test",
+                "CallbacksSuite after",
+                "CallbacksSuite before",
+                "CallbacksSuite test2",
+                "CallbacksSuite after",
+                "CallbacksSuite before",
+                "CallbacksSuite test3",
+                "CallbacksSuite after",
+                "CallbacksSuite static after"
+            ]);
+        });
     });
 });
 

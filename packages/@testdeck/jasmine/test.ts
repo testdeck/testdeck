@@ -106,8 +106,8 @@ describe("tests", function() {
         events = [];
     });
 
-    afterAll(function() {
-        assert.deepEqual(events, [
+    it("order of execution", function() {
+        assert.sameOrderedMembers(events, [
             "Suite static before",
             "Suite before",
             "Suite test",
@@ -125,7 +125,6 @@ describe("tests", function() {
             "CallbacksSuite after",
             "CallbacksSuite static after"
         ]);
-        events = undefined;
     });
 });
 

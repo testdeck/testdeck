@@ -51,7 +51,7 @@ Shortly describe the actual behaviour.
 
 ### Expected Behaviour
 
-Shortly describe what you thing that the expected behaviour should be.
+Shortly describe what you think that the expected behaviour should be.
 
 ### Additional Information
 

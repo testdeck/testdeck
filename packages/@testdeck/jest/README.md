@@ -23,6 +23,14 @@ class Hello {
 }
 ```
 
+With support for
+
+- test suite inheritance by either extension or mixins
+- individual naming of both suites and tests
+- parameterised tests
+
+and more...
+
 If you are looking for other test framework support, please see the following packages
 
 - [@testdeck/jasmine](https://npmjs.com/package/@testdeck/jasmine)

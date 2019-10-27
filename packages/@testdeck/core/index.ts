@@ -100,10 +100,15 @@ export abstract class ClassTestUI {
       }
 
       let instance;
-
-      // Register the first "before each" callback to be one that will instantiate the class.
-      theTestUI.runner.beforeEach("setup instance", function setupInstance() {
+      // Register the first "before all" callback to be one that will instantiate the class.
+      theTestUI.runner.beforeAll("setup instance beforeAll", function setupInstance() {
         instance = theTestUI.createInstance(constructor);
+      });
+      // Register the first "before each" callback to be one that will instantiate the class if not already instantiated.
+      theTestUI.runner.beforeEach("setup instance", function setupInstance() {
+        if (!instance) {
+          instance = theTestUI.createInstance(constructor);
+        }
       });
 
       const prototype = constructor.prototype;

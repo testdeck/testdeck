@@ -107,7 +107,18 @@ export abstract class ClassTestUI {
       });
 
       const prototype = constructor.prototype;
-
+      // Register the instance beforeAll method to be called before-all tests.
+      if (prototype.beforeAll) {
+        if (isAsync(prototype.beforeAll)) {
+          theTestUI.runner.beforeAll("beforeAll", wrap(function(done: Function) {
+            return prototype.beforeAll.call(instance, done);
+          }, prototype.beforeAll), theTestUI.getSettings(prototype.beforeAll));
+        } else {
+          theTestUI.runner.beforeAll("beforeAll", wrap(function() {
+            return prototype.beforeAll.call(instance);
+          }, prototype.beforeAll), theTestUI.getSettings(prototype.beforeAll));
+        }
+      }
       // Register the instance before method to be called before-each test method.
       if (prototype.before) {
         if (isAsync(prototype.before)) {
@@ -203,6 +214,19 @@ export abstract class ClassTestUI {
       theTestUI.runner.afterEach("teardown instance", function teardownInstance() {
         instance = null;
       });
+
+      // Register the instance afterAll method to be called after-all tests.
+      if (prototype.afterAll) {
+        if (isAsync(prototype.afterAll)) {
+          theTestUI.runner.afterAll("afterAll", wrap(function(done) {
+            return prototype.afterAll.call(instance, done);
+          }, prototype.afterAll), theTestUI.getSettings(prototype.afterAll));
+        } else {
+          theTestUI.runner.afterAll("afterAll", wrap(function() {
+            return prototype.afterAll.call(instance);
+          }, prototype.afterAll), theTestUI.getSettings(prototype.afterAll));
+        }
+      }
 
       // Register the static after method of the class to be called after-all tests.
       if (constructor.after) {
@@ -503,9 +527,19 @@ export interface TestInstance {
   before?(done?: Done): void | Promise<void>;
 
   /**
+   * An instance method, that if defined, is executed before tests.
+   */
+  beforeAll?(done?: Done): void | Promise<void>;
+
+  /**
    * An instance method, that if defined, is executed after every test method.
    */
   after?(done?: Done): void | Promise<void>;
+
+  /**
+   * An instance method, that if defined, is executed after tests.
+   */
+  afterAll?(done?: Done): void | Promise<void>;
 }
 
 export interface TestClass<T extends TestInstance> {

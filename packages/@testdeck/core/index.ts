@@ -133,11 +133,18 @@ export abstract class ClassTestUI {
       let currentPrototype = prototype;
       while (currentPrototype !== Object.prototype) {
         Object.getOwnPropertyNames(currentPrototype).forEach((key) => {
-          if (typeof prototype[key] === "function") {
-            const method = prototype[key];
-            if (method[ClassTestUI.nameSymbol] && !collectedTests[key]) {
-              collectedTests[key] = [prototype, method];
+          // Issue #248: getters and setters declared by classes may result in error
+          // and accessing the property by name will directly invoke either one
+          try {
+            if (typeof prototype[key] === "function") {
+              const method = prototype[key];
+              if (method[ClassTestUI.nameSymbol] && !collectedTests[key]) {
+                collectedTests[key] = [prototype, method];
+              }
             }
+          } catch (ignored) {
+            // getter or setter
+            // just ignore, even though it is a costly operation
           }
         });
         currentPrototype = (Object as any).getPrototypeOf(currentPrototype);

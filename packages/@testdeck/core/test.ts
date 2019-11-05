@@ -887,6 +887,38 @@ describe("testdeck", function() {
             );
         });
     });
+
+    describe("regression #248: getters and setters are invoked during initialization of the suite", function() {
+
+      it("must not fail on getter or setter during initialization of the test suite", function() {
+
+        class Issue248Base {
+
+          private readonly mStrings: Set<string>;
+
+          constructor() {
+            this.mStrings = new Set<string>();
+          }
+
+          get strings(): string[] {
+            return Array.from(this.mStrings);
+          }
+        }
+
+        @ui.suite
+        class Issue248Test extends Issue248Base {
+
+          constructor() {
+            super();
+          }
+
+          @ui.test
+          private testFoo() {
+            const _ = this.strings;
+          }
+        }
+      });
+    });
 });
 
 declare var setTimeout;

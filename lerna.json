@@ -1,6 +1,9 @@
 {
   "packages": [
-    "packages/@testdeck/*"
+    "packages/@testdeck/core",
+    "packages/@testdeck/jasmine",
+    "packages/@testdeck/mocha",
+    "packages/@testdeck/jest"
   ],
   "command": {
     "bootstrap": {

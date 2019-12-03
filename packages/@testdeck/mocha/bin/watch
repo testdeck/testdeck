@@ -18,8 +18,8 @@ const argv = yargs
       t: {
           alias: "tsc",
           demand: false,
-          default: "./node_modules/typescript/bin/tsc",
-          describe: "Path to executable tsc, by default points to typescript installed as dev dependency. Set to 'tsc' for global tsc installation.",
+          default: "tsc",
+          describe: "Path to executable tsc, by default points to typescript installed as dependency, then to global tsc installation.",
           type: "string",
       },
       o: {
@@ -32,8 +32,8 @@ const argv = yargs
       m: {
           alias: "mocha",
           demand: false,
-          default: "./node_modules/mocha/bin/mocha",
-          describe: "Path to executable mocha, by default points to mocha installed as dev dependency.",
+          default: "mocha",
+          describe: "Path to executable mocha, by default points to mocha installed as dependency, then to global mocha installation.",.",
           type: "string",
       },
       n: {

@@ -25,7 +25,7 @@ const argv = yargs
       o: {
           alias: "opts",
           demand: false,
-          default: "./test/mocha.opts",
+          default: undefined,
           describe: "Path to mocha.opts file containing additional mocha configuration.",
           type: "string",
       },
@@ -88,8 +88,11 @@ function compilationComplete() {
     } else {
         console.log(chalk.gray("Run mocha."));
     }
-
-    const mochaOptions = ["--opts", argv.opts, "--colors"].concat(argv._);
+    const mochaOptions = ["--colors"]
+    if (argv.opts) {
+        mochaOptions.push("--opts");
+        mochaOptions.push(argv.opts);
+    }  
     if (argv.g) {
         mochaOptions.push("-g");
         mochaOptions.push(argv.g);

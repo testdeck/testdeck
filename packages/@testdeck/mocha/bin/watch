@@ -88,7 +88,7 @@ function compilationComplete() {
     } else {
         console.log(chalk.gray("Run mocha."));
     }
-    const mochaOptions = ["--colors"]
+    const mochaOptions = ["--colors"].concat(argv._);
     if (argv.opts) {
         mochaOptions.push("--opts");
         mochaOptions.push(argv.opts);

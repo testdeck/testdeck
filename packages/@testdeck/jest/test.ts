@@ -11,7 +11,7 @@ describe("tests", function() {
         }
 
         public before() {
-            assert(this instanceof Suite);
+            assert(this).instanceOf(Suite);
             events.push("Suite before");
         }
 
@@ -29,7 +29,7 @@ describe("tests", function() {
         }
 
         public after() {
-            assert(this instanceof Suite);
+            assert(this).instanceOf(Suite);
             events.push("Suite after");
         }
 
@@ -45,7 +45,7 @@ describe("tests", function() {
         }
 
         public before(done) {
-            assert(this instanceof CallbacksSuite);
+            assert(this).instanceOf(CallbacksSuite);
             events.push("CallbacksSuite before");
             setTimeout(done, 0);
         }
@@ -83,7 +83,7 @@ describe("tests", function() {
         }
 
         public after(done) {
-            assert(this instanceof CallbacksSuite);
+            assert(this).instanceOf(CallbacksSuite);
             events.push("CallbacksSuite after");
             setTimeout(done, 0);
         }

@@ -1,6 +1,6 @@
 {
   "packages": [
-    "packages/@testdeck/*"
+    "packages/*"
   ],
   "command": {
     "bootstrap": {

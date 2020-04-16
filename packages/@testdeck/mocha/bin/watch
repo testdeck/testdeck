@@ -5,6 +5,7 @@ const chalk = require("chalk");
 const spawn = require("cross-spawn");
 const readline = require("readline");
 const yargs = require("yargs");
+const fs = require("fs");
 
 const argv = yargs
   .options({
@@ -18,8 +19,8 @@ const argv = yargs
       t: {
           alias: "tsc",
           demand: false,
-          default: "./node_modules/typescript/bin/tsc",
-          describe: "Path to executable tsc, by default points to typescript installed as dev dependency. Set to 'tsc' for global tsc installation.",
+          default: "tsc",
+          describe: "Path to executable tsc, by default points to typescript installed as dependency, then to global tsc installation.",
           type: "string",
       },
       o: {
@@ -32,8 +33,8 @@ const argv = yargs
       m: {
           alias: "mocha",
           demand: false,
-          default: "./node_modules/mocha/bin/mocha",
-          describe: "Path to executable mocha, by default points to mocha installed as dev dependency.",
+          default: "mocha",
+          describe: "Path to executable mocha, by default points to mocha installed as dependency, then to global mocha installation.",
           type: "string",
       },
       n: {
@@ -89,7 +90,11 @@ function compilationComplete() {
         console.log(chalk.gray("Run mocha."));
     }
 
-    const mochaOptions = ["--opts", argv.opts, "--colors"].concat(argv._);
+    const mochaOptions = ["--colors"].concat(argv._);
+    if (argv.opts && fs.existsSync(argv.opts)) {
+        mochaOptions.push("--opts");
+        mochaOptions.push(argv.opts);
+    }
     if (argv.g) {
         mochaOptions.push("-g");
         mochaOptions.push(argv.g);

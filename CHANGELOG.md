@@ -3,11 +3,11 @@
 
 #### :house: Internal
 * `core`, `jasmine`, `jest`, `mocha`
-  * [#263](https://github.com/testdeck/testdeck/pull/263) #219 ([@silkentrance](https://github.com/silkentrance))
+  * [#263](https://github.com/testdeck/testdeck/pull/263) Closes [#219](https://github.com/testdeck/testdeck/issues/219) ([@silkentrance](https://github.com/silkentrance))
 
 #### :bug: Bug Fix
 * `core`, `jasmine`, `jest`, `mocha`
-  * [#263](https://github.com/testdeck/testdeck/pull/263) Closes [#262](https://github.com/testdeck/testdeck/issues/262))
+  * [#263](https://github.com/testdeck/testdeck/pull/263) Closes [#262](https://github.com/testdeck/testdeck/issues/262) ([@silkentrance](https://github.com/silkentrance))
 
 #### :rocket: New Feature
 * `@testdeck/mocha`

@@ -14,3 +14,4 @@ dist
 node_modules/
 .idea/
 coverage
+CHANGELOG.new.md

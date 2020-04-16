@@ -1,4 +1,25 @@
 
+## v0.0.7 (2020-04-16)
+
+#### :house: Internal
+* `core`, `jasmine`, `jest`, `mocha`
+  * [#263](https://github.com/testdeck/testdeck/pull/263) #219 ([@silkentrance](https://github.com/silkentrance))
+
+#### :bug: Bug Fix
+* `core`, `jasmine`, `jest`, `mocha`
+  * [#263](https://github.com/testdeck/testdeck/pull/263) Closes [#262](https://github.com/testdeck/testdeck/issues/262))
+
+#### :rocket: New Feature
+* `@testdeck/mocha`
+  * [#257](https://github.com/testdeck/testdeck/pull/257) let npm resolve mocka and tsc binary ([@dcharbonnier](https://github.com/dcharbonnier))
+
+#### :memo: Documentation
+* [#233](https://github.com/testdeck/testdeck/pull/233) chore #205: update readme ([@silkentrance](https://github.com/silkentrance))
+
+#### Committers: 2
+- Carsten Klein ([@silkentrance](https://github.com/silkentrance))
+- [@dcharbonnier](https://github.com/dcharbonnier)
+
 ## v0.0.6 (2019-04-09)
 
 #### :house: Internal

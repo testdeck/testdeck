@@ -28,7 +28,7 @@
     "@testdeck/core": "^0.0.6"
   },
   "devDependencies": {
-    "@types/jasmine": "^3.3.12"
+    "@types/jasmine": "latest"
   },
   "files": [
     "dist/index.d.ts",

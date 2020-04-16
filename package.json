@@ -1,7 +1,7 @@
 {
   "name": "testdeck",
   "private": true,
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "TypeScript decorators based wrapper over various test framework interfaces",
   "author": "Panayot Cankov",
   "contributors": [
@@ -17,17 +17,17 @@
     "url": "https://github.com/testdeck/testdeck.git"
   },
   "devDependencies": {
-    "@types/chai": "^4.1.7",
-    "@types/chai-as-promised": "^7.1.0",
-    "chai": "^4.2.0",
-    "chai-as-promised": "^7.1.1",
-    "jasmine": "^3.3.1",
-    "jest": "^24.5.0",
+    "@types/chai": "latest",
+    "@types/chai-as-promised": "latest",
+    "chai": "latest",
+    "chai-as-promised": "latest",
+    "jasmine": "latest",
+    "jest": "latest",
     "lerna": "latest",
-    "lerna-changelog": "^0.8.2",
-    "mocha": "^6.0.2",
+    "lerna-changelog": "latest",
+    "mocha": "latest",
     "nyc": "latest",
-    "tslint": "^5.14.0",
+    "tslint": "latest",
     "typescript": "latest"
   },
   "scripts": {

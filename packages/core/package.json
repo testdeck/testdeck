@@ -48,7 +48,7 @@
     "all": true
   },
   "devDependencies": {
-    "@types/mocha": "^5.2.6"
+    "@types/mocha": "latest"
   },
   "publishConfig": {
     "access": "public"

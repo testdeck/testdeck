@@ -1,6 +1,6 @@
 {
   "name": "@testdeck/jasmine",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Object oriented testing for the Jasmine test framework",
   "author": "Panayot Cankov",
   "contributors": [
@@ -25,7 +25,7 @@
     "tslint-fix": "tslint --project . --fix"
   },
   "dependencies": {
-    "@testdeck/core": "^0.0.6"
+    "@testdeck/core": "^0.0.7"
   },
   "devDependencies": {
     "@types/jasmine": "latest"

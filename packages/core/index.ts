@@ -277,7 +277,9 @@ export abstract class ClassTestUI {
       }
     };
 
-    return decorator;
+    // TODO: figure out why the interface SuiteDecoratorOrName cannot be returned here,
+    // for now we will just cast to any to make the compiler happy
+    return decorator as any;
   }
 
   // Things regarding test, abstract in a separate class...
@@ -437,6 +439,13 @@ export interface SuiteDecoratorOrName extends ClassDecorator {
    * ```
    */
   (...decorator: ClassDecorator[]): ClassDecorator;
+  /**
+   * Called with with no arguments, e.g.
+   * ```
+   * @suite()
+   * ```
+   */
+  // (): SuiteDecoratorOrName;
 }
 
 export interface SuiteDecorator extends SuiteDecoratorOrName {

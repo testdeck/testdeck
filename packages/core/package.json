@@ -2,6 +2,15 @@
   "name": "@testdeck/core",
   "version": "0.0.8",
   "description": "Core framework for decorator based object oriented testing",
+  "keywords": [
+    "test",
+    "testing",
+    "typescript",
+    "bdd",
+    "tdd",
+    "object oriented",
+    "object-oriented"
+  ],
   "author": "Panayot Cankov",
   "contributors": [
     {

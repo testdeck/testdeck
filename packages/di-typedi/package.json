@@ -1,6 +1,6 @@
 {
   "name": "@testdeck/di-typedi",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "TypeDI IOC integration for testdeck",
   "author": "Panayot Cankov",
   "contributors": [
@@ -24,8 +24,8 @@
     "tslint-fix": "tslint --project . --fix"
   },
   "devDependencies": {
-    "@testdeck/core": "^0.0.7",
-    "@testdeck/mocha": "^0.0.7",
+    "@testdeck/core": "^0.0.8",
+    "@testdeck/mocha": "^0.0.8",
     "reflect-metadata": "^0.1.13",
     "typedi": "^0.8.0"
   },

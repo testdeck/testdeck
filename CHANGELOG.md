@@ -1,4 +1,13 @@
 
+## v0.0.9 (2020-04-17)
+
+#### :house: Internal
+* `core`, `jasmine`, `jest`, `mocha`
+  * [#268](https://github.com/testdeck/testdeck/pull/268) Closes [#267](https://github.com/testdeck/testdeck/issues/267): add missing keywords to package manifest ([@silkentrance](https://github.com/silkentrance))
+
+#### Committers: 1
+- Carsten Klein ([@silkentrance](https://github.com/silkentrance))
+
 ## v0.0.8 (2020-04-17)
 
 #### :bug: Bug Fix

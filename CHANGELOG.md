@@ -1,4 +1,13 @@
 
+## v0.0.8 (2020-04-17)
+
+#### :bug: Bug Fix
+* `core`, `jasmine`, `jest`
+  * [#266](https://github.com/testdeck/testdeck/pull/266) Closes [#265](https://github.com/testdeck/testdeck/issues/265): support running afterAll/afterEach hooks in reverse order ([@silkentrance](https://github.com/silkentrance))
+
+#### Committers: 1
+- Carsten Klein ([@silkentrance](https://github.com/silkentrance))
+
 ## v0.0.7 (2020-04-16)
 
 #### :house: Internal

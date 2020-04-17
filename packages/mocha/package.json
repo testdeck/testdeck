@@ -1,6 +1,6 @@
 {
   "name": "@testdeck/mocha",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Object oriented testing for the Mocha test framework",
   "keywords": [
     "test",
@@ -38,7 +38,7 @@
     "tslint-fix": "tslint --project . --fix"
   },
   "dependencies": {
-    "@testdeck/core": "^0.0.8"
+    "@testdeck/core": "^0.0.9"
   },
   "nyc": {
     "check-coverage": true,

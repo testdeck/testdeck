@@ -48,6 +48,8 @@ const jestRunner: core.TestRunner = {
 };
 
 class JestClassTestUI extends core.ClassTestUI {
+  public readonly executeAfterHooksInReverseOrder: boolean = true;
+
   public constructor(runner: core.TestRunner = jestRunner) {
     super(runner);
   }

@@ -11,6 +11,7 @@ describe("tests", function() {
         }
 
         public before() {
+            assert(this).instanceOf(Suite);
             events.push("Suite before");
         }
 
@@ -28,6 +29,7 @@ describe("tests", function() {
         }
 
         public after() {
+            assert(this).instanceOf(Suite);
             events.push("Suite after");
         }
 

@@ -18,11 +18,10 @@ class LoggingClassTestUI extends ClassTestUI {
     public log: LoggingClassTestUI.Log;
     private readonly logger: LoggingClassTestUI.LoggingRunner;
     constructor() {
-        const runner = new LoggingClassTestUI.LoggingRunner();
-        super(runner);
+        super(new LoggingClassTestUI.LoggingRunner());
         this.log = LoggingClassTestUI.Log.Default;
-        runner.ui = this;
-        this.logger = runner;
+        (this.runner as LoggingClassTestUI.LoggingRunner).ui = this;
+        this.logger = this.runner as LoggingClassTestUI.LoggingRunner;
     }
     get root(): LoggingClassTestUI.ChildInfo[] { return this.logger.peek; }
 }

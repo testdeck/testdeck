@@ -18,6 +18,8 @@ export abstract class ClassTestUI {
   private static readonly executionSymbol = ClassTestUI.MakeSymbol("execution");
   private static readonly isDecoratorSymbol = ClassTestUI.MakeSymbol("isDecorator");
 
+  public readonly executeAfterHooksInReverseOrder: boolean = false;
+
   public readonly runner: TestRunner;
 
   public readonly suite: SuiteDecorator;
@@ -193,6 +195,18 @@ export abstract class ClassTestUI {
         declareTestMethod(value[0], value[1]);
       }
 
+      // Register a final after-each method to clear the instance reference.
+      function registerTeardownHook() {
+        theTestUI.runner.afterEach("teardown instance", function teardownInstance() {
+          instance = null;
+        });
+      }
+
+      // Jest will run the hooks in their reverse order
+      if (theTestUI.executeAfterHooksInReverseOrder) {
+        registerTeardownHook();
+      }
+
       // Register the instance after method to be called after-each test method.
       if (prototype.after) {
         if (isAsync(prototype.after)) {
@@ -206,10 +220,10 @@ export abstract class ClassTestUI {
         }
       }
 
-      // Register a final after-each method to clear the instance reference.
-      theTestUI.runner.afterEach("teardown instance", function teardownInstance() {
-        instance = null;
-      });
+      // Mocha will run the hooks in the order they have been added
+      if (!theTestUI.executeAfterHooksInReverseOrder) {
+        registerTeardownHook();
+      }
 
       // Register the static after method of the class to be called after-all tests.
       if (constructor.after) {

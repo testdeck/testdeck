@@ -2,6 +2,16 @@
   "name": "@testdeck/jest",
   "version": "0.0.8",
   "description": "Object oriented testing for the Jest test framework",
+  "keywords": [
+    "test",
+    "testing",
+    "jest",
+    "typescript",
+    "bdd",
+    "tdd",
+    "object oriented",
+    "object-oriented"
+  ],
   "author": "Panayot Cankov",
   "contributors": [
     {

@@ -2,6 +2,16 @@
   "name": "@testdeck/mocha",
   "version": "0.0.8",
   "description": "Object oriented testing for the Mocha test framework",
+  "keywords": [
+    "test",
+    "testing",
+    "mocha",
+    "typescript",
+    "bdd",
+    "tdd",
+    "object oriented",
+    "object-oriented"
+  ],
   "author": "Panayot Cankov",
   "contributors": [
     {

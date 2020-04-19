@@ -1,4 +1,13 @@
 
+## v0.0.10 (2020-04-19)
+
+#### :bug: Bug Fix
+* `core`
+  * [#269](https://github.com/testdeck/testdeck/pull/269) fix gh-254: use Object.getOwnPropertyDescriptor instead of accessing the fields directly ([@silkentrance](https://github.com/silkentrance))
+
+#### Committers: 1
+- Carsten Klein ([@silkentrance](https://github.com/silkentrance))
+
 ## v0.0.9 (2020-04-17)
 
 #### :house: Internal

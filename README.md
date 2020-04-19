@@ -4,11 +4,11 @@ This is the monorepo for the testdeck packages.
 
 ## Packages
 
-- [@testdeck/mocha](./packages/@testdeck/mocha)
-- [@testdeck/jasmine](./packages/@testdeck/jasmine)
-- [@testdeck/jest](./packages/@testdeck/jest)
-- [@testdeck/di-typedi](./packages/@testdeck/di-typedi)
-- [@testdeck/core](./packages/@testdeck/core)
+- [@testdeck/mocha](./packages/mocha)
+- [@testdeck/jasmine](./packages/jasmine)
+- [@testdeck/jest](./packages/jest)
+- [@testdeck/di-typedi](./packages/di-typedi)
+- [@testdeck/core](./packages/core)
 
 ## Build
 

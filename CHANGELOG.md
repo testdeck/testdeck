@@ -1,4 +1,15 @@
 
+## v0.1.0 (2020-05-04)
+
+#### :boom: Breaking Change
+* [#274](https://github.com/testdeck/testdeck/pull/274) drop support for node < v10.0.0 ([@silkentrance](https://github.com/silkentrance))
+
+#### :memo: Documentation
+* [#271](https://github.com/testdeck/testdeck/pull/271) Closes [#270](https://github.com/testdeck/testdeck/issues/270): packages have been moved ([@silkentrance](https://github.com/silkentrance))
+
+#### Committers: 1
+- Carsten Klein ([@silkentrance](https://github.com/silkentrance))
+
 ## v0.0.10 (2020-04-19)
 
 #### :bug: Bug Fix

@@ -14,6 +14,6 @@ install:
   - npm install 
 script:
   - npm test
-#branches:
-#  except:
-#    - /^gh-.*$/
+branches:
+  except:
+    - /^gh-.*$/

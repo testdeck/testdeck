@@ -3,7 +3,6 @@ node_js:
   - "13"
   - "12"
   - "10"
-  - "8"
 sudo: false
 cache:
   directories:
@@ -11,9 +10,9 @@ cache:
 install:
   - npm install -g npm
   - test -d node_modules && npm prune || true
-  - npm install 
+  - npm install
 script:
   - npm test
-#branches:
-#  except:
-#    - /^gh-.*$/
+branches:
+  except:
+    - /^gh-.*$/

@@ -223,11 +223,11 @@ export abstract class ClassTestUI {
         if (isAsync(constructor.after)) {
           theTestUI.runner.afterAll("static after", wrap(function(done) {
             return constructor.after(done);
-          }, constructor.after), theTestUI.getSettings(constructor.before));
+          }, constructor.after), theTestUI.getSettings(constructor.after));
         } else {
           theTestUI.runner.afterAll("static after", wrap(function() {
             return constructor.after();
-          }, constructor.after), theTestUI.getSettings(constructor.before));
+          }, constructor.after), theTestUI.getSettings(constructor.after));
         }
       }
     };

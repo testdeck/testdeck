@@ -499,6 +499,17 @@ describe("testdeck", function() {
                 }]
             }]);
         });
+
+        it("gh-276: regression static after only must not result in error", function() {
+
+            ui.log = LoggingClassTestUI.Log.SetupTeardown;
+
+            assert.doesNotThrow(function() {
+                @ui.suite class SomeSuite {
+                    public static after() {}
+                }
+            });
+        });
     });
 
     describe("lifecycle hooks", function() {

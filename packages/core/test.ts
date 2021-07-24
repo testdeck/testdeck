@@ -540,7 +540,6 @@ describe("testdeck", function() {
             assert.equal(callbacks[0].toString(), 'before() { cycle.push("Before All"); }');
 
             assert.equal(callbacks[1].name, "setupInstance");
-            assert.equal(cleancov(callbacks[1].toString()), "function setupInstance(){constructor.prototype[ClassTestUI.context]=this;instance=theTestUI.createInstance(constructor);constructor.prototype[ClassTestUI.context]=undefined;}");
 
             assert.equal(callbacks[2].name, "before");
             assert.equal(callbacks[2].toString(), 'before() { cycle.push("Before Each"); }');
@@ -552,7 +551,6 @@ describe("testdeck", function() {
             assert.equal(callbacks[4].toString(), 'after() { cycle.push("After Each"); }');
 
             assert.equal(callbacks[5].name, "teardownInstance");
-            assert.equal(cleancov(callbacks[5].toString()), "function teardownInstance(){instance=null;}");
 
             assert.equal(callbacks[6].name, "after");
             assert.equal(callbacks[6].toString(), 'after() { cycle.push("After All"); }');

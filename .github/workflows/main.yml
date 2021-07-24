@@ -21,7 +21,8 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npm ci
-      - run: npm run build --if-present
+#      - run: npm ci # npm ci - will install dependency in a way suitable for ci but requires a package lock
+      - run: npm i
+#      - run: npm run build --if-present
       - run: npm test
 

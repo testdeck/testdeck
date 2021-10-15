@@ -789,21 +789,21 @@ describe("testdeck", function() {
 
             const suite = ui.root[0] as LoggingClassTestUI.SuiteInfo;
 
-            await assert.isRejected(new Promise((resolve, reject) => {
+            await assert.isRejected(new Promise<void>((resolve, reject) => {
                 suite.children[0].callback((err?) => err ? reject(err) : resolve());
             }) as PromiseLike<any>);
             suite.children[1].callback();
-            await assert.isRejected(new Promise((resolve, reject) => {
+            await assert.isRejected(new Promise<void>((resolve, reject) => {
                 suite.children[2].callback((err?) => err ? reject(err) : resolve());
             }) as PromiseLike<any>);
-            await assert.isRejected(new Promise((resolve, reject) => {
+            await assert.isRejected(new Promise<void>((resolve, reject) => {
                 suite.children[3].callback((err?) => err ? reject(err) : resolve());
             }) as PromiseLike<any>);
-            await assert.isRejected(new Promise((resolve, reject) => {
+            await assert.isRejected(new Promise<void>((resolve, reject) => {
                 suite.children[4].callback((err?) => err ? reject(err) : resolve());
             }) as PromiseLike<any>);
             suite.children[5].callback();
-            await assert.isRejected(new Promise((resolve, reject) => {
+            await assert.isRejected(new Promise<void>((resolve, reject) => {
                 suite.children[6].callback((err?) => err ? reject(err) : resolve());
             }) as PromiseLike<any>);
         });

@@ -35,4 +35,4 @@ The following npm scripts are available
 ## Resources 
 
 - [Official Documentation](https://testdeck.org)
-
+- [Usage: npm-stat.js](https://npm-stat.com/charts.html?package=mocha-typescript&package=%40testdeck%2Fmocha&package=%40testdeck%2Fjest&package=%40testdeck%2Fmocha&package=%40testdeck%2Fjasmine)

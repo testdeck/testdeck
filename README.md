@@ -28,9 +28,9 @@ This will install all required dependencies and will also bootstrap `lerna`.
 
 The following npm scripts are available
 
-- tslint      -- runs `tslint` on all sources in all available packages
-- tslint-fix  -- runs `tslint --fix` on all sources in all available packages
-- test        -- run all tests on all available packages
+- `npm run tslint`      -- runs `tslint` on all sources in all available packages
+- `npm run tslint-fix`  -- runs `tslint --fix` on all sources in all available packages
+- `npm test`            -- run all tests on all available packages
 
 ## Resources 
 

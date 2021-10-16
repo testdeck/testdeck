@@ -29,7 +29,7 @@
     "testdeck-watch": "./bin/watch"
   },
   "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "types": "index.d.ts",
   "scripts": {
     "prepare": "tsc",
     "pretest": "tsc",
@@ -60,9 +60,10 @@
   },
   "files": [
     "bin/watch",
-    "dist/index.d.ts",
     "dist/index.js",
     "dist/index.js.map",
+    "index.d.ts",
+    "index.ts",
     "README.md",
     "LICENSE"
   ],

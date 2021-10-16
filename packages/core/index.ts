@@ -22,7 +22,7 @@ export abstract class ClassTestUI {
    * This symbol can be used to get the `this` context passed to `describe` and `it` in test runner frameworks.
    * Test classes and instances will have the context assigned using this key.
    */
-  public static readonly context: unique symbol = ClassTestUI.MakeSymbol("context") as any;
+  public readonly context: symbol = ClassTestUI.MakeSymbol("context") as any;
 
   public readonly executeAfterHooksInReverseOrder: boolean = false;
 
@@ -98,12 +98,12 @@ export abstract class ClassTestUI {
         const settings = theTestUI.getSettings(constructor.before);
         if (isAsync(constructor.before)) {
           theTestUI.runner.beforeAll("static before", wrap(function(done) {
-            constructor[ClassTestUI.context] = this;
+            constructor[theTestUI.context] = this;
             return constructor.before(done);
           }, constructor.before), settings);
         } else {
           theTestUI.runner.beforeAll("static before", wrap(function() {
-            constructor[ClassTestUI.context] = this;
+            constructor[theTestUI.context] = this;
             return constructor.before();
           }, constructor.before), settings);
         }
@@ -113,9 +113,9 @@ export abstract class ClassTestUI {
 
       // Register the first "before each" callback to be one that will instantiate the class.
       theTestUI.runner.beforeEach("setup instance", function setupInstance() {
-        constructor.prototype[ClassTestUI.context] = this;
+        constructor.prototype[theTestUI.context] = this;
         instance = theTestUI.createInstance(constructor);
-        constructor.prototype[ClassTestUI.context] = undefined;
+        constructor.prototype[theTestUI.context] = undefined;
       });
 
       const prototype = constructor.prototype;
@@ -124,12 +124,12 @@ export abstract class ClassTestUI {
       if (prototype.before) {
         if (isAsync(prototype.before)) {
           theTestUI.runner.beforeEach("before", wrap(function(done: Function) {
-            instance[ClassTestUI.context] = this;
+            instance[theTestUI.context] = this;
             return prototype.before.call(instance, done);
           }, prototype.before), theTestUI.getSettings(prototype.before));
         } else {
           theTestUI.runner.beforeEach("before", wrap(function() {
-            instance[ClassTestUI.context] = this;
+            instance[theTestUI.context] = this;
             return prototype.before.call(instance);
           }, prototype.before), theTestUI.getSettings(prototype.before));
         }
@@ -185,12 +185,12 @@ export abstract class ClassTestUI {
       function applyTestFunc(testName: string, method: Function, callArgs: any[], testSettings: TestSettings) {
         if (isAsync(method)) {
           theTestUI.runner.test(testName, wrap(function(done) {
-            instance[ClassTestUI.context] = this;
+            instance[theTestUI.context] = this;
             return method.call(instance, done, ...callArgs);
           }, method), testSettings);
         } else {
           theTestUI.runner.test(testName, wrap(function() {
-            instance[ClassTestUI.context] = this;
+            instance[theTestUI.context] = this;
             return method.call(instance, ...callArgs);
           }, method), testSettings);
         }
@@ -218,12 +218,12 @@ export abstract class ClassTestUI {
       if (prototype.after) {
         if (isAsync(prototype.after)) {
           theTestUI.runner.afterEach("after", wrap(function(done) {
-            instance[ClassTestUI.context] = this;
+            instance[theTestUI.context] = this;
             return prototype.after.call(instance, done);
           }, prototype.after), theTestUI.getSettings(prototype.after));
         } else {
           theTestUI.runner.afterEach("after", wrap(function() {
-            instance[ClassTestUI.context] = this;
+            instance[theTestUI.context] = this;
             return prototype.after.call(instance);
           }, prototype.after), theTestUI.getSettings(prototype.after));
         }
@@ -238,12 +238,12 @@ export abstract class ClassTestUI {
       if (constructor.after) {
         if (isAsync(constructor.after)) {
           theTestUI.runner.afterAll("static after", wrap(function(done) {
-            constructor[ClassTestUI.context] = this;
+            constructor[theTestUI.context] = this;
             return constructor.after(done);
           }, constructor.after), theTestUI.getSettings(constructor.after));
         } else {
           theTestUI.runner.afterAll("static after", wrap(function() {
-            constructor[ClassTestUI.context] = this;
+            constructor[theTestUI.context] = this;
             return constructor.after();
           }, constructor.after), theTestUI.getSettings(constructor.after));
         }
@@ -421,7 +421,8 @@ export abstract class ClassTestUI {
    * Creates the decorators `@pending`, `@only`, `@skip`.
    */
   private createExecutionModifier(execution: Execution): ExecutionModifierDecorator {
-    const decorator = function(target: Function | boolean, propertyKey?: string | symbol): any {
+    // <T>(target: Object, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<T>) => TypedPropertyDescriptor<T> | void
+    const decorator = function<T>(target: Function | boolean | Object, propertyKey?: string | symbol, descriptor?: TypedPropertyDescriptor<T>): any {
       if (typeof target === "undefined" || typeof target === "boolean") {
         if (target) {
           return decorator;
@@ -435,7 +436,7 @@ export abstract class ClassTestUI {
         target[propertyKey][ClassTestUI.executionSymbol] = execution;
       }
     };
-    return decorator;
+    return decorator as any;
   }
 }
 

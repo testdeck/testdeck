@@ -1,6 +1,6 @@
 import * as core from "@testdeck/core";
 
-const jestRunner: core.TestRunner = {
+const jasmineRunner: core.TestRunner = {
   suite(name: string, callback: () => void, settings?: core.SuiteSettings): void {
     // TODO: Push settings.timeout on the stack and pass it to each child test...
     switch (settings && settings.execution) {
@@ -47,14 +47,27 @@ const jestRunner: core.TestRunner = {
   }
 };
 
-class JestClassTestUI extends core.ClassTestUI {
+class JasmineClassTestUI extends core.ClassTestUI {
   public readonly executeAfterHooksInReverseOrder: boolean = true;
 
-  public constructor(runner: core.TestRunner = jestRunner) {
+  public constructor(runner: core.TestRunner = jasmineRunner) {
     super(runner);
   }
 }
 
-const jestDecorators = new JestClassTestUI();
+const jasmineDecorators = new JasmineClassTestUI();
 
-export = jestDecorators;
+export const {
+
+  // "context" is not available for jasmine
+
+  suite,
+  test,
+  slow,
+  timeout,
+  retries,
+  pending,
+  only,
+  skip,
+  params
+} = jasmineDecorators;

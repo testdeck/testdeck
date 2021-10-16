@@ -55,4 +55,17 @@ class JestClassTestUI extends core.ClassTestUI {
 
 const jestDecorators = new JestClassTestUI();
 
-export = jestDecorators;
+export const {
+
+  // "context" is not available for jest
+
+  suite,
+  test,
+  slow,
+  timeout,
+  retries,
+  pending,
+  only,
+  skip,
+  params
+} = jestDecorators;

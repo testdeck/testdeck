@@ -75,7 +75,6 @@ class MochaClassTestUI extends core.ClassTestUI {
     super(runner);
   }
 }
-(MochaClassTestUI as any).prototype.context =  core.ClassTestUI.context;
 
 const mochaDecorators = new MochaClassTestUI();
 
@@ -92,4 +91,17 @@ declare global {
   }
 }
 
-export = mochaDecorators;
+export const {
+
+  context,
+
+  suite,
+  test,
+  slow,
+  timeout,
+  retries,
+  pending,
+  only,
+  skip,
+  params
+} = mochaDecorators;

@@ -4,11 +4,9 @@
 [![Downloads per Week](https://img.shields.io/npm/dw/@testdeck/jest.svg)](https://www.npmjs.com/package/@testdeck/jest)
 [![Issues](https://img.shields.io/github/issues/testdeck/testdeck.svg)](https://github.com/testdeck/testdeck/issues)
 [![Pull Requests](https://img.shields.io/github/issues-pr/testdeck/testdeck.svg)](https://github.com/testdeck/testdeck/pulls)
-[![Travis Build Status](https://img.shields.io/travis/testdeck/testdeck/master.svg)](https://travis-ci.org/testdeck/testdeck)
-[![Appveyor Build Status](https://img.shields.io/appveyor/ci/pana-cc/testdeck.svg)](https://ci.appveyor.com/project/pana-cc/testdeck)
 ![Apache 2.0 License](https://img.shields.io/npm/l/@testdeck/jest.svg)
 
-Jest testing with style - the OOP way
+Jest tests in OOP style!
 
 ```TypeScript
 import { suite, test } from "@testdeck/jest";

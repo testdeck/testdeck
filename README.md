@@ -1,8 +1,28 @@
 # testdeck 
 
-This is the monorepo for the testdeck packages.
+The JavaScript OOP style tests!
+
+```TypeScript
+// Use one of the mocha/jest/jasmine test runners:
+import { suite, test } from "@testdeck/mocha";
+import { suite, test } from "@testdeck/jest";
+import { suite, test } from "@testdeck/jasmine";
+
+// And write your tests like:
+import { expect } from 'chai';
+
+@suite
+class Hello {
+  
+  @test
+  world() {
+    expect(false).to.be.true;
+  }
+}
+```
 
 ## Packages
+This is the monorepo for the testdeck packages.
 
 - [@testdeck/mocha](./packages/mocha)
 - [@testdeck/jasmine](./packages/jasmine)

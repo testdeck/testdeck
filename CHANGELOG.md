@@ -1,3 +1,7 @@
+## v0.2.0
+* Fix null `this` in jest after methods
+* Reorganize typings, uses re-exports instead `module.exports =`
+* Mocha now export a `context` symbol that can be used to access the underlying mocha context
 
 ## v0.1.0 (2020-05-04)
 

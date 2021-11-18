@@ -26,6 +26,7 @@
   "devDependencies": {
     "@testdeck/core": "^0.1.2",
     "@testdeck/mocha": "^0.1.2",
+    "@types/mocha": "^9.0.0",
     "reflect-metadata": "^0.1.13",
     "typedi": "^0.8.0"
   },

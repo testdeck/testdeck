@@ -943,33 +943,33 @@ describe("testdeck", function() {
             @ui.suite
             class MySyncTest {
                 static before() {
-                    trace += `static before(); context: ${this[ClassTestUI.context]};\n`;
+                    trace += `static before(); context: ${this[ui.context]};\n`;
                 }
 
                 constructor() {
-                    trace += `constructor(); context: ${this[ClassTestUI.context]};\n`;
+                    trace += `constructor(); context: ${this[ui.context]};\n`;
                 }
 
                 before(): void {
-                    trace += `before(); context: ${this[ClassTestUI.context]};\n`;
+                    trace += `before(); context: ${this[ui.context]};\n`;
                 }
 
                 @ui.test
                 myTest1(): void {
-                    trace += `myTest1(); context: ${this[ClassTestUI.context]};\n`;
+                    trace += `myTest1(); context: ${this[ui.context]};\n`;
                 }
 
                 @ui.test
                 myTest2(): void {
-                    trace += `myTest2(); context: ${this[ClassTestUI.context]};\n`;
+                    trace += `myTest2(); context: ${this[ui.context]};\n`;
                 }
 
                 after(): void {
-                    trace += `after(); context: ${this[ClassTestUI.context]};\n`;
+                    trace += `after(); context: ${this[ui.context]};\n`;
                 }
 
                 static after() {
-                    trace += `static after(); context: ${this[ClassTestUI.context]};\n`;
+                    trace += `static after(); context: ${this[ui.context]};\n`;
                 }
             }
 
@@ -1038,33 +1038,33 @@ describe("testdeck", function() {
             @ui.suite
             class MySyncTest {
                 static before(done: Done) {
-                    trace += `static before(done); context: ${this[ClassTestUI.context]};\n`;
+                    trace += `static before(done); context: ${this[ui.context]};\n`;
                 }
 
                 constructor() {
-                    trace += `constructor(); context: ${this[ClassTestUI.context]};\n`;
+                    trace += `constructor(); context: ${this[ui.context]};\n`;
                 }
 
                 before(done: Done): void {
-                    trace += `before(done); context: ${this[ClassTestUI.context]};\n`;
+                    trace += `before(done); context: ${this[ui.context]};\n`;
                 }
 
                 @ui.test
                 myTest1(done: Done): void {
-                    trace += `myTest1(done); context: ${this[ClassTestUI.context]};\n`;
+                    trace += `myTest1(done); context: ${this[ui.context]};\n`;
                 }
 
                 @ui.test
                 myTest2(done: Done): void {
-                    trace += `myTest2(done); context: ${this[ClassTestUI.context]};\n`;
+                    trace += `myTest2(done); context: ${this[ui.context]};\n`;
                 }
 
                 after(done: Done): void {
-                    trace += `after(done); context: ${this[ClassTestUI.context]};\n`;
+                    trace += `after(done); context: ${this[ui.context]};\n`;
                 }
 
                 static after(done: Done) {
-                    trace += `static after(done); context: ${this[ClassTestUI.context]};\n`;
+                    trace += `static after(done); context: ${this[ui.context]};\n`;
                 }
             }
 

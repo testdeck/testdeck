@@ -1,5 +1,14 @@
 
+# Use kramdown to highlight markdown code blocks
 markdown: kramdown
 kramdown:
   input: GFM
   syntax_highlighter: rouge
+
+# Set the Sass partials directory, as we're using @imports
+sass:
+  style: :expanded # You might prefer to minify using :compressed
+
+# Use the following plug-ins
+gems:
+  - jekyll-sitemap # Create a sitemap using the official Jekyll sitemap gem

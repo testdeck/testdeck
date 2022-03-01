@@ -2,7 +2,7 @@
 
 The JavaScript OOP style tests!
 
-``` TypeScript
+``` typescript
 // Use one of the mocha/jest/jasmine test runners:
 import { suite, test } from "@testdeck/mocha";
 import { suite, test } from "@testdeck/jest";

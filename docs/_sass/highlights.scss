@@ -1,20 +1,17 @@
 
 pre.highlight {
-  background-color: #efefef;
-  padding: 7px 7px 7px 10px;
-  border: 1px solid #ddd;
-  -moz-box-shadow: 3px 3px rgba(0,0,0,0.1);
-  -webkit-box-shadow: 3px 3px rgba(0,0,0,0.1);
-  box-shadow: 3px 3px rgba(0,0,0,0.1);
-  margin: 20px 0 20px 0;
-  overflow: scroll;
+  background-color: #27292b;
+  border-radius: 5px;
+  padding: 8px;
+  margin: 12px;
+  overflow: auto;
 }
 
 code {
   font-family:'Bitstream Vera Sans Mono','Courier', monospace;
 }
 
-.highlight .c { color: #586E75 } /* Comment */
+.highlight .c { color: #556b2f; font-weight: 600; } /* Comment */
 .highlight .err { color: #93A1A1 } /* Error */
 .highlight .g { color: #93A1A1 } /* Generic */
 .highlight .k { color: #859900 } /* Keyword */

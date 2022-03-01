@@ -1,8 +1,0 @@
-_site
-.sass-cache
-.jekyll-metadata
-package-lock.json
-attic
-.*.swp
-.idea
-Gemfile.lock

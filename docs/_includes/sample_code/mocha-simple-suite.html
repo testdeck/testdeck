@@ -1,0 +1,14 @@
+{% highlight TypeScript %}
+import { suite, test } from '@testdeck/mocha';
+import { assert } from 'chai';
+
+@suite
+class TestSuite {
+
+  @test
+  someTest() {
+
+    assert.isOk(false);
+  }
+}
+{% endhighlight %}

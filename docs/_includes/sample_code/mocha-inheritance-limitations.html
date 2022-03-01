@@ -1,0 +1,19 @@
+{% highlight TypeScript linenos %}
+import { suite } from '@testdeck/mocha';
+
+@suite
+class SuperSuite {
+}
+
+@suite
+class ChildSuite extends SuperSuite {
+}
+{% endhighlight %}
+
+{% highlight shell %}
+npm test
+
+...
+Error: @suite ChildSuite must not subclass another @suite decorated class, use abstract base classes instead.
+...
+{% endhighlight %}

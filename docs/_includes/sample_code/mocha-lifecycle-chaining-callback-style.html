@@ -1,0 +1,78 @@
+{% if include.isStatic %}
+{% assign scope = 'static ' %}
+{% assign accessor = '.' %}
+{% assign lifecycle = 'all' %}
+{% else %}
+{% assign scope = '' %}
+{% assign accessor = '#' %}
+{% assign lifecycle = 'each' %}
+{% endif %}
+### Callback Style
+
+{% highlight TypeScript linenos %}
+import { suite, test } from '@testdeck/mocha';
+
+abstract class AbstractTestBase {
+
+  {{ scope }}before(done) {
+
+    console.log('AbstractTestBase.before');
+    return done();
+  }
+
+  {{ scope }}after(done) {
+
+    console.log('AbstractTestBase{{ accessor }}after');
+    return done(new Error('AbstractTestBase{{ accessor }}after failed'), null);
+  }
+}
+
+@suite
+class ConcreteTests extends AbstractTestBase {
+
+  {{ scope }}before(done) {
+
+    // let super before do its thing first
+    super.before((err, res) => {
+
+      if (err) {
+
+        return done(err);
+      }
+
+      // do our thing
+      console.log('ConcreteTest{{ accessor }}before');
+
+      return done();
+    });
+  }
+
+  {{ scope }}after(done) {
+
+    let err;
+    try {
+
+      console.log('ConcreteTest{{ accessor }}after');
+
+      // do our thing
+
+    } catch (ex) {
+
+      err = ex;
+    } finally {
+
+      return super.after((err2, res) => {
+
+        // might want to merge both errors here into one
+        return done(err || err2, null);
+      });
+    }
+  }
+
+  @test
+  test() {
+  }
+}
+{% endhighlight %}
+
+{% include sample_code/mocha-lifecycle-chaining-test-result.html isStatic=include.isStatic %}

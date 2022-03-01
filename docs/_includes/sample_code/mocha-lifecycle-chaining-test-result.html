@@ -1,0 +1,31 @@
+{% if include.isStatic %}
+{% assign accessor = '.' %}
+{% assign lifecycle = 'all' %}
+{% else %}
+{% assign accessor = '#' %}
+{% assign lifecycle = 'each' %}
+{% endif %}
+
+#### Run Tests
+
+{% highlight shell %}
+npm test
+
+...
+
+  ConcreteTests
+AbstractTestBase{{ accessor }}before
+ConcreteTest{{ accessor }}before
+    ✓ test
+ConcreteTest{{ accessor }}after
+AbstractTestBase{{ accessor }}after
+    1) "after {{ lifecycle }}" hook: after for "test"
+
+...
+
+  1) ConcreteTests
+       "after {{ lifecycle }}" hook: after for "test":
+     Error: AbstractTestBase{{ accessor }}after failed
+
+...
+{% endhighlight %}

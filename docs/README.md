@@ -2,21 +2,20 @@
 
 The JavaScript OOP style tests!
 
-<div class="mocha">
 ``` typescript
 import { suite, test } from "@testdeck/mocha";
 ```
-</div>
-<div class="jest">
+{: .mocha}
+
 ``` typescript
 import { suite, test } from "@testdeck/jest";
 ```
-</div>
-<div class="jasmine">
+{: .jest}
+
 ``` typescript
 import { suite, test } from "@testdeck/jasmine";
 ```
-</div>
+{: .jasmine}
 
 ``` typescript
 // Switch gears from functional:

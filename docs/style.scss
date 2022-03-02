@@ -47,6 +47,18 @@ h4 {
   font-size: 18px;
 }
 
+header h1 img {
+  width: 270px;
+  height: 48px;
+}
+
+a.mocha>img,
+a.jest>img,
+a.jasmine>img {
+  width: 32px;
+  height: 32px;
+}
+
 body.mocha a.mocha {
   border: 1px solid red;
 }

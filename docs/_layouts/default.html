@@ -7,8 +7,7 @@
 {% include meta.html %}
 
     <link rel="stylesheet" type="text/css" href="{{ site.baseurl }}/style.css" />
-    <link rel="alternate" type="application/rss+xml" title="{{ site.name }} - {{ site.description }}"
-        href="{{ site.baseurl }}/feed.xml" />
+    <link rel="alternate" type="application/rss+xml" title="{{ site.name }} - {{ site.description }}" href="{{ site.baseurl }}/feed.xml" />
 
     <link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
     <link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
@@ -29,13 +28,8 @@
     <meta name="theme-color" content="#ffffff">
 
 </head>
-
 <body>
     {% include cookies.html %}
-    <nav>
-        <a href="{{ site.baseurl }}/">Blog</a>
-        <a href="{{ site.baseurl }}/about">About</a>
-    </nav>
     <header>
         <h1><a href="{{ site.baseurl }}/"><img src="{{ site.avatar }}" alt="{{ site.name }}" /></a></h1>
         <p>{{ site.description }}</p>
@@ -44,12 +38,23 @@
         <a class="jest" href="javascript: void selectTestFramework('jest')">Jest</a>
         <a class="jasmine" href="javascript: void selectTestFramework('jasmine')">Jasmine</a>
     </header>
-
+    <nav>
+        <ul>
+            <li><a href="{{ site.baseurl }}/">Blog</a></li>
+            <li><a href="{{ site.baseurl }}/about">About</a></li>
+        </ul>
+    </nav>
     <main>
         {{ content }}
     </main>
-
+    <aside>
+        <ol>
+            <li>Lipsum 1</li>
+            <li>Lipsum 2</li>
+        </ol>
+    </aside>
     <footer>
+        <p>Some trailing links</p>
     </footer>
 </body>
 

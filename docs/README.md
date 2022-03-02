@@ -2,27 +2,70 @@
 
 The JavaScript OOP style tests!
 
+<div class="mocha">
 ``` typescript
-// Use one of the testdeck mocha/jest/jasmine integrations:
 import { suite, test } from "@testdeck/mocha";
-import { suite, test } from "@testdeck/jest";
-import { suite, test } from "@testdeck/jasmine";
-
 import { expect } from 'chai';
 
-// And turn your tests from functional:
+// Turn your tests from functional:
 describe("Hello", function() {
   it("world", function() {
     expect(false).to.be.true;
   });
 });
 
-// Into 100% OOP awesomeness:
+// Into pure OOP awesomeness:
 @suite class Hello {
   @test world() {
     expect(false).to.be.true;
   }
 }
 
-// P.S. You can still mix and match!
+// Yes, you can mix and match!
 ```
+</div>
+
+<div class="jest">
+``` typescript
+import { suite, test } from "@testdeck/jest";
+import { expect } from 'chai';
+
+// Turn your tests from functional:
+describe("Hello", function() {
+  it("world", function() {
+    expect(false).to.be.true;
+  });
+});
+
+// Into pure OOP awesomeness:
+@suite class Hello {
+  @test world() {
+    expect(false).to.be.true;
+  }
+}
+
+// Yes, you can mix and match!
+```
+</div>
+<div class="jasmine">
+``` typescript
+import { suite, test } from "@testdeck/jasmine";
+import { expect } from 'chai';
+
+// Turn your tests from functional:
+describe("Hello", function() {
+  it("world", function() {
+    expect(false).to.be.true;
+  });
+});
+
+// Into pure OOP awesomeness:
+@suite class Hello {
+  @test world() {
+    expect(false).to.be.true;
+  }
+}
+
+// Yes, you can mix and match!
+```
+</div>

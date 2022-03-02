@@ -1,0 +1,31 @@
+<script>
+    function setCookie(cname, cvalue) {
+        document.cookie = cname + "=" + cvalue + ";path=/";
+    }
+
+    function getCookie(cname) {
+        let name = cname + "=";
+        let ca = document.cookie.split(';');
+        for (let i = 0; i < ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+            }
+        }
+        return "";
+    }
+
+    var userTestFramework = getCookie("user-test-framework") || "jest";
+    document.body.style.setProperty("--user-test-framework", userTestFramework);
+    document.body.classList.remove("mocha", "jest", "jasmine");
+    document.body.classList.add(userTestFramework);
+
+    function selectTestFramework(userTestFramework) {
+        setCookie("user-test-framework", userTestFramework);
+        document.body.classList.remove("mocha", "jest", "jasmine");
+        document.body.classList.add(userTestFramework);
+    }
+</script>

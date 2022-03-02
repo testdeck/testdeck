@@ -46,3 +46,22 @@ h4 {
   font-size: 18px;
 }
 
+body.mocha a.mocha {
+  border: 1px solid red;
+}
+body.jest a.jest {
+  border: 1px solid red;
+}
+body.jasmine a.jasmine {
+  border: 1px solid red;
+}
+
+body.mocha div.jest,
+body.mocha div.jasmine,
+body.jest div.mocha,
+body.jest div.jasmine,
+body.jasmine div.mocha,
+body.jasmine div.jest
+{
+  display: none;
+}

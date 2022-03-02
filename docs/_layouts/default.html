@@ -5,6 +5,7 @@
     <title>{% if page.title %}{{ page.title }} – {% endif %}{{ site.name }} – {{ site.description }}</title>
 
     {% include meta.html %}
+    {% include cookies.html %}
 
     <link rel="stylesheet" type="text/css" href="{{ site.baseurl }}/style.css" />
     <link rel="alternate" type="application/rss+xml" title="{{ site.name }} - {{ site.description }}"
@@ -38,6 +39,10 @@
     <header>
         <h1><a href="{{ site.baseurl }}/"><img src="{{ site.avatar }}" alt="{{ site.name }}" /></a></h1>
         <p>{{ site.description }}</p>
+
+        <a class="mocha" href="javascript: void selectTestFramework('mocha')">Mocha</a>
+        <a class="jest" href="javascript: void selectTestFramework('jest')">Jest</a>
+        <a class="jasmine" href="javascript: void selectTestFramework('jasmine')">Jasmine</a>
     </header>
 
     <main>

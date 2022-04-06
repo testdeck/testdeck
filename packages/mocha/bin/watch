@@ -26,8 +26,8 @@ const argv = yargs
       o: {
           alias: "opts",
           demand: false,
-          default: "./test/mocha.opts",
-          describe: "Path to mocha.opts file containing additional mocha configuration.",
+          default: "./test/.mocharc.json",
+          describe: "Path to file containing additional mocha configuration.",
           type: "string",
       },
       m: {
@@ -92,7 +92,7 @@ function compilationComplete() {
 
     const mochaOptions = ["--colors"].concat(argv._);
     if (argv.opts && fs.existsSync(argv.opts)) {
-        mochaOptions.push("--opts");
+        mochaOptions.push("--options");
         mochaOptions.push(argv.opts);
     }
     if (argv.g) {

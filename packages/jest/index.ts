@@ -48,6 +48,9 @@ const jestRunner: core.TestRunner = {
 };
 
 class JestClassTestUI extends core.ClassTestUI {
+  // Jest can still use jasmine2 as a test runner.
+  public readonly executeAfterHooksInReverseOrder = Boolean(global.jasmine);
+
   public constructor(runner: core.TestRunner = jestRunner) {
     super(runner);
   }

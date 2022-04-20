@@ -30,7 +30,7 @@
   "scripts": {
     "prepare": "tsc",
     "pretest": "tsc",
-    "test": "jest dist/test.js && tslint --project .",
+    "test": "jest dist/test.js && jest --testRunner=jest-jasmine2 dist/test.js && tslint --project .",
     "tslint": "tslint --project .",
     "tslint-fix": "tslint --project . --fix"
   },

@@ -523,11 +523,19 @@ export interface TestDecorator extends TestDecoratorOrName {
 }
 
 /**
+ * See: https://github.com/testdeck/testdeck/issues/292
+ * Basically the mocha [context] symbol extends Object and somehow the TypeScript typechecking
+ * become strict enough to discard Object as source for the target: Object,
+ * so we are now using the escape hatch - any for target type.
+ */
+declare type RelaxedMethodDecorator = <T>(target: any, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<T>) => TypedPropertyDescriptor<T> | void;
+
+/**
  * After a `@suite` or `@test`,
  * these decortors can be used as `@slow(1000)`, `@timeout(2000)` and `@retries(3)`.
  * These can also be used as traits - such as `@suite(timeout(2000))`.
  */
-export type ExecutionOptionDecorator = (value: number) => ClassDecorator & MethodDecorator;
+export type ExecutionOptionDecorator = (value: number) => ClassDecorator & MethodDecorator & RelaxedMethodDecorator;
 
 /**
  * An execution modifier decorators. Used to control which tests will be executed on test-run.

@@ -47,6 +47,13 @@ h4 {
   font-size: 18px;
 }
 
+header {
+  position: sticky;
+  top: -96px;
+  background: white;
+  padding: 0px 0px 8px 0px;
+}
+
 header h1 {
   float: left;
 
@@ -63,10 +70,11 @@ header h1 img {
 
 header div.menu {
   float: right;
+  margin: 36px 0px 0px 0px;
 
   @include mobile {
     float: none;
-    position: sticky;
+    margin: 0px;
   }
 }
 

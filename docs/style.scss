@@ -6,7 +6,7 @@
 
 // Mobile breakpoints
 @mixin mobile {
-  @media screen and (max-width: 640px) {
+  @media screen and (max-width: 700px) {
     @content;
   }
 }
@@ -57,7 +57,7 @@ header h1 {
   @include mobile {
     float: none;
     text-align: center;
-    margin: auto;
+    margin: 1em 0 15px;
   }
 }
 header h1 img {
@@ -65,7 +65,7 @@ header h1 img {
   height: 48px;
 }
 
-header div.framework {
+header div.menu {
   display: inline-block;
   position: absolute;
   bottom: 32px;
@@ -73,34 +73,53 @@ header div.framework {
 
   @include mobile {
     display: block;
+    position: static;
   }
 }
-ul.framework {
+
+header button.hamburger {
+  display: none;
+
+  @include mobile {
+    display: block;
+    float: left;
+  }
+}
+
+header div.menu div.framework {
+  display: inline-block;
+
+  @include mobile {
+    float: right;
+  }
+}
+
+menu.framework {
   list-style-type: none;
   margin: 0px;
   padding: 0px;
   display: inline-block;
 }
-ul.framework>li {
+menu.framework>li {
   display: inline-block;
   vertical-align: -10px;
 }
-ul.framework a.mocha>img,
-ul.framework a.jest>img,
-ul.framework a.jasmine>img {
+menu.framework a.mocha>img,
+menu.framework a.jest>img,
+menu.framework a.jasmine>img {
   width: 32px;
   height: 32px;
 }
-ul.framework a.mocha {
+menu.framework a.mocha {
   border-bottom: 3px solid transparent;
 }
-body.mocha ul.framework a.mocha {
+body.mocha menu.framework a.mocha {
   border-bottom: 3px solid black;
 }
-body.jest ul.framework a.jest {
+body.jest menu.framework a.jest {
   border-bottom: 3px solid black;
 }
-body.jasmine ul.framework a.jasmine {
+body.jasmine menu.framework a.jasmine {
   border-bottom: 3px solid black;
 }
 

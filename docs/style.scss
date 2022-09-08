@@ -47,6 +47,10 @@ h4 {
   font-size: 18px;
 }
 
+header {
+  position: relative;
+}
+
 header h1 {
   float: left;
 
@@ -62,19 +66,24 @@ header h1 img {
 }
 
 header div.framework {
-  float: right;
+  display: inline-block;
+  position: absolute;
+  bottom: 32px;
+  right: 0px;
+
   @include mobile {
-    float: none;
-    text-align: center;
-    margin: auto;
+    display: block;
   }
 }
-
 ul.framework {
   list-style-type: none;
   margin: 0px;
   padding: 0px;
-  display: flex;
+  display: inline-block;
+}
+ul.framework>li {
+  display: inline-block;
+  vertical-align: -10px;
 }
 ul.framework a.mocha>img,
 ul.framework a.jest>img,

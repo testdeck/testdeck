@@ -1,7 +1,3 @@
-# testdeck
-
-The JavaScript OOP style tests!
-
 ``` typescript
 import { suite, test } from "@testdeck/mocha";
 ```
@@ -17,20 +13,20 @@ import { suite, test } from "@testdeck/jasmine";
 ```
 {: .jasmine}
 
+Pure OOP TypeScript testing
 ``` typescript
-// Switch gears from functional:
-describe("Hello", () => {
-  it("world", () => {
-    expect(false).to.be.true;
-  });
-});
-
-// To pure OOP awesomeness:
 @suite class Hello {
   @test world() {
-    assert(false == true);
+    assert(false);
   }
 }
+```
 
-// And you can mix and match!
+Compatible with functional TDD interfaces
+``` typescript
+suite("Hello", () => {
+  test("world", () => {
+    assert(false);
+  }
+});
 ```

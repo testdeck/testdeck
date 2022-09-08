@@ -32,11 +32,11 @@
     {% include cookies.html %}
     <header>
         <h1><a href="{{ site.baseurl }}/"><img src="{{ site.baseurl }}/assets/testdeck-wide.svg" alt="{{ site.name }}" /></a></h1>
-        <p>{{ site.description }}</p>
 
-        <a class="mocha" href="javascript: void selectTestFramework('mocha')"><img src="{{ site.baseurl }}/assets/mocha.svg" alt="Mocha"/></a>
-        <a class="jest" href="javascript: void selectTestFramework('jest')"><img src= "{{ site.baseurl }}/assets/jest.svg" alt="Jest"/></a>
-        <a class="jasmine" href="javascript: void selectTestFramework('jasmine')"><img src = "{{ site.baseurl }}/assets/jasmine.svg" alt="Jasmine"/></a>
+        <div class="framework">
+            +
+            {% include framework.html %}
+        </div>
     </header>
     <nav>
         <ul>

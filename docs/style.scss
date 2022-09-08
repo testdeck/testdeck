@@ -47,26 +47,52 @@ h4 {
   font-size: 18px;
 }
 
+header h1 {
+  float: left;
+
+  @include mobile {
+    float: none;
+    text-align: center;
+    margin: auto;
+  }
+}
 header h1 img {
   width: 270px;
   height: 48px;
 }
 
-a.mocha>img,
-a.jest>img,
-a.jasmine>img {
+header div.framework {
+  float: right;
+  @include mobile {
+    float: none;
+    text-align: center;
+    margin: auto;
+  }
+}
+
+ul.framework {
+  list-style-type: none;
+  margin: 0px;
+  padding: 0px;
+  display: flex;
+}
+ul.framework a.mocha>img,
+ul.framework a.jest>img,
+ul.framework a.jasmine>img {
   width: 32px;
   height: 32px;
 }
-
-body.mocha a.mocha {
-  border: 1px solid red;
+ul.framework a.mocha {
+  border-bottom: 3px solid transparent;
 }
-body.jest a.jest {
-  border: 1px solid red;
+body.mocha ul.framework a.mocha {
+  border-bottom: 3px solid black;
 }
-body.jasmine a.jasmine {
-  border: 1px solid red;
+body.jest ul.framework a.jest {
+  border-bottom: 3px solid black;
+}
+body.jasmine ul.framework a.jasmine {
+  border-bottom: 3px solid black;
 }
 
 body.mocha div.jest,

@@ -30,19 +30,17 @@
 </head>
 <body>
     {% include cookies.html %}
-
     <header>
         <h1><a href="{{ site.baseurl }}/"><img src="{{ site.baseurl }}/assets/testdeck-wide.svg" alt="{{ site.name }}" /></a></h1>
-    </header>
 
-    <div class="menu">
-        <button class="hamburger">=</button>
-        <div class="framework">
-            +
-            {% include framework.html %}
+        <div class="menu">
+            <button class="hamburger">=</button>
+            <div class="framework">
+                +
+                {% include framework.html %}
+            </div>
         </div>
-    </div>
-
+    </header>
     <nav>
         <ul>
             <li><a href="{{ site.baseurl }}/">Blog</a></li>

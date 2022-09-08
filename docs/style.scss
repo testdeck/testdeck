@@ -47,10 +47,6 @@ h4 {
   font-size: 18px;
 }
 
-header {
-  position: relative;
-}
-
 header h1 {
   float: left;
 
@@ -66,19 +62,23 @@ header h1 img {
 }
 
 header div.menu {
-  display: inline-block;
-  position: absolute;
-  bottom: 32px;
-  right: 0px;
+  float: right;
 
   @include mobile {
-    display: block;
-    position: static;
+    float: none;
+    position: sticky;
   }
 }
 
-header button.hamburger {
+header div.menu button.hamburger {
   display: none;
+
+  width: 32px;
+  height: 32px;
+
+  background: lightgray;
+  border: 1px solid black;
+  border-radius: 5px;
 
   @include mobile {
     display: block;

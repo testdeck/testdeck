@@ -78,7 +78,7 @@ header div.menu {
   }
 }
 
-header div.menu button.hamburger {
+header div.menu a.hamburger {
   display: none;
 
   width: 32px;
@@ -91,6 +91,16 @@ header div.menu button.hamburger {
   @include mobile {
     display: block;
     float: left;
+  }
+}
+body.hamburger-open header div.menu a.hamburger {
+  @include mobile {
+    background: gray;
+  }
+}
+body.hamburger-open>nav {
+  @include mobile {
+    display: block;
   }
 }
 

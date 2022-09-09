@@ -101,6 +101,10 @@ body.hamburger-open header div.menu a.hamburger {
 body.hamburger-open>nav {
   @include mobile {
     display: block;
+    z-index: 1;
+    background: white;
+    position: sticky;
+    top: 50px;
   }
 }
 

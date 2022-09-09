@@ -42,7 +42,7 @@ body>nav {
 @media only screen and (max-width: 700px) {
     body>nav {
         // Span completely over main and footer, header will be sticky.
-        grid-area: 1 / 1 / 2 / 1;
+        grid-area: 2 / 1 / 4 / 1;
     }
 }
 body>main {

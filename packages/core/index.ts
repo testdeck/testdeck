@@ -582,8 +582,8 @@ export interface TestClass<T extends TestInstance> {
 }
 
 export interface DependencyInjectionSystem {
-  handles<T>(cls: TestClass<T>): boolean;
-  create<T>(cls: TestClass<T>): T;
+  handles<T extends TestInstance>(cls: TestClass<T>): boolean;
+  create<T extends TestInstance>(cls: TestClass<T>): T;
 }
 
 /**

@@ -29,9 +29,9 @@
   "scripts": {
     "prepare": "tsc",
     "pretest": "tsc",
-    "test": "mocha dist/test.js && tslint --project .",
-    "tslint": "tslint --project .",
-    "tslint-fix": "tslint --project . --fix"
+    "test": "mocha dist/test.js && eslint .",
+    "lint": "eslint .",
+    "lint-fix": "eslint . --fix"
   },
   "files": [
     "dist/index.js",

@@ -19,22 +19,24 @@
   "devDependencies": {
     "@types/chai": "latest",
     "@types/chai-as-promised": "latest",
+    "@typescript-eslint/eslint-plugin": "latest",
+    "@typescript-eslint/parser": "latest",
     "chai": "latest",
     "chai-as-promised": "latest",
+    "eslint": "latest",
     "jasmine": "latest",
     "jest": "latest",
     "lerna": "latest",
     "lerna-changelog": "latest",
     "mocha": "latest",
     "nyc": "latest",
-    "tslint": "latest",
     "typescript": "latest"
   },
   "scripts": {
     "postinstall": "lerna bootstrap --no-ci",
     "test": "lerna run --stream test",
-    "tslint": "lerna run --stream tslint",
-    "tslint-fix": "lerna run --stream tslint-fix",
+    "lint": "lerna run --stream lint",
+    "lint-fix": "lerna run --stream lint-fix",
     "lerna-publish": "lerna publish",
     "changelog": "lerna-changelog"
   },

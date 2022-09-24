@@ -474,19 +474,19 @@ describe("testdeck", function() {
                         type: "test",
                         name: "one",
                         settings: {
-                          execution: "skip"
+                            execution: "skip"
                         }
                     }, {
                         type: "test",
                         name: "two",
                         settings: {
-                          execution: "pending"
+                            execution: "pending"
                         }
                     }, {
                         type: "test",
                         name: "test1 4",
                         settings: {
-                          execution: "only"
+                            execution: "only"
                         }
                     }]
                 }, {
@@ -537,23 +537,23 @@ describe("testdeck", function() {
             const callbacks = suite.children.map((c) => c.callback);
 
             assert.equal(callbacks[0].name, "before");
-            assert.equal(callbacks[0].toString(), 'before() { cycle.push("Before All"); }');
+            assert.equal(callbacks[0].toString(), "before() { cycle.push(\"Before All\"); }");
 
             assert.equal(callbacks[1].name, "setupInstance");
 
             assert.equal(callbacks[2].name, "before");
-            assert.equal(callbacks[2].toString(), 'before() { cycle.push("Before Each"); }');
+            assert.equal(callbacks[2].toString(), "before() { cycle.push(\"Before Each\"); }");
 
             assert.equal(callbacks[3].name, "myTest");
-            assert.equal(callbacks[3].toString(), 'myTest() { cycle.push("Test"); }');
+            assert.equal(callbacks[3].toString(), "myTest() { cycle.push(\"Test\"); }");
 
             assert.equal(callbacks[4].name, "after");
-            assert.equal(callbacks[4].toString(), 'after() { cycle.push("After Each"); }');
+            assert.equal(callbacks[4].toString(), "after() { cycle.push(\"After Each\"); }");
 
             assert.equal(callbacks[5].name, "teardownInstance");
 
             assert.equal(callbacks[6].name, "after");
-            assert.equal(callbacks[6].toString(), 'after() { cycle.push("After All"); }');
+            assert.equal(callbacks[6].toString(), "after() { cycle.push(\"After All\"); }");
 
             callbacks[0]();
             callbacks[1]();
@@ -564,12 +564,12 @@ describe("testdeck", function() {
             callbacks[6]();
 
             assert.deepEqual(cycle, [
-              "Before All",
-              "Constructor",
-              "Before Each",
-              "Test",
-              "After Each",
-              "After All"
+                "Before All",
+                "Constructor",
+                "Before Each",
+                "Test",
+                "After Each",
+                "After All"
             ]);
 
             // TODO: Call GC, check if a weak ref to the MyClass will be cleared!
@@ -583,7 +583,7 @@ describe("testdeck", function() {
 
             function ping(): Promise<void> {
 
-                return Promise.resolve() as Promise<void>;
+                return Promise.resolve() ;
             }
 
             @ui.suite class MyClass {
@@ -639,17 +639,17 @@ describe("testdeck", function() {
             await promise;
 
             assert.deepEqual(cycle, [
-              "Before All",
-              "post Before All",
-              "Constructor",
-              "Before Each",
-              "post Before Each",
-              "Test",
-              "post Test",
-              "After Each",
-              "post After Each",
-              "After All",
-              "post After All"
+                "Before All",
+                "post Before All",
+                "Constructor",
+                "Before Each",
+                "post Before Each",
+                "Test",
+                "post Test",
+                "After Each",
+                "post After Each",
+                "After All",
+                "post After All"
             ]);
 
             // TODO: Call GC, check if a weak ref to the MyClass will be cleared!
@@ -662,7 +662,7 @@ describe("testdeck", function() {
             const cycle: string[] = [];
 
             function ping(): Promise<void> {
-                return new Promise<void>((done, err) => setTimeout(done, 0)) as Promise<void>;
+                return new Promise<void>((done, err) => setTimeout(done, 0)) ;
             }
 
             @ui.suite class MyClass {
@@ -717,17 +717,17 @@ describe("testdeck", function() {
             await new Promise((done) => suite.children[6].callback(done));
 
             assert.deepEqual(cycle, [
-              "Before All",
-              "post Before All",
-              "Constructor",
-              "Before Each",
-              "post Before Each",
-              "Test",
-              "post Test",
-              "After Each",
-              "post After Each",
-              "After All",
-              "post After All"
+                "Before All",
+                "post Before All",
+                "Constructor",
+                "Before Each",
+                "post Before Each",
+                "Test",
+                "post Test",
+                "After Each",
+                "post After Each",
+                "After All",
+                "post After All"
             ]);
 
             // TODO: Call GC, check if a weak ref to the MyClass will be cleared!
@@ -895,40 +895,40 @@ describe("testdeck", function() {
                 .forEach((suite) => (suite as LoggingClassTestUI.SuiteInfo)
                     .children
                     .forEach((c) => c.callback())
-            );
+                );
         });
     });
 
     describe("regression #248: getters and setters are invoked during initialization of the suite", function() {
 
-      it("must not fail on getter or setter during initialization of the test suite", function() {
+        it("must not fail on getter or setter during initialization of the test suite", function() {
 
-        class Issue248Base {
+            class Issue248Base {
 
-          private readonly mStrings: Set<string>;
+                private readonly mStrings: Set<string>;
 
-          constructor() {
-            this.mStrings = new Set<string>();
-          }
+                constructor() {
+                    this.mStrings = new Set<string>();
+                }
 
-          get strings(): string[] {
-            return Array.from(this.mStrings);
-          }
-        }
+                get strings(): string[] {
+                    return Array.from(this.mStrings);
+                }
+            }
 
         @ui.suite
-        class Issue248Test extends Issue248Base {
+            class Issue248Test extends Issue248Base {
 
-          constructor() {
-            super();
-          }
+            constructor() {
+                super();
+            }
 
           @ui.test
-          private testFoo() {
-            const _ = this.strings;
-          }
+            private testFoo() {
+                const _ = this.strings;
+            }
         }
-      });
+        });
     });
 
     describe("test framework context", function() {
@@ -938,7 +938,7 @@ describe("testdeck", function() {
 
         it("is passed down to sync tests", function() {
 
-            let trace: string = "";
+            let trace = "";
 
             @ui.suite
             class MySyncTest {
@@ -1033,7 +1033,7 @@ describe("testdeck", function() {
         });
         it("is passed down to async tests", function() {
 
-            let trace: string = "";
+            let trace = "";
 
             @ui.suite
             class MySyncTest {
@@ -1150,4 +1150,4 @@ describe("testdeck", function() {
     });
 });
 
-declare var setTimeout;
+declare let setTimeout;

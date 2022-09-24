@@ -19,9 +19,9 @@
   "scripts": {
     "prepare": "tsc",
     "pretest": "tsc",
-    "test": "nyc mocha dist/test.js && tslint --project .",
-    "tslint": "tslint --project .",
-    "tslint-fix": "tslint --project . --fix"
+    "test": "nyc mocha dist/test.js && eslint .",
+    "lint": "eslint .",
+    "lint-fix": "eslint . --fix"
   },
   "devDependencies": {
     "@testdeck/core": "^0.2.2",

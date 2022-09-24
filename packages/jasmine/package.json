@@ -30,9 +30,9 @@
   "scripts": {
     "prepare": "tsc",
     "pretest": "tsc",
-    "test": "jasmine dist/test.js JASMINE_CONFIG_PATH=jasmine.json && tslint --project .",
-    "tslint": "tslint --project .",
-    "tslint-fix": "tslint --project . --fix"
+    "test": "jasmine dist/test.js JASMINE_CONFIG_PATH=jasmine.json && eslint .",
+    "lint": "eslint .",
+    "lint-fix": "eslint . --fix"
   },
   "dependencies": {
     "@testdeck/core": "^0.2.2"

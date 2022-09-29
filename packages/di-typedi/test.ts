@@ -12,21 +12,19 @@ import { Service } from "typedi";
 @Service()
 class SomeService {
 
-  public doSomething(): boolean {
-
-    return true;
-  }
+    public doSomething(): boolean {
+        return true;
+    }
 }
 
 @suite
 class Hello {
 
-  public constructor(private service: SomeService) {
-  }
+    public constructor(private service: SomeService) {
+    }
 
-  @test
-  public world() {
-
-    expect(this.service.doSomething()).to.be.true;
-  }
+    @test
+    public world() {
+        expect(this.service.doSomething()).to.be.true;
+    }
 }

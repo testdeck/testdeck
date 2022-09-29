@@ -19,6 +19,8 @@
   "scripts": {
     "prepare": "tsc",
     "pretest": "tsc",
+    "prelint": "tsc",
+    "prelint-fix": "tsc",
     "test": "nyc mocha dist/test.js && eslint .",
     "lint": "eslint .",
     "lint-fix": "eslint . --fix"
@@ -31,6 +33,7 @@
     "typedi": "^0.8.0"
   },
   "files": [
+    "dist/index.d.ts",
     "dist/index.js",
     "dist/index.js.map",
     "README.md",

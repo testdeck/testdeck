@@ -26,10 +26,12 @@
     "url": "https://github.com/testdeck/testdeck.git"
   },
   "main": "dist/index.js",
-  "types": "index.d.ts",
+  "types": "dist/index.d.ts",
   "scripts": {
     "prepare": "tsc",
     "pretest": "tsc",
+    "prelint": "tsc",
+    "prelint-fix": "tsc",
     "test": "jest dist/test.js && eslint .",
     "lint": "eslint .",
     "lint-fix": "eslint --fix"

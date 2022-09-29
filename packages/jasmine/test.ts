@@ -1,5 +1,7 @@
 import { assert } from "chai";
-import { retries, slow, suite, test, timeout } from "./index";
+import { retries, slow, suite, test, timeout, Done } from "./index";
+
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
 describe("tests", function() {
 
@@ -37,54 +39,54 @@ describe("tests", function() {
     }
 
     @suite class CallbacksSuite {
-        public static before(done) {
+        public static before(done : Done) {
             events.push("CallbacksSuite static before");
             setTimeout(done, 0);
         }
 
-        public before(done) {
+        public before(done : Done) {
             events.push("CallbacksSuite before");
             setTimeout(done, 0);
         }
 
         @test(timeout(1000), slow(500), retries(3))
-        public test(done) {
+        public test(done : Done) {
             events.push("CallbacksSuite test");
             setTimeout(done, 0);
         }
 
         @test
         @timeout(100)
-        public test2(done) {
+        public test2(done : Done) {
             events.push("CallbacksSuite test2");
             setTimeout(done, 1);
         }
 
         @test
         @retries(100)
-        public test3(done) {
+        public test3(done : Done) {
             events.push("CallbacksSuite test3");
             setTimeout(done, 1);
         }
 
         @test.pending(timeout(1000))
-        public pendingTest(done) {
+        public pendingTest(done : Done) {
             events.push("CallbacksSuite pendingTest");
             setTimeout(done, 0);
         }
 
         @test.skip(slow(500))
-        public skippedTest(done) {
+        public skippedTest(done : Done) {
             events.push("CallbacksSuite skippedTest");
             setTimeout(done, 0);
         }
 
-        public after(done) {
+        public after(done : Done) {
             events.push("CallbacksSuite after");
             setTimeout(done, 0);
         }
 
-        public static after(done) {
+        public static after(done : Done) {
             events.push("CallbacksSuite static after");
             setTimeout(done, 0);
         }
@@ -128,4 +130,3 @@ describe("tests", function() {
     });
 });
 
-declare var setTimeout;

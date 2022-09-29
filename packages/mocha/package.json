@@ -33,6 +33,8 @@
   "scripts": {
     "prepare": "tsc",
     "pretest": "tsc",
+    "prelint": "tsc",
+    "prelint-fix": "tsc",
     "test": "nyc mocha dist/test.js && eslint .",
     "lint": "eslint .",
     "lint-fix": "eslint . --fix"
@@ -60,9 +62,9 @@
   },
   "files": [
     "bin/watch",
+    "dist/index.d.ts",
     "dist/index.js",
     "dist/index.js.map",
-    "index.d.ts",
     "index.ts",
     "README.md",
     "LICENSE"

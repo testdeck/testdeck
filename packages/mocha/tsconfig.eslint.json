@@ -13,5 +13,12 @@
       ],
       "outDir": "dist"
   },
-  "compileOnSave": false
+  "compileOnSave": false,
+  "include": [
+      "index.ts",
+      "test.ts"
+  ],
+  "exclude": [
+      "dist", "node_modules"
+  ]
 }

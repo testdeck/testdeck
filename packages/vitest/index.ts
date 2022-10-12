@@ -1,72 +1,101 @@
+// Copyright 2022 Testdeck Team and Contributors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 import * as core from "@testdeck/core";
 
-import { afterAll, afterEach, beforeAll, beforeEach, describe, it } from "vitest";
+import * as vitest from "vitest";
 
-
-const vitestRunner: core.TestRunner = {
-  suite(name: string, callback: () => void, settings?: core.SuiteSettings): void {
-    // TODO: Push settings.timeout on the stack and pass it to each child test...
-    switch (settings && settings.execution) {
-      case "only":
-        describe.only(name, callback);
+class VitestAdapter implements core.TestFrameworkAdapter {
+  describe(options: core.EffectiveSuiteOptions, callback: () => void): void {
+    switch (options.execution) {
+      case "immediate":
+        vitest.describe(options.name, callback);
+        break;
+      case "focus":
+        core.withCondition(options.condition, () => {
+          vitest.describe.only(options.name, callback);
+        }, () => {
+          vitest.describe(options.name, callback);
+        });
         break;
       case "skip":
-        describe.skip(name, callback);
-        break;
       case "pending":
-        describe.todo(name);
+        core.withCondition(options.condition, () => {
+          vitest.describe.skip(options.name, callback);
+        }, () => {
+          vitest.describe(options.name, callback);
+        });
         break;
-      default:
-        describe(name, callback);
     }
-  },
-  test(name: string, callback: core.CallbackOptionallyAsync, settings?: core.TestSettings): void {
-    const testSettings = { timeout: settings && settings.timeout, retry: settings && settings.retries };
-    switch (settings && settings.execution) {
-      case "only":
-        it.only(name, callback, testSettings);
-        break;
-      case "skip":
-        it.skip(name, callback, testSettings);
-        break;
-      case "pending":
-        it.todo(name);
-        break;
-      default:
-        it(name, callback, testSettings);
-    }
-  },
-  beforeAll(name: string, callback: core.CallbackOptionallyAsync, settings?: core.LifecycleSettings): void {
-    beforeAll(callback as any, settings && settings.timeout);
-  },
-  beforeEach(name: string, callback: core.CallbackOptionallyAsync, settings?: core.LifecycleSettings): void {
-    beforeEach(callback as any, settings && settings.timeout);
-  },
-  afterEach(name: string, callback: core.CallbackOptionallyAsync, settings?: core.LifecycleSettings): void {
-    afterEach(callback as any, settings && settings.timeout);
-  },
-  afterAll(name: string, callback: core.CallbackOptionallyAsync, settings?: core.LifecycleSettings): void {
-    afterAll(callback as any, settings && settings.timeout);
   }
-};
 
-class VitestClassTestUI extends core.ClassTestUI {
-  public constructor(runner: core.TestRunner = vitestRunner) {
-    super(runner);
+  it(options: core.EffectiveTestOptions, callback: () => core.PromiseOrVoid): void {
+    const testOptions: vitest.TestOptions = {
+      timeout: options.timeout,
+      retry: options.retry
+    };
+    switch (options.execution) {
+      case "immediate":
+        vitest.it(options.name, callback, testOptions);
+        break;
+      case "focus":
+        core.withCondition(options.condition, () => {
+          vitest.it.only(options.name, callback, testOptions);
+        }, () => {
+          vitest.it(options.name, callback, testOptions);
+        });
+        break;
+      case "skip":
+      case "pending":
+        core.withCondition(options.condition, () => {
+          vitest.it.skip(options.name, callback, testOptions);
+        }, () => {
+          vitest.it(options.name, callback, testOptions);
+        });
+        break;
+    }
+  }
+
+  beforeAll(options: core.EffectiveHookOptions, callback: () => core.PromiseOrVoid): void {
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+    vitest.beforeAll(callback as vitest.HookListener<any[], vitest.HookCleanupCallback>, options.timeout);
+  }
+
+  beforeEach(options: core.EffectiveHookOptions, callback: () => core.PromiseOrVoid): void {
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+    vitest.beforeEach(callback as vitest.HookListener<any[], vitest.HookCleanupCallback>, options.timeout);
+  }
+
+  afterEach(options: core.EffectiveHookOptions, callback: () => core.PromiseOrVoid): void {
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+    vitest.afterEach(callback as vitest.HookListener<any[], void>, options.timeout);
+  }
+
+  afterAll(options: core.EffectiveHookOptions, callback: () => core.PromiseOrVoid): void {
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+    vitest.afterAll(callback as vitest.HookListener<any[], void>, options.timeout);
   }
 }
 
-const vitestDecorators = new VitestClassTestUI();
+class VitestClassTestUI extends core.ClassTestUI { }
+
+const testUI = new VitestClassTestUI(new VitestAdapter());
 
 export const {
-
-  suite,
-  test,
-  slow,
-  timeout,
-  retries,
-  pending,
-  only,
-  skip,
-  params
-} = vitestDecorators;
+  Suite,
+  Test,
+  Params,
+  Before,
+  After
+} = testUI;

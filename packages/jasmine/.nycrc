@@ -11,9 +11,9 @@
     "include": [
         "index.ts"
     ],
-    "check-coverage": true,
-    "branches": 70,
-    "lines": 84,
+    "check-coverage": false,
+    "branches": 100,
+    "lines": 100,
     "functions": 100,
-    "statements": 84
+    "statements": 100
 }

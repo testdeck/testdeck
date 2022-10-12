@@ -1,0 +1,6 @@
+{
+    "spec": "./test/focus/*_test.ts",
+    "require": [
+        "ts-node/register"
+    ]
+}

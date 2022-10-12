@@ -33,6 +33,12 @@ module.exports = {
     ],
     "root": true,
     "rules": {
+        "@typescript-eslint/no-unused-vars": [
+            "error",
+            {
+                "varsIgnorePattern": "Suite"
+            }
+        ],
         "@typescript-eslint/adjacent-overload-signatures": "error",
         "@typescript-eslint/array-type": [
             "error",
@@ -87,8 +93,6 @@ module.exports = {
         ],
         "@typescript-eslint/typedef": "off",
         "@typescript-eslint/unified-signatures": "error",
-        "@typescript-eslint/no-unsafe-argument": "warn",
-        "@typescript-eslint/no-explicit-any": "warn",
         "comma-dangle": "off",
         "complexity": "off",
         "constructor-super": "error",
@@ -138,7 +142,7 @@ module.exports = {
         "no-unused-expressions": "off",
         "no-unused-labels": "error",
         "no-use-before-define": "off",
-        "no-var": "warn",
+        "no-var": "error",
         "object-shorthand": "error",
         "one-var": [
             "error",

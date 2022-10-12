@@ -1,3 +1,11 @@
 {
-    "random": false
+    "helpers": [
+        "jasmine_helper.js"
+    ],
+    "env": {
+        "random": false,
+        "stopSpecOnFailure": false,
+        "stopSpecOnExpectationFailure": false,
+        "failSpecWithNoExpectations": false
+    }
 }

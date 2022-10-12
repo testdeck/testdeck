@@ -16,9 +16,10 @@ jobs:
       - name: Use latest Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: lts/*
+          node-version: latest
       - run: npm install
       - run: npm test
+# @testdeck/core
       - name: Analyze @testdeck/core with SonarCloud
         uses: sonarsource/sonarcloud-github-action@master
         with:
@@ -27,12 +28,13 @@ jobs:
             -Dsonar.organization=testdeck
             -Dsonar.projectKey=testdeck_core
             -Dsonar.sources=index.ts
-            -Dsonar.tests=test.ts
+            -Dsonar.tests=test/
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
             -Dsonar.verbose=false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+# @testdeck/mocha
       - name: Analyze @testdeck/mocha with SonarCloud
         uses: sonarsource/sonarcloud-github-action@master
         with:
@@ -41,12 +43,13 @@ jobs:
             -Dsonar.organization=testdeck
             -Dsonar.projectKey=testdeck_mocha
             -Dsonar.sources=index.ts
-            -Dsonar.tests=test.ts
+            -Dsonar.tests=test/
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
             -Dsonar.verbose=false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+# @testdeck/jest
       - name: Analyze @testdeck/jest with SonarCloud
         uses: sonarsource/sonarcloud-github-action@master
         with:
@@ -55,12 +58,13 @@ jobs:
             -Dsonar.organization=testdeck
             -Dsonar.projectKey=testdeck_jest
             -Dsonar.sources=index.ts
-            -Dsonar.tests=test.ts
+            -Dsonar.tests=test/
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
             -Dsonar.verbose=false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+# @testdeck/jasmine
       - name: Analyze @testdeck/jasmine with SonarCloud
         uses: sonarsource/sonarcloud-github-action@master
         with:
@@ -69,12 +73,13 @@ jobs:
             -Dsonar.organization=testdeck
             -Dsonar.projectKey=testdeck_jasmine
             -Dsonar.sources=index.ts
-            -Dsonar.tests=test.ts
+            -Dsonar.tests=test/
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
             -Dsonar.verbose=false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+# @testdeck/vitest
       - name: Analyze @testdeck/vitest with SonarCloud
         uses: sonarsource/sonarcloud-github-action@master
         with:
@@ -83,12 +88,13 @@ jobs:
             -Dsonar.organization=testdeck
             -Dsonar.projectKey=testdeck_vitest
             -Dsonar.sources=index.ts
-            -Dsonar.tests=test.ts
+            -Dsonar.tests=test/
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
             -Dsonar.verbose=false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+# @testdeck/di-typedi
       - name: Analyze @testdeck/di-typedi with SonarCloud
         uses: sonarsource/sonarcloud-github-action@master
         with:

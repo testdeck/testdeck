@@ -5,35 +5,34 @@
 
 # testdeck
 
-The JavaScript OOP style tests!
+# @testdeck
 
-``` TypeScript
-// Use one of the mocha/jest/jasmine test runners:
+Object oriented javascript / typescript testing.
+
+```typescript
 import { suite, test } from "@testdeck/mocha";
-import { suite, test } from "@testdeck/jest";
-import { suite, test } from "@testdeck/jasmine";
 
 import { expect } from 'chai';
 
-// And turn your tests from functional:
+// Turn your standard tests
 describe("Hello", function() {
   it("world", function() {
     expect(false).to.be.true;
   });
 });
 
-// Into 100% OOP awesomeness:
-@suite class Hello {
-  @test world() {
+// into 100% OOP awesomeness
+@Suite()
+class Hello {
+  @Test()
+  world() {
     expect(false).to.be.true;
   }
 }
-
-// P.S. You can still mix and match!
 ```
 
 ## Packages
-This is the monorepo for the testdeck packages.
+This is the `@testdeck` monorepo.
 
 - [@testdeck/mocha](./packages/mocha)
 - [@testdeck/jasmine](./packages/jasmine)
@@ -56,13 +55,16 @@ Then from inside the so created `testdeck` directory run
 npm install
 ```
 
-This will install all required dependencies and will also bootstrap `lerna`.
+This will bootstrap `lerna` and install all external (dev) dependencies.
 
 The following npm scripts are available
 
-- `npm run tslint`      -- runs `tslint` on all sources in all available packages
-- `npm run tslint-fix`  -- runs `tslint --fix` on all sources in all available packages
-- `npm test`            -- run all tests on all available packages
+- `build`     -- runs the build script in all packages
+- `clean`     -- runs the clean script in all packages
+- `clean-all` -- runs the clean-all script in all packages (requires `npm install` afterwards)
+- `lint`      -- runs the lint script in all packages
+- `lint-fix`  -- runs the lint-fix script in all packages
+- `test`      -- runs the test script in all packages
 
 ## Resources
 

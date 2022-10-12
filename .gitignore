@@ -1,8 +1,8 @@
 attic
+*.log
 *.tgz
 *.swp
 package-lock.json
-*debug.log
 .nyc_output
 .DS_Store
 dist
@@ -10,3 +10,5 @@ node_modules
 .idea
 coverage
 CHANGELOG.new.md
+.vs
+.vscode

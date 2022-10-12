@@ -2,6 +2,17 @@
   "name": "@testdeck/di-typedi",
   "version": "0.3.3",
   "description": "TypeDI IOC integration for testdeck",
+  "keywords": [
+    "typedi",
+    "testdeck",
+    "test",
+    "testing",
+    "typescript",
+    "bdd",
+    "tdd",
+    "object oriented",
+    "object-oriented"
+  ],
   "author": "Panayot Cankov",
   "contributors": [
     {
@@ -16,6 +27,7 @@
     "url": "https://github.com/testdeck/testdeck.git"
   },
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
     "clean": "npx rimraf .nyc_output coverage dist || true",
@@ -32,13 +44,11 @@
     "@istanbuljs/nyc-config-typescript": "latest",
     "@testdeck/mocha": "^0.3.3",
     "@types/chai": "latest",
-    "@types/chai-as-promised": "latest",
     "@types/mocha": "latest",
     "@types/node": "latest",
     "@typescript-eslint/eslint-plugin": "latest",
     "@typescript-eslint/parser": "latest",
     "chai": "latest",
-    "chai-as-promised": "latest",
     "eslint": "latest",
     "eslint-plugin-import": "latest",
     "eslint-plugin-jsdoc": "latest",
@@ -53,6 +63,8 @@
   "files": [
     "dist/index.js",
     "dist/index.js.map",
+    "dist/index.d.ts",
+    "index.ts",
     "README.md",
     "LICENSE"
   ],

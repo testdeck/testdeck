@@ -1,7 +1,7 @@
 {
   "name": "testdeck",
   "private": true,
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "TypeScript decorators based wrapper over various test framework interfaces",
   "author": "Panayot Cankov",
   "contributors": [
@@ -21,17 +21,17 @@
     "lerna-changelog": "latest"
   },
   "scripts": {
-    "postinstall": "lerna bootstrap --no-ci",
+    "changelog": "lerna-changelog",
     "build": "lerna run build",
     "clean": "lerna run clean",
     "clean-all": "lerna run clean-all",
     "postclean-all": "npx rimraf node_modules || true",
-    "test": "lerna run test --verbose",
-    "lint": "lerna run lint",
-    "lint-fix": "lerna run lint-fix",
+    "postinstall": "lerna bootstrap --no-ci",
     "prelerna-publish": "npm run clean-all && npm install && npm run build && npm run test",
     "lerna-publish": "lerna publish",
-    "changelog": "lerna-changelog"
+    "lint": "lerna run lint",
+    "lint-fix": "lerna run lint-fix",
+    "test": "lerna run test --verbose"
   },
   "changelog": {
     "repo": "testdeck/testdeck",

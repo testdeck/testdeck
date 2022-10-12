@@ -2,16 +2,16 @@
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
-  testRegex: ['(.*)test.ts'],
+  testRegex: ['test/(.*)_test.ts', 'test/focus/(.*)_test.ts'],
   testPathIgnorePatterns: ['dist', 'node_modules'],
   verbose: true,
   collectCoverage: true,
   coverageThreshold: {
     global: {
-      branches: 70,
+      branches: 100,
       functions: 100,
-      lines: 84,
-      statements: 84
+      lines: 100,
+      statements: 100
     }
   }
 };

@@ -3,9 +3,9 @@
   "version": "0.3.3",
   "description": "Object oriented testing for the Mocha test framework",
   "keywords": [
+    "mocha",
     "test",
     "testing",
-    "mocha",
     "typescript",
     "bdd",
     "tdd",
@@ -29,15 +29,18 @@
     "testdeck-watch": "./bin/watch"
   },
   "main": "dist/index.js",
-  "types": "index.d.ts",
+  "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
     "clean": "npx rimraf .nyc_output coverage dist || true",
     "clean-all": "npm run clean && npx rimraf node_modules || true",
-    "pretest": "npm run clean & npm run lint && npm run build",
-    "test": "nyc mocha",
     "lint": "eslint .",
-    "lint-fix": "eslint --fix ."
+    "lint-fix": "eslint --fix .",
+    "pretest": "npm run clean & npm run lint && npm run build",
+    "test": "npm run test:standard && npm run test:focus && npm run test:coverage",
+    "test:focus": "nyc --silent --no-clean mocha --config .mocharc.focus.json",
+    "test:standard": "nyc --silent mocha --config .mocharc.json",
+    "test:coverage": "nyc report --check-coverage"
   },
   "dependencies": {
     "@testdeck/core": "^0.3.3"
@@ -45,13 +48,11 @@
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "latest",
     "@types/chai": "latest",
-    "@types/chai-as-promised": "latest",
     "@types/mocha": "latest",
     "@types/node": "latest",
     "@typescript-eslint/eslint-plugin": "latest",
     "@typescript-eslint/parser": "latest",
     "chai": "latest",
-    "chai-as-promised": "latest",
     "eslint": "latest",
     "eslint-plugin-import": "latest",
     "eslint-plugin-jsdoc": "latest",
@@ -62,10 +63,10 @@
     "typescript": "latest"
   },
   "files": [
-    "bin/watch",
     "dist/index.js",
     "dist/index.js.map",
-    "index.d.ts",
+    "dist/index.d.ts",
+    "bin/watch",
     "index.ts",
     "README.md",
     "LICENSE"

@@ -1,107 +1,120 @@
+// Copyright 2022 Testdeck Team and Contributors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 import * as core from "@testdeck/core";
 
-function applyTimings(fn: any, settings: any): any {
-  if (settings) {
-    if (fn.length === 1) {
-      return core.wrap(function(done) {
-        if (settings.retries !== undefined) { this.retries(settings.retries); }
-        if (settings.slow !== undefined) { this.slow(settings.slow); }
-        if (settings.timeout !== undefined) { this.timeout(settings.timeout); }
-        return fn.call(this, done);
-      }, fn);
-    } else {
-      return core.wrap(function() {
-        if (settings.retries !== undefined) { this.retries(settings.retries); }
-        if (settings.slow !== undefined) { this.slow(settings.slow); }
-        if (settings.timeout !== undefined) { this.timeout(settings.timeout); }
-        return fn.call(this);
-      }, fn);
+function applyTimings(options: core.ExecutionOptions, callback: () => Promise<unknown> | void): () => Promise<unknown> | void {
+  return core.wrap(function(this: Mocha.Context): core.PromiseOrVoid {
+    if (options.retry) {
+      this.retries(options.retry);
     }
-  } else {
-    return fn;
-  }
+    if (options.timeout) {
+      this.timeout(options.timeout);
+    }
+    if (options.slow) {
+      this.slow(options.slow);
+    }
+
+    return (callback.bind(this) as () => core.PromiseOrVoid)();
+  }, callback);
 }
 
-const mochaRunner: core.TestRunner = {
-  suite(name: string, callback: () => void, settings?: core.SuiteSettings): void {
-    switch (settings && settings.execution) {
-      case "only":
-        describe.only(name, applyTimings(callback, settings));
+class MochaAdapter implements core.TestFrameworkAdapter {
+  describe(options: core.EffectiveSuiteOptions, callback: () => void): void {
+    switch (options.execution) {
+      case "immediate":
+        describe(options.name, callback);
+        break;
+      case "focus":
+        core.withCondition(options.condition, () => {
+          describe.only(options.name, callback);
+        }, () => {
+          describe(options.name, callback);
+        });
         break;
       case "skip":
-        describe.skip(name, applyTimings(callback, settings));
-        break;
       case "pending":
-        // `describe(name);` will not generate pending suite, intentionally skip.
-        describe.skip(name, applyTimings(callback, settings));
+        core.withCondition(options.condition, () => {
+          describe.skip(options.name, callback);
+        }, () => {
+          describe(options.name, callback);
+        });
         break;
-      default:
-        describe(name, applyTimings(callback, settings));
     }
-  },
-  test(name: string, callback: core.CallbackOptionallyAsync, settings?: core.TestSettings): void {
-    switch (settings && settings.execution) {
-      case "only":
-        it.only(name, applyTimings(callback, settings));
+  }
+
+  it(options: core.EffectiveTestOptions, callback: () => core.PromiseOrVoid): void {
+    const actualCallback = applyTimings(options, callback);
+    switch (options.execution) {
+      case "immediate":
+        it(options.name, actualCallback);
+        break;
+      case "focus":
+        core.withCondition(options.condition, () => {
+          it.only(options.name, actualCallback);
+        }, () => {
+          it(options.name, actualCallback);
+        });
         break;
       case "skip":
-        it.skip(name, applyTimings(callback, settings));
-        break;
       case "pending":
-        it(name);
+        core.withCondition(options.condition, () => {
+          it.skip(options.name, actualCallback);
+        }, () => {
+          it(options.name, actualCallback);
+        });
         break;
-      default:
-        it(name, applyTimings(callback, settings));
     }
-  },
-
-  beforeAll(name: string, callback: core.CallbackOptionallyAsync, settings?: core.LifecycleSettings): void {
-    before(applyTimings(callback, settings));
-  },
-  beforeEach(name: string, callback: core.CallbackOptionallyAsync, settings?: core.LifecycleSettings): void {
-    beforeEach(applyTimings(callback, settings));
-  },
-  afterEach(name: string, callback: core.CallbackOptionallyAsync, settings?: core.LifecycleSettings): void {
-    afterEach(applyTimings(callback, settings));
-  },
-  afterAll(name: string, callback: core.CallbackOptionallyAsync, settings?: core.LifecycleSettings): void {
-    after(applyTimings(callback, settings));
   }
-};
 
-class MochaClassTestUI extends core.ClassTestUI {
-  // TODO: skipOnError, @context
-  public constructor(runner: core.TestRunner = mochaRunner) {
-    super(runner);
+  beforeAll(options: core.EffectiveHookOptions, callback: () => core.PromiseOrVoid): void {
+    const actualCallback = applyTimings({ timeout: options.timeout }, callback);
+    before(actualCallback);
   }
-}
 
-const mochaDecorators = new MochaClassTestUI();
-
-interface MochaClassTestUI {
-  readonly context: unique symbol;
-}
-
-declare global {
-  interface Function {
-    [mochaDecorators.context]: Mocha.Suite;
+  beforeEach(options: core.EffectiveHookOptions, callback: () => core.PromiseOrVoid): void {
+    const actualCallback = applyTimings({ timeout: options.timeout }, callback);
+    beforeEach(actualCallback);
   }
-  interface Object {
-    [mochaDecorators.context]: Mocha.Context
+
+  afterEach(options: core.EffectiveHookOptions, callback: () => core.PromiseOrVoid): void {
+    const actualCallback = applyTimings({ timeout: options.timeout }, callback);
+    afterEach(actualCallback);
+  }
+
+  afterAll(options: core.EffectiveHookOptions, callback: () => core.PromiseOrVoid): void {
+    const actualCallback = applyTimings({ timeout: options.timeout }, callback);
+    after(actualCallback);
   }
 }
+
+class MochaClassTestUI extends core.ClassTestUI { }
+
+const testUI = new MochaClassTestUI(new MochaAdapter());
 
 export const {
+  Suite,
+  Test,
+  Params,
+  Before,
+  After,
+} = testUI;
 
-  context,
+export const CONTEXT = core.CONTEXT;
 
-  suite,
-  test,
-  slow,
-  timeout,
-  retries,
-  pending,
-  only,
-  skip,
-  params
-} = mochaDecorators;
+// declare global {
+//   export interface Object {
+//     [core.CONTEXT]: Context;
+//   }
+// }

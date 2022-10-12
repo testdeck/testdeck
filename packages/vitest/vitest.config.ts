@@ -19,6 +19,6 @@ export default defineConfig({
       statements: 80,
     },
     reporters: 'verbose',
-    include: ['test.ts']
+    include: ['test/*_test.ts', 'test/focus/*_test.ts']
   },
 });

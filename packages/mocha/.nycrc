@@ -8,12 +8,12 @@
         "json",
         "text"
     ],
+    "check-coverage": false,
     "include": [
         "index.ts"
     ],
-    "check-coverage": true,
-    "branches": 93,
-    "lines": 89,
+    "branches": 100,
+    "lines": 100,
     "functions": 100,
-    "statements": 90
+    "statements": 100
 }

@@ -4,9 +4,9 @@
   "description": "Object oriented testing for the Vitest test framework",
   "type": "module",
   "keywords": [
+    "vitest",
     "test",
     "testing",
-    "vitest",
     "typescript",
     "bdd",
     "tdd",
@@ -32,10 +32,10 @@
     "build": "tsc",
     "clean": "npx rimraf .nyc_output coverage dist || true",
     "clean-all": "npm run clean && npx rimraf node_modules || true",
-    "pretest": "npm run clean & npm run lint && npm run build",
-    "test": "vitest run --coverage",
     "lint": "eslint .",
-    "lint-fix": "eslint --fix ."
+    "lint-fix": "eslint --fix .",
+    "pretest": "npm run clean & npm run lint && npm run build",
+    "test": "vitest run --coverage"
   },
   "dependencies": {
     "@testdeck/core": "^0.3.3"
@@ -51,7 +51,6 @@
     "eslint-plugin-import": "latest",
     "eslint-plugin-jsdoc": "latest",
     "eslint-plugin-prefer-arrow": "latest",
-    "typescript": "latest",
     "vite": "latest",
     "vitest": "latest"
   },

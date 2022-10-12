@@ -33,6 +33,12 @@ module.exports = {
     ],
     "root": true,
     "rules": {
+        "@typescript-eslint/no-unused-vars": [
+            "error",
+            {
+                "varsIgnorePattern": "Suite"
+            }
+        ],
         "@typescript-eslint/adjacent-overload-signatures": "error",
         "@typescript-eslint/array-type": [
             "error",
@@ -40,7 +46,7 @@ module.exports = {
                 "default": "array"
             }
         ],
-        "@typescript-eslint/ban-types": "warn",
+        "@typescript-eslint/ban-types": "error",
         "@typescript-eslint/consistent-type-assertions": "error",
         "@typescript-eslint/dot-notation": "error",
         "@typescript-eslint/explicit-function-return-type": "off",
@@ -87,21 +93,6 @@ module.exports = {
         ],
         "@typescript-eslint/typedef": "off",
         "@typescript-eslint/unified-signatures": "error",
-        "@typescript-eslint/no-explicit-any": "warn",
-        "@typescript-eslint/no-unsafe-argument": "warn",
-        "@typescript-eslint/no-unnecessary-type-assertion": "warn",
-        "@typescript-eslint/no-unsafe-call": "warn",
-        "@typescript-eslint/no-unsafe-return": "warn",
-        "@typescript-eslint/require-await": "warn",
-        "@typescript-eslint/no-misused-promises": "warn",
-        "@typescript-eslint/no-floating-promises": "warn",
-        "@typescript-eslint/restrict-template-expressions": "warn",
-        "@typescript-eslint/no-inferrable-types": "warn",
-        "@typescript-eslint/no-unsafe-member-access": "warn",
-        "@typescript-eslint/no-unused-vars": "warn",
-        "@typescript-eslint/no-this-alias": "warn",
-        "@typescript-eslint/no-unsafe-assignment": "warn",
-        "@typescript-eslint/unbound-method": "warn",
         "comma-dangle": "off",
         "complexity": "off",
         "constructor-super": "error",
@@ -126,8 +117,8 @@ module.exports = {
         "id-match": "error",
         "import/no-deprecated": "error",
         "jsdoc/check-alignment": "error",
-        "jsdoc/check-indentation": "warn",
-        "jsdoc/newline-after-description": "warn",
+        "jsdoc/check-indentation": "error",
+        "jsdoc/newline-after-description": "error",
         "max-classes-per-file": "off",
         "max-len": "off",
         "new-parens": "error",
@@ -151,15 +142,14 @@ module.exports = {
         "no-unused-expressions": "off",
         "no-unused-labels": "error",
         "no-use-before-define": "off",
-        "no-var": "warn",
+        "no-var": "error",
         "object-shorthand": "error",
         "one-var": [
             "error",
             "never"
         ],
         "prefer-arrow/prefer-arrow-functions": "off",
-        "prefer-const": "warn",
-        "prefer-rest-params": "warn",
+        "prefer-const": "error",
         "radix": "error",
         "spaced-comment": [
             "error",

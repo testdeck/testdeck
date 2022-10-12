@@ -12,8 +12,8 @@
         "index.ts"
     ],
     "check-coverage": true,
-    "branches": 98,
-    "lines": 99,
-    "functions": 100,
-    "statements": 99
+    "branches": 96,
+    "lines": 98,
+    "functions": 94,
+    "statements": 97
 }

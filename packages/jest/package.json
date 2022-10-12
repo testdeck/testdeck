@@ -3,9 +3,9 @@
   "version": "0.3.3",
   "description": "Object oriented testing for the Jest test framework",
   "keywords": [
+    "jest",
     "test",
     "testing",
-    "jest",
     "typescript",
     "bdd",
     "tdd",
@@ -26,42 +26,40 @@
     "url": "https://github.com/testdeck/testdeck.git"
   },
   "main": "dist/index.js",
-  "types": "index.d.ts",
+  "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
     "clean": "npx rimraf .nyc_output coverage dist || true",
     "clean-all": "npm run clean && npx rimraf node_modules || true",
-    "pretest": "npm run clean & npm run lint && npm run build",
-    "test": "jest",
     "lint": "eslint .",
-    "lint-fix": "eslint --fix ."
+    "lint-fix": "eslint --fix .",
+    "pretest": "npm run clean & npm run lint && npm run build",
+    "test": "jest"
   },
   "dependencies": {
     "@testdeck/core": "^0.3.3"
   },
   "devDependencies": {
+    "@istanbuljs/nyc-config-typescript": "latest",
     "@types/chai": "latest",
-    "@types/chai-as-promised": "latest",
     "@types/jest": "latest",
     "@types/node": "latest",
     "@typescript-eslint/eslint-plugin": "latest",
     "@typescript-eslint/parser": "latest",
     "chai": "latest",
-    "chai-as-promised": "latest",
     "eslint": "latest",
     "eslint-plugin-import": "latest",
     "eslint-plugin-jsdoc": "latest",
     "eslint-plugin-prefer-arrow": "latest",
     "jest": "latest",
     "ts-jest": "latest",
-    "tslint": "latest",
     "typescript": "latest"
   },
   "files": [
     "dist/index.js",
     "dist/index.js.map",
+    "dist/index.d.ts",
     "index.ts",
-    "index.d.ts",
     "README.md",
     "LICENSE"
   ],

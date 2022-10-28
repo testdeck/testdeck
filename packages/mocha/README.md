@@ -4,6 +4,7 @@
 [![Downloads per Week](https://img.shields.io/npm/dw/@testdeck/mocha.svg)](https://www.npmjs.com/package/@testdeck/mocha)
 [![Issues](https://img.shields.io/github/issues/testdeck/testdeck.svg)](https://github.com/testdeck/testdeck/issues)
 [![Pull Requests](https://img.shields.io/github/issues-pr/testdeck/testdeck.svg)](https://github.com/testdeck/testdeck/pulls)
+[![Build Status](https://github.com/testdeck/testdeck/actions/workflows/main.yml/badge.svg)](https://github.com/testdeck/testdeck/actions/workflows/main.yml)
 ![Apache 2.0 License](https://img.shields.io/npm/l/@testdeck/mocha.svg)
 
 Mocha tests in OOP style!
@@ -14,7 +15,7 @@ import { expect } from 'chai';
 
 @suite
 class Hello {
-  
+
   @test
   world() {
     expect(false).to.be.true;
@@ -34,7 +35,7 @@ If you are looking for other test framework support, please see the following pa
 
 - [@testdeck/jasmine](https://npmjs.com/package/@testdeck/jasmine)
 - [@testdeck/jest](https://npmjs.com/package/@testdeck/jest)
-
+- [@testdeck/vitest](https://npmjs.com/package/@testdeck/vitest)
 
 ## Installation
 

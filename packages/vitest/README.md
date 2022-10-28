@@ -4,6 +4,7 @@
 [![Downloads per Week](https://img.shields.io/npm/dw/@testdeck/jest.svg)](https://www.npmjs.com/package/@testdeck/jest)
 [![Issues](https://img.shields.io/github/issues/testdeck/testdeck.svg)](https://github.com/testdeck/testdeck/issues)
 [![Pull Requests](https://img.shields.io/github/issues-pr/testdeck/testdeck.svg)](https://github.com/testdeck/testdeck/pulls)
+[![Build Status](https://github.com/testdeck/testdeck/actions/workflows/main.yml/badge.svg)](https://github.com/testdeck/testdeck/actions/workflows/main.yml)
 ![Apache 2.0 License](https://img.shields.io/npm/l/@testdeck/jest.svg)
 
 Jest tests in OOP style!
@@ -13,7 +14,7 @@ import { suite, test } from "@testdeck/jest";
 
 @suite
 class Hello {
-  
+
   @test
   world() {
     expect(false).toBe(true);
@@ -32,8 +33,8 @@ and more...
 If you are looking for other test framework support, please see the following packages
 
 - [@testdeck/jasmine](https://npmjs.com/package/@testdeck/jasmine)
+- [@testdeck/jest](https://npmjs.com/package/@testdeck/jest)
 - [@testdeck/mocha](https://npmjs.com/package/@testdeck/mocha)
-
 
 ## Installation
 

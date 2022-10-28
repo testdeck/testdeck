@@ -4,8 +4,7 @@
 [![Downloads per Week](https://img.shields.io/npm/dw/@testdeck/di-typedi.svg)](https://npmjs.com/package/@testdeck/di-typedi)
 [![Issues](https://img.shields.io/github/issues/testdeck/testdeck.svg)](https://github.com/testdeck/testdeck/issues)
 [![Pull Requests](https://img.shields.io/github/issues-pr/testdeck/testdeck.svg)](https://github.com/testdeck/testdeck/pulls)
-[![Travis Build Status](https://img.shields.io/travis/testdeck/testdeck/master.svg)](https://travis-ci.org/testdeck/testdeck)
-[![Appveyor Build Status](https://img.shields.io/appveyor/ci/pana-cc/testdeck.svg)](https://ci.appveyor.com/project/pana-cc/testdeck)
+[![Build Status](https://github.com/testdeck/testdeck/actions/workflows/main.yml/badge.svg)](https://github.com/testdeck/testdeck/actions/workflows/main.yml)
 ![Apache 2.0 License](https://img.shields.io/npm/l/@testdeck/di-typedi.svg)
 
 Integration of the TypeDI IOC.
@@ -22,19 +21,19 @@ import { Service } from "typedi";
 
 @Service()
 class SomeService {
-  
+
   doSomething(): boolean {
-    
+
     return false;
   }
 }
 
 @suite
 class Hello {
-  
+
   constructor(private service: SomeService) {
   }
-  
+
   @test
   world() {
     expect(this.service.doSomething()).to.be.true;

@@ -1,0 +1,55 @@
+{
+  "name": "@testdeck/vitest",
+  "version": "0.2.2",
+  "description": "Object oriented testing for the Vitest test framework",
+  "keywords": [
+    "test",
+    "testing",
+    "vitest",
+    "typescript",
+    "bdd",
+    "tdd",
+    "object oriented",
+    "object-oriented"
+  ],
+  "author": "Panayot Cankov",
+  "contributors": [
+    {
+      "name": "silkentrance",
+      "url": "https://github.com/silkentrance"
+    }
+  ],
+  "homepage": "https://testdeck.org/",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/testdeck/testdeck.git"
+  },
+  "main": "dist/index.js",
+  "types": "index.d.ts",
+  "scripts": {
+    "prepare": "tsc",
+    "pretest": "tsc",
+    "test": "vitest run && tslint --project .",
+    "tslint": "tslint --project .",
+    "tslint-fix": "tslint --project . --fix"
+  },
+  "dependencies": {
+    "@testdeck/core": "0.2.2"
+  },
+  "devDependencies": {
+    "vite": "latest",
+    "vitest": "latest"
+  },
+  "files": [
+    "dist/index.js",
+    "dist/index.js.map",
+    "index.ts",
+    "index.d.ts",
+    "README.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}

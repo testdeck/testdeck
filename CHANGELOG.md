@@ -1,18 +1,25 @@
-## v0.2.0
+## v0.2.2
+
+* Release v0.2.2
+
+#### :house: Internal
+
+* fix internal dependency version mismatch
+* add missing tags to repo (v0.2.0, v0.2.1)
+* add missing changelog entries (v0.2.1, v0.2.2)
+
+## v0.2.1 (2022-09-08, incomplete)
+
+#### :bug: Bug Fix
+* `mocha`
+  * [#294](https://github.com/testdeck/testdeck/pull/294) fix typings
+  * [#290](https://github.com/testdeck/testdeck/pull/290) fix watcher to use new mocha --options flag and .mocharc.json instead
+
+## v0.2.0 (internal)
+
 * Fix null `this` in jest after methods
 * Reorganize typings, uses re-exports instead `module.exports =`
 * Mocha now export a `context` symbol that can be used to access the underlying mocha context
-
-## v0.1.0 (2020-05-04)
-
-#### :boom: Breaking Change
-* [#274](https://github.com/testdeck/testdeck/pull/274) drop support for node < v10.0.0 ([@silkentrance](https://github.com/silkentrance))
-
-#### :memo: Documentation
-* [#271](https://github.com/testdeck/testdeck/pull/271) Closes [#270](https://github.com/testdeck/testdeck/issues/270): packages have been moved ([@silkentrance](https://github.com/silkentrance))
-
-#### Committers: 1
-- Carsten Klein ([@silkentrance](https://github.com/silkentrance))
 
 ## v0.1.0 (2020-05-04)
 

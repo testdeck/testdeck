@@ -1,23 +1,24 @@
-## @testdeck/jest
+## @testdeck/vitest
 
-[![Get it on NPM](https://img.shields.io/npm/v/@testdeck/jest.svg)](https://www.npmjs.com/package/@testdeck/jest)
-[![Downloads per Week](https://img.shields.io/npm/dw/@testdeck/jest.svg)](https://www.npmjs.com/package/@testdeck/jest)
+[![Get it on NPM](https://img.shields.io/npm/v/@testdeck/vitest.svg)](https://www.npmjs.com/package/@testdeck/vitest)
+[![Downloads per Week](https://img.shields.io/npm/dw/@testdeck/vitest.svg)](https://www.npmjs.com/package/@testdeck/vitest)
 [![Issues](https://img.shields.io/github/issues/testdeck/testdeck.svg)](https://github.com/testdeck/testdeck/issues)
 [![Pull Requests](https://img.shields.io/github/issues-pr/testdeck/testdeck.svg)](https://github.com/testdeck/testdeck/pulls)
 [![Build Status](https://github.com/testdeck/testdeck/actions/workflows/main.yml/badge.svg)](https://github.com/testdeck/testdeck/actions/workflows/main.yml)
-![Apache 2.0 License](https://img.shields.io/npm/l/@testdeck/jest.svg)
+![Apache 2.0 License](https://img.shields.io/npm/l/@testdeck/vitest.svg)
 
-Jest tests in OOP style!
+Vitest tests in OOP style!
 
 ```TypeScript
-import { suite, test } from "@testdeck/jest";
+import { suite, test } from "@testdeck/vitest";
+import { expect } from "chai";
 
 @suite
 class Hello {
 
   @test
   world() {
-    expect(false).toBe(true);
+    expect(false).to.be.true;
   }
 }
 ```
@@ -47,11 +48,11 @@ guide for which a link has been provided below.
 
 ## Getting Started
 
-To get you started, a [seed has been provided](https://github.com/testdeck/testdeck-jest-seed) that can help you with
+To get you started, a [seed has been provided](https://github.com/testdeck/testdeck-vitest-seed) that can help you with
 setting up your project.
 
 ```shell
-git clone https://github.com/testdeck/testdeck-jest-seed.git
+git clone https://github.com/testdeck/testdeck-vitest-seed.git
 ```
 
 ## Additional Information

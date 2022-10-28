@@ -1,6 +1,6 @@
 {
   "name": "@testdeck/jest",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Object oriented testing for the Jest test framework",
   "keywords": [
     "test",
@@ -35,7 +35,7 @@
     "tslint-fix": "tslint --project . --fix"
   },
   "dependencies": {
-    "@testdeck/core": "^0.2.1"
+    "@testdeck/core": "^0.2.2"
   },
   "devDependencies": {
     "@types/jest": "latest"

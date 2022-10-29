@@ -1,6 +1,6 @@
 import * as core from "@testdeck/core";
 
-import { describe, it, beforeAll, beforeEach, afterEach, afterAll, HookListener } from "vitest";
+import { afterAll, afterEach, beforeAll, beforeEach, describe, it } from "vitest";
 
 
 const vitestRunner: core.TestRunner = {
@@ -21,18 +21,19 @@ const vitestRunner: core.TestRunner = {
     }
   },
   test(name: string, callback: core.CallbackOptionallyAsync, settings?: core.TestSettings): void {
+    const testSettings = { timeout: settings && settings.timeout, retry: settings && settings.retries };
     switch (settings && settings.execution) {
       case "only":
-        it.only(name, callback, settings && settings.timeout);
+        it.only(name, callback, testSettings);
         break;
       case "skip":
-        it.skip(name, callback, settings && settings.timeout);
+        it.skip(name, callback, testSettings);
         break;
       case "pending":
         it.todo(name);
         break;
       default:
-        it(name, callback, settings && settings.timeout);
+        it(name, callback, testSettings);
     }
   },
   beforeAll(name: string, callback: core.CallbackOptionallyAsync, settings?: core.LifecycleSettings): void {

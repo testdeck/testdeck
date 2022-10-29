@@ -4,8 +4,13 @@
 * `vitest`
   * [#300](https://github.com/testdeck/testdeck/pull/300) add initial support for vitest ([@silkentrance](https://github.com/silkentrance))
 
+#### :memo: Documentation
+* `core`, `di-typedi`, `jasmine`, `jest`, `mocha`, `vitest`
+  * [#320](https://github.com/testdeck/testdeck/pull/320) use github workflow badge instead of appveyor/travis-ci ([@silkentrance](https://github.com/silkentrance))
+
 #### Committers: 1
 - Carsten Klein ([@silkentrance](https://github.com/silkentrance))
+
 ## v0.2.2 (2022-10-28)
 
 #### :house: Internal

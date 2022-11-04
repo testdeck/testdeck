@@ -2,6 +2,7 @@
   "name": "@testdeck/vitest",
   "version": "0.3.0",
   "description": "Object oriented testing for the Vitest test framework",
+  "type": "module",
   "keywords": [
     "test",
     "testing",

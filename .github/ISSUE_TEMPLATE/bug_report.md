@@ -17,32 +17,30 @@ e.g. 0.0.5
  - [ ] `@testdeck/mocha`
  - [ ] `@testdeck/jasmine`
  - [ ] `@testdeck/jest`
+ - [ ] `@testdeck/vitest`
  - [ ] unsure
 
 ## NodeJS Version
 
- - [ ] 11
- - [ ] 10
- - [ ] 9
- - [ ] 8
+ - [ ] 18
+ - [ ] 16
+ - [ ] 14
  - [ ] all
  - [ ] other: 
 
-## Mocha / Jasmine / Jest Version
+## Mocha / Jasmine / Jest / Vitest Version
 
  - Mocha:
- - `@types/mocha`: 
  - Jasmine:
- - `@types/jasmine`: 
  - Jest: 
- - `@types/jest`: 
+ - Vitest:
 
 ### Operating System
 
  - [ ] Linux
  - [ ] Mac OS X
- - [ ] Windows 7
  - [ ] Windows 10
+ - [ ] Windows 11
  - [ ] Other:
 
 ### Actual Behaviour

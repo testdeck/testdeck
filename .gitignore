@@ -6,7 +6,7 @@ attic
 *.js.map
 *.tgz
 *.swp
-!package-lock.json
+package-lock.json
 *debug.log
 .nyc_output
 .DS_Store

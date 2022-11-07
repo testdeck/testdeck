@@ -8,13 +8,14 @@
       "sourceMap": true,
       "emitDecoratorMetadata": true,
       "experimentalDecorators": true,
-      "declaration": false,
+      "declaration": true,
       "lib": [
         "es5", "es6", "dom"
       ],
       "outDir": "dist"
   },
   "exclude": [
+      "dist/*",
       "vitest.config.ts"
   ],
   "compileOnSave": false

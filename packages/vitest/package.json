@@ -27,7 +27,7 @@
     "url": "https://github.com/testdeck/testdeck.git"
   },
   "main": "dist/index.js",
-  "types": "index.d.ts",
+  "types": "dist/index.d.ts",
   "scripts": {
     "prepare": "tsc",
     "pretest": "tsc",
@@ -45,8 +45,8 @@
   "files": [
     "dist/index.js",
     "dist/index.js.map",
+    "dist/index.d.ts",
     "index.ts",
-    "index.d.ts",
     "README.md",
     "LICENSE"
   ],

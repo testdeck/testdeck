@@ -1,3 +1,18 @@
+
+## v0.3.1 (2022-11-07)
+
+#### :house: Internal
+* [#329](https://github.com/testdeck/testdeck/pull/329) Remove package-lock.json ([@silkentrance](https://github.com/silkentrance))
+* [#325](https://github.com/testdeck/testdeck/pull/325) Update ISSUE_TEMPLATES ([@silkentrance](https://github.com/silkentrance))
+
+#### :bug: Bug Fix
+* `vitest`
+  * [#330](https://github.com/testdeck/testdeck/pull/330) Change vitest package type to module / esnext ([@silkentrance](https://github.com/silkentrance))
+  * [#326](https://github.com/testdeck/testdeck/pull/326) vitest index.d.ts not generated ([@silkentrance](https://github.com/silkentrance))
+
+#### Committers: 1
+- Carsten Klein ([@silkentrance](https://github.com/silkentrance))
+
 ## v0.3.0 (2022-10-28)
 
 #### :rocket: New Feature

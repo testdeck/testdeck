@@ -1,6 +1,6 @@
 {
   "name": "@testdeck/vitest",
-  "version": "0.3.1-pre.0",
+  "version": "0.3.1",
   "description": "Object oriented testing for the Vitest test framework",
   "type": "module",
   "keywords": [
@@ -36,7 +36,7 @@
     "tslint-fix": "tslint --project . --fix"
   },
   "dependencies": {
-    "@testdeck/core": "^0.3.1-pre.0"
+    "@testdeck/core": "^0.3.1"
   },
   "devDependencies": {
     "vite": "latest",

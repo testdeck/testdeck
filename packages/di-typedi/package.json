@@ -23,8 +23,10 @@
     "tslint": "tslint --project .",
     "tslint-fix": "tslint --project . --fix"
   },
+  "dependencies": {
+    "@testdeck/core": "^0.3.1"
+  },
   "devDependencies": {
-    "@testdeck/core": "^0.3.1",
     "@testdeck/mocha": "^0.3.1",
     "@types/mocha": "^9.0.0",
     "reflect-metadata": "^0.1.13",

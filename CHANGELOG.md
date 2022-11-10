@@ -1,4 +1,10 @@
 
+## v0.3.2 (2022-11-10)
+
+#### :bug: Bug Fix
+* `di-typedi`
+  * [#337](https://github.com/testdeck/testdeck/pull/338) testdeck/di-typedi does not depend on testdeck/core as a runtime dependency ([@silkentrance](https://github.com/silkentrance))
+
 ## v0.3.1 (2022-11-07)
 
 #### :house: Internal

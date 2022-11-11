@@ -30,9 +30,9 @@
   "scripts": {
     "prepare": "tsc",
     "pretest": "tsc",
-    "test": "nyc --require ts-node/register jasmine test.ts --config=jasmine.json && tslint --project .",
-    "tslint": "tslint --project .",
-    "tslint-fix": "tslint --project . --fix"
+    "test": "nyc --require ts-node/register jasmine test.ts --config=jasmine.json && npm run lint",
+    "lint": "eslint .",
+    "lint-fix": "eslint --fix ."
   },
   "dependencies": {
     "@testdeck/core": "^0.3.2"
@@ -41,10 +41,15 @@
     "@istanbuljs/nyc-config-typescript": "latest",
     "@types/jasmine": "latest",
     "@types/node": "latest",
+    "@typescript-eslint/eslint-plugin": "latest",
+    "@typescript-eslint/parser": "latest",
+    "eslint": "latest",
+    "eslint-plugin-import": "latest",
+    "eslint-plugin-jsdoc": "latest",
+    "eslint-plugin-prefer-arrow": "latest",
     "jasmine": "latest",
     "nyc": "latest",
     "ts-node": "latest",
-    "tslint": "latest",
     "typescript": "latest"
   },
   "files": [

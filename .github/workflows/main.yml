@@ -9,20 +9,18 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
-
     strategy:
       matrix:
-        node-version: [14.x, 16.x, 17.x]
+        node-version: [14.x, 16.x, 18.x, 19.x]
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-#      - run: npm ci # npm ci - will install dependency in a way suitable for ci but requires a package lock
-      - run: npm i
-#      - run: npm run build --if-present
+      - run: npm install
       - run: npm test
-

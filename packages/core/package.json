@@ -27,9 +27,11 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "prepare": "tsc",
-    "pretest": "tsc",
-    "test": "nyc mocha && npm run lint",
+    "build": "tsc",
+    "clean": "npx rimraf .nyc_output coverage dist || true",
+    "clean-all": "npm run clean && npx rimraf node_modules || true",
+    "pretest": "npm run clean & npm run lint && npm run build",
+    "test": "nyc mocha",
     "lint": "eslint .",
     "lint-fix": "eslint --fix ."
   },

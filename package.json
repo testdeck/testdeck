@@ -22,9 +22,14 @@
   },
   "scripts": {
     "postinstall": "lerna bootstrap --no-ci",
-    "test": "lerna run --stream test",
-    "lint": "lerna run --stream lint",
-    "lint-fix": "lerna run --stream lint-fix",
+    "build": "lerna run build",
+    "clean": "lerna run clean",
+    "clean-all": "lerna run clean-all",
+    "postclean-all": "npx rimraf node_modules || true",
+    "test": "lerna run test --verbose",
+    "lint": "lerna run lint",
+    "lint-fix": "lerna run lint-fix",
+    "prelerna-publish": "npm run clean-all && npm run install && npm run build && npm run test",
     "lerna-publish": "lerna publish",
     "changelog": "lerna-changelog"
   },

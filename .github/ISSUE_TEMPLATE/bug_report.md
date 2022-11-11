@@ -1,7 +1,7 @@
 ---
 name: Bug report
-about: Create a report to help us improve
-title: "[BUG] - "
+about: Create a bug report to help us improve the software
+title: "[BUG] "
 labels: bug
 assignees: ''
 
@@ -9,7 +9,7 @@ assignees: ''
 
 ## Testdeck Version
 
-e.g. 0.0.5
+e.g. v0.0.5
 
 ## Testdeck Package
 
@@ -18,6 +18,7 @@ e.g. 0.0.5
  - [ ] `@testdeck/jasmine`
  - [ ] `@testdeck/jest`
  - [ ] `@testdeck/vitest`
+ - [ ] `@testdeck/di-typedi`
  - [ ] unsure
 
 ## NodeJS Version
@@ -26,14 +27,15 @@ e.g. 0.0.5
  - [ ] 16
  - [ ] 14
  - [ ] all
- - [ ] other: 
+ - [ ] other:
 
-## Mocha / Jasmine / Jest / Vitest Version
+## Mocha / Jasmine / Jest / Vitest / Typedi Version
 
  - Mocha:
  - Jasmine:
- - Jest: 
+ - Jest:
  - Vitest:
+ - Typedi:
 
 ### Operating System
 

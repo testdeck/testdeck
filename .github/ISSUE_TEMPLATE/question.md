@@ -1,7 +1,7 @@
 ---
 name: Question
 about: Do you have a question? Feel free to ask.
-title: "[QUESTION] - "
+title: "[QUESTION] "
 labels: question
 assignees: ''
 
@@ -10,4 +10,3 @@ assignees: ''
 ## Question
 
 Place your question here.
-

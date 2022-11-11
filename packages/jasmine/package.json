@@ -38,7 +38,15 @@
     "@testdeck/core": "^0.3.2"
   },
   "devDependencies": {
-    "@types/jasmine": "latest"
+    "@types/chai": "latest",
+    "@types/chai-as-promised": "latest",
+    "@types/jasmine": "latest",
+    "@types/node": "latest",
+    "chai": "latest",
+    "chai-as-promised": "latest",
+    "jasmine": "latest",
+    "tslint": "latest",
+    "typescript": "latest"
   },
   "files": [
     "dist/index.js",

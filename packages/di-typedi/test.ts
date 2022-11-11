@@ -19,6 +19,7 @@ class SomeService {
 }
 
 @suite
+@Service()
 class Hello {
 
   public constructor(private service: SomeService) {

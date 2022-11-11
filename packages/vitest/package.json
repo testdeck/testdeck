@@ -39,6 +39,8 @@
     "@testdeck/core": "^0.3.2"
   },
   "devDependencies": {
+    "tslint": "latest",
+    "typescript": "latest",
     "vite": "latest",
     "vitest": "latest"
   },

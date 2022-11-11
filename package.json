@@ -17,18 +17,8 @@
     "url": "https://github.com/testdeck/testdeck.git"
   },
   "devDependencies": {
-    "@types/chai": "latest",
-    "@types/chai-as-promised": "latest",
-    "chai": "latest",
-    "chai-as-promised": "latest",
-    "jasmine": "latest",
-    "jest": "latest",
     "lerna": "latest",
-    "lerna-changelog": "latest",
-    "mocha": "latest",
-    "nyc": "latest",
-    "tslint": "latest",
-    "typescript": "latest"
+    "lerna-changelog": "latest"
   },
   "scripts": {
     "postinstall": "lerna bootstrap --no-ci",

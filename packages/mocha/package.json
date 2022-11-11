@@ -56,7 +56,16 @@
     "all": true
   },
   "devDependencies": {
-    "@types/mocha": "latest"
+    "@types/chai": "latest",
+    "@types/chai-as-promised": "latest",
+    "@types/mocha": "latest",
+    "@types/node": "latest",
+    "chai": "latest",
+    "chai-as-promised": "latest",
+    "mocha": "latest",
+    "nyc": "latest",
+    "tslint": "latest",
+    "typescript": "latest"
   },
   "files": [
     "bin/watch",

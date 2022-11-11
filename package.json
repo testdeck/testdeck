@@ -23,8 +23,8 @@
   "scripts": {
     "postinstall": "lerna bootstrap --no-ci",
     "test": "lerna run --stream test",
-    "tslint": "lerna run --stream tslint",
-    "tslint-fix": "lerna run --stream tslint-fix",
+    "lint": "lerna run --stream lint",
+    "lint-fix": "lerna run --stream lint-fix",
     "lerna-publish": "lerna publish",
     "changelog": "lerna-changelog"
   },

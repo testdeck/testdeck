@@ -1,0 +1,3 @@
+dist
+vitest.config.ts
+.eslintrc.cjs

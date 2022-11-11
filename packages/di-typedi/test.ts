@@ -1,6 +1,6 @@
 import { suite, test } from "@testdeck/mocha";
 
-import { expect } from "chai";
+import { assert } from "chai";
 
 // register TypeDI support with testdeck and also let reflect-metadata do it's magic
 import "./index";
@@ -28,6 +28,6 @@ class Hello {
   @test
   public world() {
 
-    expect(this.service.doSomething()).to.be.true;
+    assert.isTrue(this.service.doSomething());
   }
 }

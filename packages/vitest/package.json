@@ -31,9 +31,9 @@
   "scripts": {
     "prepare": "tsc",
     "pretest": "tsc",
-    "test": "vitest run && tslint --project .",
-    "tslint": "tslint --project .",
-    "tslint-fix": "tslint --project . --fix"
+    "test": "vitest run && npm run lint",
+    "lint": "eslint .",
+    "lint-fix": "eslint --fix ."
   },
   "dependencies": {
     "@testdeck/core": "^0.3.2"
@@ -41,9 +41,14 @@
   "devDependencies": {
     "@types/chai": "latest",
     "@types/node": "latest",
+    "@typescript-eslint/eslint-plugin": "latest",
+    "@typescript-eslint/parser": "latest",
     "@vitest/coverage-istanbul": "latest",
     "chai": "latest",
-    "tslint": "latest",
+    "eslint": "latest",
+    "eslint-plugin-import": "latest",
+    "eslint-plugin-jsdoc": "latest",
+    "eslint-plugin-prefer-arrow": "latest",
     "typescript": "latest",
     "vite": "latest",
     "vitest": "latest"

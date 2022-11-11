@@ -30,9 +30,9 @@
   "scripts": {
     "prepare": "tsc",
     "pretest": "tsc",
-    "test": "jest && tslint --project .",
-    "tslint": "tslint --project .",
-    "tslint-fix": "tslint --project . --fix"
+    "test": "jest && npm run lint",
+    "lint": "eslint .",
+    "lint-fix": "eslint --fix ."
   },
   "dependencies": {
     "@testdeck/core": "^0.3.2"
@@ -42,8 +42,14 @@
     "@types/chai-as-promised": "latest",
     "@types/jest": "latest",
     "@types/node": "latest",
+    "@typescript-eslint/eslint-plugin": "latest",
+    "@typescript-eslint/parser": "latest",
     "chai": "latest",
     "chai-as-promised": "latest",
+    "eslint": "latest",
+    "eslint-plugin-import": "latest",
+    "eslint-plugin-jsdoc": "latest",
+    "eslint-plugin-prefer-arrow": "latest",
     "jest": "latest",
     "ts-jest": "latest",
     "tslint": "latest",

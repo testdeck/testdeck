@@ -40,21 +40,6 @@
   "dependencies": {
     "@testdeck/core": "^0.3.2"
   },
-  "nyc": {
-    "check-coverage": true,
-    "lines": 80,
-    "statements": 80,
-    "functions": 80,
-    "branches": 80,
-    "include": [
-      "dist/index.js"
-    ],
-    "reporter": [
-      "lcov",
-      "text-summary"
-    ],
-    "all": true
-  },
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "latest",
     "@types/chai": "latest",

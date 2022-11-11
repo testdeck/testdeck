@@ -49,26 +49,6 @@
     "README.md",
     "LICENSE"
   ],
-  "nyc": {
-    "check-coverage": true,
-    "lines": 95,
-    "statements": 85,
-    "functions": 95,
-    "branches": 95,
-    "include": [
-      "src/**/*"
-    ],
-    "exclude": [
-      "dist",
-      "coverage",
-      "test/**/*.js"
-    ],
-    "reporter": [
-      "lcov",
-      "text-summary"
-    ],
-    "all": true
-  },
   "publishConfig": {
     "access": "public"
   }

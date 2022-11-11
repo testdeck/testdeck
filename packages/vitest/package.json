@@ -39,6 +39,10 @@
     "@testdeck/core": "^0.3.2"
   },
   "devDependencies": {
+    "@types/chai": "latest",
+    "@types/node": "latest",
+    "@vitest/coverage-istanbul": "latest",
+    "chai": "latest",
     "tslint": "latest",
     "typescript": "latest",
     "vite": "latest",

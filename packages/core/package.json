@@ -29,7 +29,7 @@
   "scripts": {
     "prepare": "tsc",
     "pretest": "tsc",
-    "test": "mocha dist/test.js && tslint --project .",
+    "test": "nyc mocha && tslint --project .",
     "tslint": "tslint --project .",
     "tslint-fix": "tslint --project . --fix"
   },
@@ -42,22 +42,8 @@
     "LICENSE"
   ],
   "typings": "dist/index.d.ts",
-  "nyc": {
-    "check-coverage": true,
-    "lines": 100,
-    "statements": 100,
-    "functions": 100,
-    "branches": 100,
-    "include": [
-      "dist/index.js"
-    ],
-    "reporter": [
-      "lcov",
-      "text-summary"
-    ],
-    "all": true
-  },
   "devDependencies": {
+    "@istanbuljs/nyc-config-typescript": "latest",
     "@types/chai": "latest",
     "@types/chai-as-promised": "latest",
     "@types/mocha": "latest",
@@ -65,6 +51,8 @@
     "chai": "latest",
     "chai-as-promised": "latest",
     "mocha": "latest",
+    "nyc": "latest",
+    "ts-node": "latest",
     "tslint": "latest",
     "typescript": "latest"
   },

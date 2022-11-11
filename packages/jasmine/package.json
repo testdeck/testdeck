@@ -30,7 +30,7 @@
   "scripts": {
     "prepare": "tsc",
     "pretest": "tsc",
-    "test": "jasmine dist/test.js JASMINE_CONFIG_PATH=jasmine.json && tslint --project .",
+    "test": "nyc --require ts-node/register jasmine test.ts --config=jasmine.json && tslint --project .",
     "tslint": "tslint --project .",
     "tslint-fix": "tslint --project . --fix"
   },
@@ -38,13 +38,12 @@
     "@testdeck/core": "^0.3.2"
   },
   "devDependencies": {
-    "@types/chai": "latest",
-    "@types/chai-as-promised": "latest",
+    "@istanbuljs/nyc-config-typescript": "latest",
     "@types/jasmine": "latest",
     "@types/node": "latest",
-    "chai": "latest",
-    "chai-as-promised": "latest",
     "jasmine": "latest",
+    "nyc": "latest",
+    "ts-node": "latest",
     "tslint": "latest",
     "typescript": "latest"
   },

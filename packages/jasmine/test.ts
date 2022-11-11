@@ -1,4 +1,3 @@
-import { assert } from "chai";
 import { retries, slow, suite, test, timeout } from "./index";
 
 describe("tests", function() {
@@ -107,7 +106,7 @@ describe("tests", function() {
     });
 
     it("order of execution", function() {
-        assert.sameOrderedMembers(events, [
+        expect(events).toEqual([
             "Suite static before",
             "Suite before",
             "Suite test",

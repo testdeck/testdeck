@@ -30,7 +30,7 @@
   "scripts": {
     "prepare": "tsc",
     "pretest": "tsc",
-    "test": "jest dist/test.js && tslint --project .",
+    "test": "jest && tslint --project .",
     "tslint": "tslint --project .",
     "tslint-fix": "tslint --project . --fix"
   },
@@ -45,6 +45,7 @@
     "chai": "latest",
     "chai-as-promised": "latest",
     "jest": "latest",
+    "ts-jest": "latest",
     "tslint": "latest",
     "typescript": "latest"
   },

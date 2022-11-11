@@ -33,7 +33,7 @@
   "scripts": {
     "prepare": "tsc",
     "pretest": "tsc",
-    "test": "nyc mocha dist/test.js && tslint --project .",
+    "test": "nyc mocha && tslint --project .",
     "tslint": "tslint --project .",
     "tslint-fix": "tslint --project . --fix"
   },
@@ -56,6 +56,7 @@
     "all": true
   },
   "devDependencies": {
+    "@istanbuljs/nyc-config-typescript": "latest",
     "@types/chai": "latest",
     "@types/chai-as-promised": "latest",
     "@types/mocha": "latest",
@@ -64,6 +65,7 @@
     "chai-as-promised": "latest",
     "mocha": "latest",
     "nyc": "latest",
+    "ts-node": "latest",
     "tslint": "latest",
     "typescript": "latest"
   },

@@ -1,10 +1,17 @@
+/** @type {import('ts-jest').JestConfigWithTsJest} */
 module.exports = {
+  preset: 'ts-jest',
+  testEnvironment: 'node',
+  testRegex: ['(.*)test.ts'],
+  testPathIgnorePatterns: ['dist', 'node_modules'],
+  verbose: true,
+  collectCoverage: true,
   coverageThreshold: {
     global: {
-      branches: 95,
-      functions: 95,
-      lines: 95,
-      statements: 95
+      branches: 70,
+      functions: 100,
+      lines: 84,
+      statements: 84
     }
   }
 };

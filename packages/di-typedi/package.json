@@ -28,9 +28,18 @@
   },
   "devDependencies": {
     "@testdeck/mocha": "^0.3.2",
-    "@types/mocha": "^9.0.0",
-    "reflect-metadata": "^0.1.13",
-    "typedi": "^0.8.0"
+    "@types/chai": "latest",
+    "@types/chai-as-promised": "latest",
+    "@types/mocha": "latest",
+    "@types/node": "latest",
+    "chai": "latest",
+    "chai-as-promised": "latest",
+    "mocha": "latest",
+    "nyc": "latest",
+    "reflect-metadata": "latest",
+    "tslint": "latest",
+    "typescript": "latest",
+    "typedi": "latest"
   },
   "files": [
     "dist/index.js",

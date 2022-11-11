@@ -38,7 +38,15 @@
     "@testdeck/core": "^0.3.2"
   },
   "devDependencies": {
-    "@types/jest": "latest"
+    "@types/chai": "latest",
+    "@types/chai-as-promised": "latest",
+    "@types/jest": "latest",
+    "@types/node": "latest",
+    "chai": "latest",
+    "chai-as-promised": "latest",
+    "jest": "latest",
+    "tslint": "latest",
+    "typescript": "latest"
   },
   "files": [
     "dist/index.js",

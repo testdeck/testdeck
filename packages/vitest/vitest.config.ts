@@ -11,11 +11,12 @@ export default defineConfig({
       include: [
         "index.ts"
       ],
+      reporter: ['lcov', 'html', 'text'],
       perFile: true,
-      lines: 100,
-      branches: 100,
+      lines: 80,
+      branches: 70,
       functions: 100,
-      statements: 100,
+      statements: 80,
     },
     reporters: 'verbose',
     include: ['test.ts']

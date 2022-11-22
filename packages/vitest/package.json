@@ -33,7 +33,7 @@
     "clean": "npx rimraf .nyc_output coverage dist || true",
     "clean-all": "npm run clean && npx rimraf node_modules || true",
     "pretest": "npm run clean & npm run lint && npm run build",
-    "test": "vitest run",
+    "test": "vitest run --coverage",
     "lint": "eslint .",
     "lint-fix": "eslint --fix ."
   },

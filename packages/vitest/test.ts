@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import { describe, beforeAll, test } from "vitest";
+import { beforeAll, describe, test } from "vitest";
 import { retries, slow, suite, test as test_, timeout } from "./index";
 
 describe("tests", function() {
@@ -61,7 +61,7 @@ describe("tests", function() {
         }
 
         @test_
-        @timeout(100)
+        @timeout(1000)
         public async test2() {
             events.push("AsyncSuite timeout test");
 	    return Promise.resolve();

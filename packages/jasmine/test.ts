@@ -38,54 +38,54 @@ describe("tests", function() {
     @suite class CallbacksSuite {
         public static before(done) {
             events.push("CallbacksSuite static before");
-            setTimeout(done, 0);
+            setTimeout(done, 50);
         }
 
         public before(done) {
             events.push("CallbacksSuite before");
-            setTimeout(done, 0);
+            setTimeout(done, 50);
         }
 
         @test(timeout(1000), slow(500), retries(3))
         public test(done) {
             events.push("CallbacksSuite test");
-            setTimeout(done, 0);
+            setTimeout(done, 50);
         }
 
         @test
-        @timeout(100)
+        @timeout(1000)
         public test2(done) {
             events.push("CallbacksSuite test2");
-            setTimeout(done, 1);
+            setTimeout(done, 50);
         }
 
         @test
         @retries(100)
         public test3(done) {
             events.push("CallbacksSuite test3");
-            setTimeout(done, 1);
+            setTimeout(done, 50);
         }
 
         @test.pending(timeout(1000))
         public pendingTest(done) {
             events.push("CallbacksSuite pendingTest");
-            setTimeout(done, 0);
+            setTimeout(done, 50);
         }
 
         @test.skip(slow(500))
         public skippedTest(done) {
             events.push("CallbacksSuite skippedTest");
-            setTimeout(done, 0);
+            setTimeout(done, 50);
         }
 
         public after(done) {
             events.push("CallbacksSuite after");
-            setTimeout(done, 0);
+            setTimeout(done, 50);
         }
 
         public static after(done) {
             events.push("CallbacksSuite static after");
-            setTimeout(done, 0);
+            setTimeout(done, 50);
         }
     }
 

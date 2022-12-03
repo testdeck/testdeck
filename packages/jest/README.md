@@ -1,6 +1,8 @@
 [![Get it on NPM](https://img.shields.io/npm/v/@testdeck/jest.svg)](https://www.npmjs.com/package/@testdeck/jest)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Build Status](https://github.com/testdeck/testdeck/actions/workflows/ci.yml/badge.svg)](https://github.com/testdeck/testdeck/actions/workflows/ci.yml)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=testdeck_jest&metric=coverage)](https://sonarcloud.io/summary/new_code?id=testdeck_jest)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=testdeck_jest&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=testdeck_jest)
 [![Issues](https://img.shields.io/github/issues/testdeck/testdeck/@testdeck/jest)](https://github.com/testdeck/testdeck/issues)
 [![Pull Requests](https://img.shields.io/github/issues-pr/testdeck/testdeck/@testdeck/jest)](https://github.com/testdeck/testdeck/pulls)
 

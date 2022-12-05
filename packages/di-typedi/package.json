@@ -1,6 +1,6 @@
 {
   "name": "@testdeck/di-typedi",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "TypeDI IOC integration for testdeck",
   "author": "Panayot Cankov",
   "contributors": [
@@ -26,11 +26,11 @@
     "lint-fix": "eslint --fix ."
   },
   "dependencies": {
-    "@testdeck/core": "^0.3.2"
+    "@testdeck/core": "^0.3.3"
   },
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "latest",
-    "@testdeck/mocha": "^0.3.2",
+    "@testdeck/mocha": "^0.3.3",
     "@types/chai": "latest",
     "@types/chai-as-promised": "latest",
     "@types/mocha": "latest",
@@ -47,8 +47,8 @@
     "nyc": "latest",
     "reflect-metadata": "latest",
     "ts-node": "latest",
-    "typescript": "latest",
-    "typedi": "latest"
+    "typedi": "latest",
+    "typescript": "latest"
   },
   "files": [
     "dist/index.js",

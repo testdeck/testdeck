@@ -1,6 +1,6 @@
 {
   "name": "@testdeck/mocha",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Object oriented testing for the Mocha test framework",
   "keywords": [
     "test",
@@ -40,7 +40,7 @@
     "lint-fix": "eslint --fix ."
   },
   "dependencies": {
-    "@testdeck/core": "^0.3.2"
+    "@testdeck/core": "^0.3.3"
   },
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "latest",

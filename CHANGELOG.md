@@ -1,5 +1,5 @@
 
-## v0.3.3 (unreleased)
+## v0.3.3 (2022-12-05)
 
 #### :house: Internal
 * [#342](https://github.com/testdeck/testdeck/pull/342) Closes [#334](https://github.com/testdeck/testdeck/issues/334): Add additional issue templates ([@silkentrance](https://github.com/silkentrance))

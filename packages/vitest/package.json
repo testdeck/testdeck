@@ -1,6 +1,6 @@
 {
   "name": "@testdeck/vitest",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Object oriented testing for the Vitest test framework",
   "type": "module",
   "keywords": [
@@ -38,7 +38,7 @@
     "lint-fix": "eslint --fix ."
   },
   "dependencies": {
-    "@testdeck/core": "^0.3.2"
+    "@testdeck/core": "^0.3.3"
   },
   "devDependencies": {
     "@types/chai": "latest",

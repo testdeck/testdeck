@@ -29,7 +29,7 @@
     "test": "lerna run test --verbose",
     "lint": "lerna run lint",
     "lint-fix": "lerna run lint-fix",
-    "prelerna-publish": "npm run clean-all && npm run install && npm run build && npm run test",
+    "prelerna-publish": "npm run clean-all && npm install && npm run build && npm run test",
     "lerna-publish": "lerna publish",
     "changelog": "lerna-changelog"
   },

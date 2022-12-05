@@ -6,56 +6,78 @@
 [![Issues](https://img.shields.io/github/issues/testdeck/testdeck/@testdeck/jasmine)](https://github.com/testdeck/testdeck/issues)
 [![Pull Requests](https://img.shields.io/github/issues-pr/testdeck/testdeck/@testdeck/jasmine)](https://github.com/testdeck/testdeck/pulls)
 
+# ![Testdeck](https://raw.githubusercontent.com/testdeck/testdeck/main/docs/assets/testdeck-wide.svg)
+
 ## @testdeck/jasmine
 
-Jasmine tests in OOP style!
+The package provides a suite of decorators to integrate your favorite test framework into an object-oriented workflow.
 
-```TypeScript
+## Object-Oriented API Usage
+With Testdeck, writing object-oriented test suites is just a blaze.
+
+``` TypeScript
 import { suite, test } from "@testdeck/jasmine";
 
-@suite
-class Hello {
+class TestBase {
+  @test
+  basic() {
+    // expected fail :/
+    expect(true).toEqual(false);
+  }
+}
 
+@suite
+class Hello extends TestBase {
   @test
   world() {
-    expect(false).toBe(true);
+    // expected fail :/
+    expect(false).toEqual(true);
   }
 }
 ```
 
-With support for
+## Standard Functional API Usage
+With Testdeck, you can always use the standard functional test framework API:
 
-- test suite inheritance by either extension or mixins
-- individual naming of both suites and tests
-- parameterised tests
+``` TypeScript
+function basic() {
+  it('basic', () => {
+    // expected fail :/
+    expect(true).to.be.false;
+  });
+}
 
-and more...
-
-If you are looking for other test framework support, please see the following packages
-
-- [@testdeck/jest](https://npmjs.com/package/@testdeck/jest)
-- [@testdeck/mocha](https://npmjs.com/package/@testdeck/mocha)
-- [@testdeck/vitest](https://npmjs.com/package/@testdeck/vitest)
-
-## Installation
-
-```shell
-npm install --save-dev @types/jasmine jasmine @testdeck/jasmine
+describe('Hello', () => {
+  basic();
+  it('world', () => {
+    // expected fail :/
+    expect(false).to.be.true;
+  });
+})
 ```
 
-Additional dependencies need to be installed, unless you use the seed below or follow the instructions in the setup
-guide for which a link has been provided below.
+And you can migrate your existing functional test suites to object-oriented over time.
 
-## Getting Started
+## Further Reading
 
-To get you started, a [seed has been provided](https://github.com/testdeck/testdeck-jasmine-seed) that can help you with
-setting up your project.
+- [Documentation](https://testdeck.org)
+- [CHANGELOG](https://github.com/testdeck/testdeck/blob/main/CHANGELOG.md)
+- [LICENSE](https://github.com/testdeck/testdeck/blob/main/LICENSE)
 
-```shell
-git clone https://github.com/testdeck/testdeck-jasmine-seed.git
+## License
+
 ```
+Copyright 2016-2022 Testdeck Team and Contributors
 
-## Additional Information
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-You can find a lot more information in the [official documentation](https://testdeck.org/), especially in the
-[setup guide](https://testdeck.org/pages/guide/setup).
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+```

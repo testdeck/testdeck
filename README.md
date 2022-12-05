@@ -3,68 +3,105 @@
 [![Issues](https://img.shields.io/github/issues/testdeck/testdeck.svg)](https://github.com/testdeck/testdeck/issues)
 [![Pull Requests](https://img.shields.io/github/issues-pr/testdeck/testdeck.svg)](https://github.com/testdeck/testdeck/pulls)
 
-# testdeck
+# ![Testdeck](https://raw.githubusercontent.com/testdeck/testdeck/main/docs/assets/testdeck-wide.svg)
 
-The JavaScript OOP style tests!
+Testdeck is a suite of decorators to integrate your favorite test framework into an object-oriented workflow:
+- [Mocha](https://mochajs.org)
+- [Jasmine](https://jasmine.github.io)
+- [Jest](https://jestjs.io)
+- [Vitest](https://vitest.dev)
+
+## Object-Oriented API Usage
+With Testdeck, writing object-oriented test suites is just a blaze.
 
 ``` TypeScript
-// Use one of the mocha/jest/jasmine test runners:
 import { suite, test } from "@testdeck/mocha";
-import { suite, test } from "@testdeck/jest";
-import { suite, test } from "@testdeck/jasmine";
-
 import { expect } from 'chai';
 
-// And turn your tests from functional:
-describe("Hello", function() {
-  it("world", function() {
-    expect(false).to.be.true;
-  });
-});
-
-// Into 100% OOP awesomeness:
-@suite class Hello {
-  @test world() {
-    expect(false).to.be.true;
+class TestBase {
+  @test
+  basic() {
+    // expected fail :/
+    expect(true).to.equal(false);
   }
 }
 
-// P.S. You can still mix and match!
+@suite
+class Hello extends TestBase {
+  @test
+  world() {
+    // expected fail :/
+    expect(false).to.equal(true);
+  }
+}
+```
+
+## Standard Functional API Usage
+With Testdeck, you can always use the standard functional test framework API:
+
+``` TypeScript
+import { expect } from 'chai';
+
+function basic() {
+  it('basic', () => {
+    // expected fail :/
+    expect(true).to.equal(false);
+  });
+}
+
+describe('Hello', () => {
+  basic();
+  it('world', () => {
+    // expected fail :/
+    expect(false).to.equal(true);
+  });
+})
+```
+
+And you can migrate your functional test suites to object-oriented over time.
+
+## Further Reading
+
+- [Documentation](https://testdeck.org)
+- [CHANGELOG](https://github.com/testdeck/testdeck/blob/main/CHANGELOG.md)
+- [LICENSE](https://github.com/testdeck/testdeck/blob/main/LICENSE)
+
+## License
+
+```
+Copyright 2016-2022 Testdeck Team and Contributors
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 ```
 
 ## Packages
-This is the monorepo for the testdeck packages.
+Testdeck is the monorepo for the following packages:
 
-- [@testdeck/mocha](./packages/mocha)
-- [@testdeck/jasmine](./packages/jasmine)
-- [@testdeck/jest](./packages/jest)
-- [@testdeck/vitest](./packages/vitest)
-- [@testdeck/di-typedi](./packages/di-typedi)
-- [@testdeck/core](./packages/core)
+- [@testdeck/core](https://github.com/testdeck/testdeck/tree/main/packages/core)
 
-## Build
+  Used for integrating [new] test frameworks and IOC frameworks.
+- [@testdeck/mocha](https://github.com/testdeck/testdeck/tree/main/packages/mocha)
 
-Clone this repository using
+  Mocha test framework integration.
+- [@testdeck/jasmine](https://github.com/testdeck/testdeck/tree/main/packages/jasmine)
 
-```
-git clone https://github.com/testdeck/testdeck.git
-```
+  Jasmine test framework integration.
+- [@testdeck/jest](https://github.com/testdeck/testdeck/tree/main/packages/jest)
 
-Then from inside the so created `testdeck` directory run
+  Jest test framework integration.
+- [@testdeck/vitest](https://github.com/testdeck/testdeck/tree/main/packages/vitest)
 
-```
-npm install
-```
+  Vitest test framework integration.
+- [@testdeck/di-typedi](https://github.com/testdeck/testdeck/tree/main/packages/di-typedi)
 
-This will install all required dependencies and will also bootstrap `lerna`.
-
-The following npm scripts are available
-
-- `npm run tslint`      -- runs `tslint` on all sources in all available packages
-- `npm run tslint-fix`  -- runs `tslint --fix` on all sources in all available packages
-- `npm test`            -- run all tests on all available packages
-
-## Resources
-
-- [Official Documentation](https://testdeck.org)
-- [Usage: npm-stat.js](https://npm-stat.com/charts.html?package=mocha-typescript&package=%40testdeck%2Fdi-typedi&package=%40testdeck%2Fjest&package=%40testdeck%2Fmocha&package=%40testdeck%2Fjasmine&package=%40testdeck%2Fvitest)
+  TypeDI IOC container integration.

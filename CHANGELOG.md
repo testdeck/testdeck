@@ -1,4 +1,29 @@
 
+## v0.3.3 (unreleased)
+
+#### :house: Internal
+* [#342](https://github.com/testdeck/testdeck/pull/342) Closes [#334](https://github.com/testdeck/testdeck/issues/334): Add additional issue templates ([@silkentrance](https://github.com/silkentrance))
+* [#350](https://github.com/testdeck/testdeck/pull/350) Closes [#349](https://github.com/testdeck/testdeck/issues/349): Disable package-lock.json on root package ([@silkentrance](https://github.com/silkentrance))
+* [#352](https://github.com/testdeck/testdeck/pull/352) Closes [#351](https://github.com/testdeck/testdeck/issues/351): Update Github Workflow ([@silkentrance](https://github.com/silkentrance))
+* [#357](https://github.com/testdeck/testdeck/pull/357) Closes [#356](https://github.com/testdeck/testdeck/issues/356): Add SonarCloud to check for code coverage and other quality reports ([@silkentrance](https://github.com/silkentrance))
+* [#363](https://github.com/testdeck/testdeck/pull/363) Closes [#362](https://github.com/testdeck/testdeck/issues/362): Split workflows into CI and QA ([@silkentrance](https://github.com/silkentrance))
+* `core`, `di-typedi`, `jasmine`, `jest`, `mocha`, `vitest`
+  * [#348](https://github.com/testdeck/testdeck/pull/348) Closes [#335](https://github.com/testdeck/testdeck/issues/335): Switch to eslint ([@silkentrance](https://github.com/silkentrance))
+  * [#341](https://github.com/testdeck/testdeck/pull/341) Closes [#336](https://github.com/testdeck/testdeck/issues/336): Push down dependencies into requiring packages so that errors show up early ([@silkentrance](https://github.com/silkentrance))
+  * [#345](https://github.com/testdeck/testdeck/pull/345) Closes [#344](https://github.com/testdeck/testdeck/issues/344): Reenable coverage checks and coverage reports for all packages ([@silkentrance](https://github.com/silkentrance))
+  * [#347](https://github.com/testdeck/testdeck/pull/347) Closes [#346](https://github.com/testdeck/testdeck/issues/346): Remove nyc configuration from all package.json ([@silkentrance](https://github.com/silkentrance))
+  * [#354](https://github.com/testdeck/testdeck/pull/354) Closes [#353](https://github.com/testdeck/testdeck/issues/353): Reconfigure Package Scripts ([@silkentrance](https://github.com/silkentrance))
+  * [#361](https://github.com/testdeck/testdeck/pull/361) Closes [#360](https://github.com/testdeck/testdeck/issues/360): Include tests in sonar report ([@silkentrance](https://github.com/silkentrance))
+* `jasmine`, `jest`, `mocha`, `vitest`
+  * [#368](https://github.com/testdeck/testdeck/pull/368) Closes [#367](https://github.com/testdeck/testdeck/issues/367): Fix randomly failing test timeouts ([@silkentrance](https://github.com/silkentrance))
+* `vitest`
+  * [#359](https://github.com/testdeck/testdeck/pull/359) Closes [#358](https://github.com/testdeck/testdeck/issues/358): Enable coverage reports for @testdeck/vitest ([@silkentrance](https://github.com/silkentrance))
+
+#### :memo: Documentation
+* `core`, `di-typedi`, `jasmine`, `jest`, `mocha`, `vitest`
+  * [#365](https://github.com/testdeck/testdeck/pull/365) Closes [#364](https://github.com/testdeck/testdeck/issues/364): Streamline badges in READMEs ([@silkentrance](https://github.com/silkentrance))
+  * [#372](https://github.com/testdeck/testdeck/pull/372) Closes [#369](https://github.com/testdeck/testdeck/issues/369): Add QA Badges to Package Readmes ([@silkentrance](https://github.com/silkentrance))
+
 ## v0.3.2 (2022-11-10)
 
 #### :bug: Bug Fix

@@ -48,13 +48,13 @@ export abstract class ClassTestUI {
     this.test = this.makeTestObject();
     this.params = this.makeParamsObject();
 
-    this.slow = this.createExecutionOption(ClassTestUI.slowSymbol);
-    this.timeout = this.createExecutionOption(ClassTestUI.timeoutSymbol);
-    this.retries = this.createExecutionOption(ClassTestUI.retriesSymbol);
+    this.slow = deprecated({ feature: "[@]slow(value: number)", ...deprecationInfoDefaults }, this.createExecutionOption(ClassTestUI.slowSymbol));
+    this.timeout = deprecated({ feature: "[@]timeout(value: number)", ...deprecationInfoDefaults }, this.createExecutionOption(ClassTestUI.timeoutSymbol));
+    this.retries = deprecated({ feature: "[@]retries(value: number)", ...deprecationInfoDefaults }, this.createExecutionOption(ClassTestUI.retriesSymbol));
 
-    this.pending = this.createExecutionModifier("pending");
-    this.only = this.createExecutionModifier("only");
-    this.skip = this.createExecutionModifier("skip");
+    this.pending = deprecated({ feature: "@pending(...)", ...deprecationInfoDefaults }, this.createExecutionModifier("pending"));
+    this.only = deprecated({ feature: "@only(...)", ...deprecationInfoDefaults }, this.createExecutionModifier("only"));
+    this.skip = deprecated({ feature: "@skip(...)", ...deprecationInfoDefaults }, this.createExecutionModifier("skip"));
   }
 
   /**
@@ -97,15 +97,18 @@ export abstract class ClassTestUI {
       if (constructor.before) {
         const settings = theTestUI.getSettings(constructor.before);
         if (isAsync(constructor.before)) {
-          theTestUI.runner.beforeAll("static before", wrap(function(done) {
-            constructor[theTestUI.context] = this;
-            return constructor.before(done);
-          }, constructor.before), settings);
+          theTestUI.runner.beforeAll("static before",
+            deprecatedAsync({ feature: "static before(done)", ...deprecationInfoDefaults }, wrap(function(done) {
+              constructor[theTestUI.context] = this;
+              return constructor.before(done);
+            }, constructor.before)), settings);
         } else {
-          theTestUI.runner.beforeAll("static before", wrap(function() {
-            constructor[theTestUI.context] = this;
-            return constructor.before();
-          }, constructor.before), settings);
+          theTestUI.runner.beforeAll("static before",
+            deprecated({ feature: "static before()", ...deprecationInfoDefaults },
+              wrap(function() {
+                constructor[theTestUI.context] = this;
+                return constructor.before();
+              }, constructor.before)), settings);
         }
       }
 
@@ -123,15 +126,19 @@ export abstract class ClassTestUI {
       // Register the instance before method to be called before-each test method.
       if (prototype.before) {
         if (isAsync(prototype.before)) {
-          theTestUI.runner.beforeEach("before", wrap(function(done: Function) {
-            instance[theTestUI.context] = this;
-            return prototype.before.call(instance, done);
-          }, prototype.before), theTestUI.getSettings(prototype.before));
+          theTestUI.runner.beforeEach("before",
+            deprecatedAsync({ feature: "before(done)", ...deprecationInfoDefaults },
+              wrap(function(done: Function) {
+                instance[theTestUI.context] = this;
+                return prototype.before.call(instance, done);
+              }, prototype.before)), theTestUI.getSettings(prototype.before));
         } else {
-          theTestUI.runner.beforeEach("before", wrap(function() {
-            instance[theTestUI.context] = this;
-            return prototype.before.call(instance);
-          }, prototype.before), theTestUI.getSettings(prototype.before));
+          theTestUI.runner.beforeEach("before",
+            deprecated({ feature: "before()", ...deprecationInfoDefaults },
+              wrap(function() {
+                instance[theTestUI.context] = this;
+                return prototype.before.call(instance);
+              }, prototype.before)), theTestUI.getSettings(prototype.before));
         }
       }
 
@@ -149,8 +156,8 @@ export abstract class ClassTestUI {
         Object.getOwnPropertyNames(currentPrototype).forEach((key) => {
           const descriptor = Object.getOwnPropertyDescriptor(currentPrototype, key);
           if (typeof descriptor.value === 'function'
-              && descriptor.value[ClassTestUI.nameSymbol]
-              && !collectedTests[key]) {
+            && descriptor.value[ClassTestUI.nameSymbol]
+            && !collectedTests[key]) {
             collectedTests[key] = [prototype, descriptor.value];
           }
         });
@@ -217,15 +224,19 @@ export abstract class ClassTestUI {
       // Register the instance after method to be called after-each test method.
       if (prototype.after) {
         if (isAsync(prototype.after)) {
-          theTestUI.runner.afterEach("after", wrap(function(done) {
-            instance[theTestUI.context] = this;
-            return prototype.after.call(instance, done);
-          }, prototype.after), theTestUI.getSettings(prototype.after));
+          theTestUI.runner.afterEach("after",
+            deprecatedAsync({ feature: "after(done)", ...deprecationInfoDefaults },
+              wrap(function(done) {
+                instance[theTestUI.context] = this;
+                return prototype.after.call(instance, done);
+              }, prototype.after)), theTestUI.getSettings(prototype.after));
         } else {
-          theTestUI.runner.afterEach("after", wrap(function() {
-            instance[theTestUI.context] = this;
-            return prototype.after.call(instance);
-          }, prototype.after), theTestUI.getSettings(prototype.after));
+          theTestUI.runner.afterEach("after",
+            deprecated({ feature: "after()", ...deprecationInfoDefaults },
+              wrap(function() {
+                instance[theTestUI.context] = this;
+                return prototype.after.call(instance);
+              }, prototype.after)), theTestUI.getSettings(prototype.after));
         }
       }
 
@@ -237,26 +248,32 @@ export abstract class ClassTestUI {
       // Register the static after method of the class to be called after-all tests.
       if (constructor.after) {
         if (isAsync(constructor.after)) {
-          theTestUI.runner.afterAll("static after", wrap(function(done) {
-            constructor[theTestUI.context] = this;
-            return constructor.after(done);
-          }, constructor.after), theTestUI.getSettings(constructor.after));
+          theTestUI.runner.afterAll("static after",
+            deprecatedAsync({ feature: "static after(done)", ...deprecationInfoDefaults },
+              wrap(function(done) {
+                constructor[theTestUI.context] = this;
+                return constructor.after(done);
+              }, constructor.after)), theTestUI.getSettings(constructor.after));
         } else {
-          theTestUI.runner.afterAll("static after", wrap(function() {
-            constructor[theTestUI.context] = this;
-            return constructor.after();
-          }, constructor.after), theTestUI.getSettings(constructor.after));
+          theTestUI.runner.afterAll("static after",
+            deprecated({ feature: "static after()", ...deprecationInfoDefaults },
+              wrap(function() {
+                constructor[theTestUI.context] = this;
+                return constructor.after();
+              }, constructor.after)), theTestUI.getSettings(constructor.after));
         }
       }
     };
   }
 
   private makeSuiteObject(): SuiteDecorator {
-    return Object.assign(this.makeSuiteFunction(), {
-      skip: this.makeSuiteFunction("skip"),
-      only: this.makeSuiteFunction("only"),
-      pending: this.makeSuiteFunction("pending")
-    });
+    return Object.assign(
+      deprecated({ feature: "@suite[(...)]", ...deprecationInfoDefaults }, this.makeSuiteFunction()) as SuiteDecorator,
+      {
+        skip: deprecated({ feature: "@suite.skip[(...)]", ...deprecationInfoDefaults }, this.makeSuiteFunction("skip")),
+        only: deprecated({ feature: "@suite.only[(...)]", ...deprecationInfoDefaults }, this.makeSuiteFunction("only")),
+        pending: deprecated({ feature: "@suite.pending[(...)]", ...deprecationInfoDefaults }, this.makeSuiteFunction("pending"))
+      });
   }
 
   private makeSuiteFunction(execution?: Execution): SuiteDecoratorOrName {
@@ -309,11 +326,13 @@ export abstract class ClassTestUI {
 
   // Things regarding test, abstract in a separate class...
   private makeTestObject(): TestDecorator {
-    return Object.assign(this.makeTestFunction(), {
-      skip: this.makeTestFunction("skip"),
-      only: this.makeTestFunction("only"),
-      pending: this.makeTestFunction("pending")
-    });
+    return Object.assign(
+      deprecated({ feature: "@test[(...)]", ...deprecationInfoDefaults }, this.makeTestFunction()) as TestDecorator,
+      {
+        skip: deprecated({ feature: "@test.skip[(...)]", ...deprecationInfoDefaults }, this.makeTestFunction("skip")),
+        only: deprecated({ feature: "@test.only[(...)]", ...deprecationInfoDefaults }, this.makeTestFunction("only")),
+        pending: deprecated({ feature: "@test.pending[(...)]", ...deprecationInfoDefaults }, this.makeTestFunction("pending"))
+      });
   }
 
   private makeTestFunction(execution?: Execution) {
@@ -349,7 +368,7 @@ export abstract class ClassTestUI {
     });
   }
 
-  private testOverload({testProperty, testDecorator, testDecoratorNamed}: {
+  private testOverload({ testProperty, testDecorator, testDecoratorNamed }: {
     testProperty(target: Object, propertyKey: string | symbol, descriptor?: PropertyDescriptor): void;
     testDecorator(...decorators: MethodDecorator[]): MethodDecorator;
     testDecoratorNamed(name: string, ...decorators: MethodDecorator[]): MethodDecorator;
@@ -389,12 +408,15 @@ export abstract class ClassTestUI {
   }
 
   private makeParamsObject() {
-    return Object.assign(this.makeParamsFunction(), {
-      skip: this.makeParamsFunction("skip"),
-      only: this.makeParamsFunction("only"),
-      pending: this.makeParamsFunction("pending"),
-      naming: this.makeParamsNameFunction()
-    });
+    return Object.assign(
+      deprecated({ feature: "@params(...)", ...deprecationInfoDefaults }, this.makeParamsFunction()) as ParameterisedTestDecorator,
+      {
+        skip: deprecated({ feature: "@params.skip(...)", ...deprecationInfoDefaults }, this.makeParamsFunction("skip")),
+        only: deprecated({ feature: "@params.only(...)", ...deprecationInfoDefaults }, this.makeParamsFunction("only")),
+        pending: deprecated({ feature: "@params.pending(...)", ...deprecationInfoDefaults }, this.makeParamsFunction("pending")),
+        naming: deprecated({ feature: "@params.naming(...)", ...deprecationInfoDefaults }, this.makeParamsNameFunction())
+      }
+    );
   }
 
   /**
@@ -422,12 +444,12 @@ export abstract class ClassTestUI {
    */
   private createExecutionModifier(execution: Execution): ExecutionModifierDecorator {
     // <T>(target: Object, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<T>) => TypedPropertyDescriptor<T> | void
-    const decorator = function<T>(target: Function | boolean | Object, propertyKey?: string | symbol, descriptor?: TypedPropertyDescriptor<T>): any {
+    const decorator = function <T>(target: Function | boolean | Object, propertyKey?: string | symbol, descriptor?: TypedPropertyDescriptor<T>): any {
       if (typeof target === "undefined" || typeof target === "boolean") {
         if (target) {
           return decorator;
         } else {
-          return () => {};
+          return () => { };
         }
       }
       if (arguments.length === 1) {
@@ -670,4 +692,40 @@ export function registerDI(instantiator: DependencyInjectionSystem) {
   if (!dependencyInjectionSystems.some((di) => di === instantiator)) {
     dependencyInjectionSystems.unshift(instantiator);
   }
+}
+
+type DeprecationInfo = {
+  feature?: string;
+  version: string;
+  targetVersion: string;
+  issueLink: string;
+}
+
+const deprecationInfoDefaults: DeprecationInfo = {
+  version: "v0.4.0",
+  targetVersion: "v1.0.0",
+  issueLink: "https://github.com/testdeck/testdeck/issues/315"
+};
+
+const deprecationWarningMap: Map<string, boolean> = new Map();
+
+function doWarnAboutDeprecation(deprecationInfo: DeprecationInfo): void {
+  if (deprecationWarningMap[deprecationInfo.feature] !== true) {
+    console.warn(`${deprecationInfo.feature} was deprecated in ${deprecationInfo.version} and will be removed in ${deprecationInfo.targetVersion}, see ${deprecationInfo.issueLink}`);
+    deprecationWarningMap[deprecationInfo.feature] = true;
+  }
+}
+
+function deprecated<T>(deprecationInfo: DeprecationInfo, fn: Function): T {
+  return wrap(function(...args) {
+    doWarnAboutDeprecation(deprecationInfo);
+    return fn.call(this, ...args);
+  }, fn) as T;
+}
+
+function deprecatedAsync<T>(deprecationInfo: DeprecationInfo, fn: CallbackOptionallyAsync): T {
+  return wrap(function(done) {
+    doWarnAboutDeprecation(deprecationInfo);
+    return fn.call(this, done);
+  }, fn) as T;
 }

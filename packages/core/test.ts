@@ -1,5 +1,5 @@
-import { assert, AssertionError } from "chai";
 import * as chai from "chai";
+import { assert, AssertionError } from "chai";
 import * as chaiAsPromised from "chai-as-promised";
 import {
     CallbackOptionallyAsync,
@@ -9,9 +9,7 @@ import {
     registerDI,
     SuiteSettings,
     TestClass,
-    TestSettings,
-    TestRunner,
-    SuiteCallback
+    TestSettings
 } from "./index";
 
 chai.use(chaiAsPromised);
